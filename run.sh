@@ -9,3 +9,4 @@ sed -i 's/INCLUDEPATH.*$/INCLUDEPATH += \/home\/daitor\/Qt\/5.12.0\/gcc_64\/incl
 qmake ${buildDir}/${qt_project_filename} -o ${buildDir}
 make -C ${buildDir} 
 ./${buildDir}/${project_name}
+
