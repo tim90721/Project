@@ -1,7 +1,6 @@
 #ifndef MACROCELL
 #define MACROCELL
 #include "Cell.h"
-#include "Beam.h"
 
 class MacroCell : public Cell{
     public:

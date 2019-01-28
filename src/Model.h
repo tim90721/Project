@@ -2,7 +2,7 @@
 #define MODEL
 
 #include "includefile.h"
-#include <QPainter>
+//#include <QPainter>
 #include "Cell.h"
 #include "MacroCell.h"
 #include "IPaintSubject.h"
