@@ -21,6 +21,7 @@ class Model : public IPaintSubject{
         int getMouseY();
         void setMousePressed(bool isPressed);
         bool isMousePressed();
+        int getPressedCount();
         void notifyAll();
         void registerPaintObservor(IPaintObservor *observor);
     private:
@@ -29,8 +30,9 @@ class Model : public IPaintSubject{
         vector<Cell*> cells;
         vector<IPaintObservor*> observors;
         Cell *tempCell;
-        bool mousePressed;
         CellType cellType;
+        bool mousePressed;
+        int countPressedReleased;
 };
         
 #endif

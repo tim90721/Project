@@ -16,8 +16,7 @@ SimulationCanvas::SimulationCanvas(QWidget *parent, Model *model) :
 
 // Mouse moving event
 void SimulationCanvas::mouseMoveEvent(QMouseEvent *event){
-    if(model->isMousePressed())
-        model->setMouseXY(event->x(), event->y());
+    model->setMouseXY(event->x(), event->y());
 }
 
 // Mouse press event

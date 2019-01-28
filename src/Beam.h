@@ -19,6 +19,7 @@ class Beam{
         void setBeamIndex(int index);
         void setSpanAngle(int spanAngle);
         void setStartAngle(int index, int spanAngle);
+        void setStartAngle(int startAngle);
         void setLengthBeam(int lengthBeam);
         int getX();
         int getY();

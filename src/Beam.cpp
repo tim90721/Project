@@ -37,6 +37,10 @@ void Beam::setStartAngle(int index, int spanAngle){
     this->startAngle = (index - 1) * spanAngle;
 }
 
+void Beam::setStartAngle(int startAngle){
+    this->startAngle = startAngle;
+}
+
 int Beam::getX(){
     return this->x;
 }

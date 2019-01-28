@@ -5,9 +5,10 @@
 // x: gNB x position
 // y: gNB y position
 // cellType: gNB CellType, Macro or Femto //FIXME maybe reduntant
-Cell::Cell(int x, int y, CellType cellType){
+Cell::Cell(int x, int y, int nBeams, CellType cellType){
     this->x = x;
     this->y = y;
+    setnBeams(nBeams);
     this->cellType = cellType;
 }
 
@@ -31,11 +32,26 @@ void Cell::setY(int y){
     }
 }
 
+// set gNB number of support beams
+// nBeams: number of support beams
+void Cell::setnBeams(int nBeams){
+    this->nBeams = nBeams;
+}
+
 // Set gNB cell support distance(associate with cell size)
 void Cell::setCellSupportDistance(int supportDistance){
     this->cellSupportDistance = supportDistance;
 }
 
+// calculate beam start angle based on first mouse click coordinate and
+// second mouse click coordinate
+// diffX: the difference of x1 and x2
+// diffY: the difference of y1 and y2
+void Cell::setBeamStartAngle(int diffX, int diffY){
+    beamStartAngle = atan2(diffY, diffX) * 180 / M_PI;
+}
+
+// get cell support distance
 int Cell::getCellSupportDistance(){
     return this->cellSupportDistance;
 }
@@ -53,6 +69,12 @@ int Cell::getX(){
 // Get gNB y position
 int Cell::getY(){
     return this->y;
+}
+
+// get gNB number of support beams
+// return number of support beams
+int Cell::getnBeams(){
+    return this->nBeams;
 }
 
 // Get gNB celltype

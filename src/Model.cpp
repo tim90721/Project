@@ -7,15 +7,24 @@ Model::Model(){
     tempCell = NULL;
     mousePressed = false;
     cellType = Macro;
-    tempCell = new MacroCell(mouseX, mouseY, cellType);
+    tempCell = new MacroCell(mouseX, mouseY, 4, cellType);
+    countPressedReleased = 0;
 }
 
 // Set mouse XY position
 void Model::setMouseXY(int x, int y){
     mouseX = x;
     mouseY = y;
-    tempCell->setX(mouseX);
-    tempCell->setY(mouseY);
+    if(isMousePressed() && countPressedReleased == 1){
+        tempCell->setX(mouseX);
+        tempCell->setY(mouseY);
+    }
+    else if(countPressedReleased == 3){
+        // TODO
+        // do mouse click second time
+        tempCell->updateBeamsAngle(x - tempCell->getX(),
+                tempCell->getY() - y);
+    }
     notifyAll();
 }
 
@@ -32,10 +41,17 @@ int Model::getMouseY(){
 // Set mouse is pressed or not
 void Model::setMousePressed(bool isPressed){
     mousePressed = isPressed;
+    countPressedReleased++;
     if(mousePressed){
-        tempCell = new MacroCell(mouseX, mouseY, cellType); 
+        if(countPressedReleased == 1)
+            tempCell = new MacroCell(mouseX, mouseY, 4, cellType); 
+        else if(countPressedReleased == 3){
+            // TODO
+            // do mouse pressed second time
+        }
     }
-    else if(!mousePressed){
+    else if(!mousePressed && countPressedReleased == 4){
+        countPressedReleased = 0;
         cells.push_back(tempCell);
         tempCell = NULL;
         notifyAll();
@@ -53,9 +69,14 @@ void Model::draw(QPainter &painter){
         Cell *cell = cells.at(i);
         cell->drawCell(painter);
     }
-    if(mousePressed){
+    if(countPressedReleased >= 1 && countPressedReleased < 4){
         tempCell->drawCell(painter);
     }
+}
+
+// get number of mouse pressed count
+int Model::getPressedCount(){
+    return countPressedReleased;
 }
 
 // notify all IPaintObservor
