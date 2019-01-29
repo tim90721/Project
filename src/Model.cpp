@@ -65,7 +65,7 @@ bool Model::isMousePressed(){
 
 // Draw Cells and UEs
 void Model::draw(QPainter &painter){
-    for(int i = 0;i < cells.size();i++){
+    for(unsigned int i = 0;i < cells.size();i++){
         Cell *cell = cells.at(i);
         cell->drawCell(painter);
     }
@@ -81,7 +81,7 @@ int Model::getPressedCount(){
 
 // notify all IPaintObservor
 void Model::notifyAll(){
-    for(int i = 0;i < observors.size();i++){
+    for(unsigned int i = 0;i < observors.size();i++){
         IPaintObservor *o = observors.at(i);
         o->updateCanvas();
     }

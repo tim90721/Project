@@ -18,7 +18,7 @@ void MacroCell::drawCell(QPainter &painter){
     painter.setBrush(QBrush(QColor(128, 128, 255, 64), Qt::SolidPattern));
 
     Beam *beam;
-    for(int i = 0;(int)i < beams.size();i++){
+    for(unsigned int i = 0;i < beams.size();i++){
         beam = beams.at(i);
         beam->drawBeam(painter);
     }
