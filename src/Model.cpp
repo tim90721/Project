@@ -7,8 +7,10 @@ Model::Model(){
     tempCell = NULL;
     mousePressed = false;
     cellType = Macro;
-    tempCell = NULL;
     countPressedReleased = 0;
+    tempCell = NULL;
+    ue = new UE(300, 200);
+    UEs.push_back(ue);
 }
 
 // Set mouse XY position
@@ -73,6 +75,8 @@ void Model::draw(QPainter &painter){
     if(countPressedReleased >= 1 && countPressedReleased < 4){
         tempCell->drawCell(painter);
     }
+    painter.setBrush(QBrush(QColor(200, 128, 255, 255), Qt::SolidPattern));
+    ue->drawUE(painter);
 }
 
 // get number of mouse pressed count
@@ -91,4 +95,10 @@ void Model::notifyAll(){
 // register a IPaintObservor
 void Model::registerPaintObservor(IPaintObservor *observor){
     observors.push_back(observor);
+}
+
+void Model::traverseUEs(){
+    for(unsigned int i = 0;i < UEs.size();i++){
+
+    }
 }

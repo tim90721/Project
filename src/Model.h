@@ -3,11 +3,12 @@
 
 #include "includefile.h"
 //#include <QPainter>
-#include "Cell.h"
-#include "MacroCell.h"
 #include "IPaintSubject.h"
 #include <stdio.h>
 
+#include "Cell.h"
+#include "MacroCell.h"
+#include "UE.h"
 using namespace std;
 
 class Model : public IPaintSubject{
@@ -24,12 +25,15 @@ class Model : public IPaintSubject{
         int getPressedCount();
         void notifyAll();
         void registerPaintObservor(IPaintObservor *observor);
+        void traverseUEs();
     private:
         int mouseX;
         int mouseY;
         vector<Cell*> cells;
+        vector<UE*> UEs;
         vector<IPaintObservor*> observors;
         Cell *tempCell;
+        UE *ue;
         CellType cellType;
         bool mousePressed;
         int countPressedReleased;
