@@ -3,15 +3,16 @@
 // constructor
 // x: x position of cell center
 // y: y position of cell center
-// index: beam index
+// beamIndex: beam index
 // lengthBeam: the beam length(strength), corresponding to Cell supportDistance member
 // spanAngle: each beam's area(in form of angle) in a cell
-Beam::Beam(int x, int y, int index, int lengthBeam, int spanAngle){
+Beam::Beam(int x, int y, int cellIndex, int beamIndex, int lengthBeam, int spanAngle){
     setXY(x, y);
-    setBeamIndex(index);
+    setCellIndex(cellIndex);
+    setBeamIndex(beamIndex);
     setLengthBeam(lengthBeam);
     setSpanAngle(spanAngle);
-    setStartAngle(index, spanAngle);
+    setStartAngle(beamIndex, spanAngle);
 }
 
 // set beam's x position
@@ -35,9 +36,9 @@ void Beam::setXY(int x, int y){
 }
 
 // set beam's index
-// index: the index of beam
-void Beam::setBeamIndex(int index){
-    this->index = index;
+// beamIndex: the index of beam
+void Beam::setBeamIndex(int beamIndex){
+    this->beamIndex = beamIndex;
 }
 
 // set length(strength) of this beam
@@ -55,10 +56,10 @@ void Beam::setSpanAngle(int spanAngle){
 
 // set this beam's start angle
 // beam will draw from (start angle) to ((start angle) + (span angle))
-// index: the index of this beam
+// beamIndex: the index of this beam
 // spanAngle: the angle covered by this beam
-void Beam::setStartAngle(int index, int spanAngle){
-    this->startAngle = (index - 1) * spanAngle;
+void Beam::setStartAngle(int beamIndex, int spanAngle){
+    this->startAngle = (beamIndex - 1) * spanAngle;
 }
 
 // set this beam's start angle
@@ -66,6 +67,12 @@ void Beam::setStartAngle(int index, int spanAngle){
 // startAngle: the start drawing angle of this beam
 void Beam::setStartAngle(int startAngle){
     this->startAngle = startAngle;
+}
+
+// set this beam's cell index
+// cellIndex: cell index
+void Beam::setCellIndex(int cellIndex){
+    this->cellIndex = cellIndex;
 }
 
 // get this beam's x position
@@ -83,7 +90,7 @@ int Beam::getY(){
 // get this beam's index
 // return: this beam's index
 int Beam::getBeamIndex(){
-    return this->index;
+    return this->beamIndex;
 }
 
 // get this beam's span angle
@@ -105,6 +112,12 @@ int Beam::getStartAngle(){
 // return: this beam's length
 int Beam::getLengthBeam(){
     return this->lengthBeam;
+}
+
+// get this beam's cell index
+// return: this beam's cell index
+int Beam::getCellIndex(){
+    return this->cellIndex;
 }
 
 // draw beam

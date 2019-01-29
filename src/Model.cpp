@@ -7,7 +7,8 @@ Model::Model(){
     tempCell = NULL;
     mousePressed = false;
     cellType = Macro;
-    tempCell = new MacroCell(mouseX, mouseY, 4, cellType);
+    //tempCell = new MacroCell(mouseX, mouseY, cells.size(),  4, cellType);
+    tempCell = NULL;
     countPressedReleased = 0;
 }
 
@@ -44,7 +45,7 @@ void Model::setMousePressed(bool isPressed){
     countPressedReleased++;
     if(mousePressed){
         if(countPressedReleased == 1)
-            tempCell = new MacroCell(mouseX, mouseY, 4, cellType); 
+            tempCell = new MacroCell(mouseX, mouseY, cells.size(), 4, cellType); 
         else if(countPressedReleased == 3){
             // TODO
             // do mouse pressed second time

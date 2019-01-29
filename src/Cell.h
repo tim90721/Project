@@ -12,7 +12,7 @@ enum CellType{
 
 class Cell{
     public:
-        Cell(int x, int y, int nBeams, CellType cellType);
+        Cell(int x, int y,int cellIndex, int nBeams, CellType cellType);
         virtual void drawCell(QPainter &painter) = 0;
         void setCellType(CellType cellType);
         void setX(int x);
@@ -20,6 +20,7 @@ class Cell{
         void setnBeams(int nBeams);
         void setCellSupportDistance(int supportDistance);
         void setBeamStartAngle(int diffX, int diffY);
+        void setCellIndex(int cellIndex);
         virtual void initializeBeams(int nBeams) = 0;
         virtual void updateBeamsAngle(int diffX, int diffY) = 0;
         int getX();
@@ -27,10 +28,12 @@ class Cell{
         int getnBeams();
         int getCellSupportDistance();
         double getBeamStartAngle();
+        int getCellIndex();
         CellType getCellType();
     protected:
         int x;
         int y;
+        int cellIndex;
         int cellSupportDistance;
         double beamStartAngle;
         int nBeams;
