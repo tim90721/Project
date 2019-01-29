@@ -11,6 +11,7 @@ Cell::Cell(int x, int y, int cellIndex, int nBeams, CellType cellType){
     this->cellIndex = cellIndex;
     setnBeams(nBeams);
     this->cellType = cellType;
+    this->cellPixelSize = 10;
 }
 
 // Set gNB x position

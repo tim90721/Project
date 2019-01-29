@@ -37,6 +37,7 @@ class Cell{
         int cellSupportDistance;
         double beamStartAngle;
         int nBeams;
+        int cellPixelSize;
         CellType cellType;
         vector<Beam*> beams;
 };
