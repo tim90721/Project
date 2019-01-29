@@ -7,7 +7,6 @@ Model::Model(){
     tempCell = NULL;
     mousePressed = false;
     cellType = Macro;
-    //tempCell = new MacroCell(mouseX, mouseY, cells.size(),  4, cellType);
     tempCell = NULL;
     countPressedReleased = 0;
 }
@@ -17,12 +16,12 @@ void Model::setMouseXY(int x, int y){
     mouseX = x;
     mouseY = y;
     if(isMousePressed() && countPressedReleased == 1){
+        // do when mouse first pressed
         tempCell->setX(mouseX);
         tempCell->setY(mouseY);
     }
     else if(countPressedReleased > 1){
-        // TODO
-        // do mouse click second time
+        // do things when mouse click second time
         tempCell->updateBeamsAngle(x - tempCell->getX(),
                 tempCell->getY() - y);
     }
@@ -52,6 +51,7 @@ void Model::setMousePressed(bool isPressed){
         }
     }
     else if(!mousePressed && countPressedReleased == 4){
+        // mouse release second time
         countPressedReleased = 0;
         cells.push_back(tempCell);
         tempCell = NULL;
