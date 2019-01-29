@@ -19,7 +19,7 @@ void Model::setMouseXY(int x, int y){
         tempCell->setX(mouseX);
         tempCell->setY(mouseY);
     }
-    else if(countPressedReleased == 3){
+    else if(countPressedReleased > 1){
         // TODO
         // do mouse click second time
         tempCell->updateBeamsAngle(x - tempCell->getX(),
