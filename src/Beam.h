@@ -1,6 +1,7 @@
 #ifndef BEAM
 #define BEAM
 #include <QPainter>
+#include <math.h>
 
 class Beam{
     private:
@@ -11,6 +12,10 @@ class Beam{
         int y;
         int lengthBeam;
         int cellIndex;
+        double startB;
+        double startC;
+        double endB;
+        double endC;
     public:
         Beam(int x, int y, int cellIndex, int beamIndex, int lengthBeam, int spanAngle);
         void drawBeam(QPainter &painter);
@@ -23,6 +28,7 @@ class Beam{
         void setStartAngle(int startAngle);
         void setLengthBeam(int lengthBeam);
         void setCellIndex(int cellIndex);
+        void findBeamCoverAreaEquation();
         int getX();
         int getY();
         int getBeamIndex();
@@ -30,5 +36,9 @@ class Beam{
         int getStartAngle();
         int getLengthBeam();
         int getCellIndex();
+        double getStartA();
+        double getStartB();
+        double getEndA();
+        double getEndB();
 };
 #endif

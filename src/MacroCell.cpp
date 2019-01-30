@@ -14,7 +14,6 @@ MacroCell::MacroCell(int x, int y, int cellIndex, int nBeams, CellType cellType)
 // painter: QPainter use for painting
 void MacroCell::drawCell(QPainter &painter){
     painter.setBrush(QBrush(QColor(0, 0, 0, 255), Qt::SolidPattern));
-    //painter.drawEllipse(x + this->cellSupportDistance / 2 - 5 - 100, y + 200 / 2 - 5 - 100, 10, 10);
     painter.drawEllipse(x - cellPixelSize / 2,
             y - cellPixelSize / 2,
             cellPixelSize, 

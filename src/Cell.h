@@ -4,6 +4,7 @@
 #include <QPainter>
 #include "includefile.h"
 #include "Beam.h"
+#include "UE.h"
 
 enum CellType{
     Macro,
@@ -21,6 +22,8 @@ class Cell{
         void setCellSupportDistance(int supportDistance);
         void setBeamStartAngle(int diffX, int diffY);
         void setCellIndex(int cellIndex);
+        void findCellCoverAreaEquation();
+        void detectUE(UE ue);
         virtual void initializeBeams(int nBeams) = 0;
         virtual void updateBeamsAngle(int diffX, int diffY) = 0;
         int getX();
@@ -35,9 +38,9 @@ class Cell{
         int y;
         int cellIndex;
         int cellSupportDistance;
-        double beamStartAngle;
         int nBeams;
         int cellPixelSize;
+        double beamStartAngle;
         CellType cellType;
         vector<Beam*> beams;
 };

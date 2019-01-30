@@ -59,6 +59,19 @@ void Cell::setCellIndex(int cellIndex){
     this->cellIndex = cellIndex;
 }
 
+// find cell cover area equation
+void Cell::findCellCoverAreaEquation(){
+    Beam *beam;
+    for(unsigned int i = 0;i < beams.size();i++){
+        beam = beams.at(i);
+        beam->findBeamCoverAreaEquation();
+    }
+}
+
+void detectUE(UE ue){
+    
+}
+
 // get cell support distance
 int Cell::getCellSupportDistance(){
     return this->cellSupportDistance;

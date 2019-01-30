@@ -54,6 +54,7 @@ void Model::setMousePressed(bool isPressed){
     }
     else if(!mousePressed && countPressedReleased == 4){
         // mouse release second time
+        tempCell->findCellCoverAreaEquation();
         countPressedReleased = 0;
         cells.push_back(tempCell);
         tempCell = NULL;
@@ -99,6 +100,5 @@ void Model::registerPaintObservor(IPaintObservor *observor){
 
 void Model::traverseUEs(){
     for(unsigned int i = 0;i < UEs.size();i++){
-
     }
 }

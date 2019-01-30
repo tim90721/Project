@@ -75,6 +75,18 @@ void Beam::setCellIndex(int cellIndex){
     this->cellIndex = cellIndex;
 }
 
+// find beam cover area equation
+// B, C is the coefficient of linear function X + bY + C = 0
+// startB, startC is the coefficient of beam start angle equation
+// endB, endC is the coefficient of beam end angle equation
+void Beam::findBeamCoverAreaEquation(){
+    startB = -1.0 * tan(startAngle);
+    startC = -1.0 * ((double)this->x + startB * (double)this->y);
+    endB = -1.0 * tan(startAngle + spanAngle);
+    endC = -1.0 * ((double)this->x + endB * (double)this->y);
+    printf("%3.2f %3.2f %3.2f %3.2f\n", startB, startC, endB, endC);
+}
+
 // get this beam's x position
 // return: this beam's x position, equals to x position of cell center
 int Beam::getX(){
