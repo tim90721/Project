@@ -66,10 +66,28 @@ void Cell::findCellCoverAreaEquation(){
         beam = beams.at(i);
         beam->findBeamCoverAreaEquation();
     }
+    beam = beams.at(0);
+    this->startB = beam->getStartB();
+    this->startC = beam->getStartC();
+    this->startAngle = beam->getStartAngle();
+    beam = beams.at(beams.size() - 1);
+    this->endB = beam->getEndB();
+    this->endC = beam->getEndC();
+    this->endAngle = beam->getEndAngle();
 }
 
-void detectUE(UE ue){
-    
+void Cell::detectUE(UE *ue){
+    printf("start:%d\tend:%d\n", this->startAngle, this->endAngle);
+    if(isInArea(ue->getX(), 
+            ue->getY(),
+            this->startAngle,
+            this->endAngle,
+            this->startB,
+            this->startC,
+            this->endB,
+            this->endC)){
+        printf("is In cell index %d area!\n", this->cellIndex);
+    }
 }
 
 // get cell support distance

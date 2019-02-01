@@ -5,6 +5,7 @@
 #include "includefile.h"
 #include "Beam.h"
 #include "UE.h"
+#include "CommonMath.h"
 
 enum CellType{
     Macro,
@@ -23,7 +24,7 @@ class Cell{
         void setBeamStartAngle(int diffX, int diffY);
         void setCellIndex(int cellIndex);
         void findCellCoverAreaEquation();
-        void detectUE(UE ue);
+        void detectUE(UE *ue);
         virtual void initializeBeams(int nBeams) = 0;
         virtual void updateBeamsAngle(int diffX, int diffY) = 0;
         int getX();
@@ -40,7 +41,14 @@ class Cell{
         int cellSupportDistance;
         int nBeams;
         int cellPixelSize;
+        int cellAngle;
+        int startAngle;
+        int endAngle;
         double beamStartAngle;
+        double startB;
+        double startC;
+        double endB;
+        double endC;
         CellType cellType;
         vector<Beam*> beams;
 };

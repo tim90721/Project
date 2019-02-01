@@ -27,7 +27,8 @@ void Model::setMouseXY(int x, int y){
         tempCell->updateBeamsAngle(x - tempCell->getX(),
                 tempCell->getY() - y);
     }
-    notifyAll();
+    if(countPressedReleased >= 1)
+        notifyAll();
 }
 
 // Get mouse X position
@@ -54,11 +55,14 @@ void Model::setMousePressed(bool isPressed){
     }
     else if(!mousePressed && countPressedReleased == 4){
         // mouse release second time
+        tempCell->updateBeamsAngle(this->mouseX - tempCell->getX(),
+                tempCell->getY() - this->mouseY);
         tempCell->findCellCoverAreaEquation();
         countPressedReleased = 0;
         cells.push_back(tempCell);
         tempCell = NULL;
         notifyAll();
+        traverseUEs();
     }
 }
 
@@ -99,6 +103,13 @@ void Model::registerPaintObservor(IPaintObservor *observor){
 }
 
 void Model::traverseUEs(){
+    UE *ue;
+    Cell *cell;
     for(unsigned int i = 0;i < UEs.size();i++){
+        ue = UEs.at(i);
+        for(unsigned int j = 0;j < cells.size();j++){
+            cell = cells.at(j);
+            cell->detectUE(ue);
+        }
     }
 }

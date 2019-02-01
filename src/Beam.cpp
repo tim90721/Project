@@ -66,6 +66,9 @@ void Beam::setStartAngle(int beamIndex, int spanAngle){
 // beam will draw from (start angle) to ((start angle) + (span angle))
 // startAngle: the start drawing angle of this beam
 void Beam::setStartAngle(int startAngle){
+    if(startAngle < 0){
+        startAngle += 360;
+    }
     this->startAngle = startAngle;
 }
 
@@ -84,7 +87,9 @@ void Beam::findBeamCoverAreaEquation(){
     startC = -1.0 * ((double)this->x + startB * (double)this->y);
     endB = -1.0 * tan(startAngle + spanAngle);
     endC = -1.0 * ((double)this->x + endB * (double)this->y);
-    printf("%3.2f %3.2f %3.2f %3.2f\n", startB, startC, endB, endC);
+    //printf("%3.2f %3.2f %3.2f %3.2f\n", floor(startB), floor(startC), floor(endB), floor(endC));
+    //printf("%3.2f %3.2f\n", floor(startAngle), floor(startAngle + spanAngle));
+    //printf("%3d\n", getEndAngle());
 }
 
 // get this beam's x position
@@ -119,6 +124,13 @@ int Beam::getStartAngle(){
     return this->startAngle;
 }
 
+// get this beam's end angle
+// return: this beam's end angle(startAngle + spaneAngle)
+int Beam::getEndAngle(){
+    int endAngle = this->startAngle + this->spanAngle;
+    return (endAngle > 360)?(endAngle - 360):(endAngle);
+}
+    
 // get this beam's length(strength)
 // the beam will cover the area from cell center to beam length(associate with strength)
 // return: this beam's length
@@ -143,3 +155,18 @@ void Beam::drawBeam(QPainter &painter){
             spanAngle * 16);
 }
 
+double Beam::getStartB(){
+    return this->startB;
+}
+
+double Beam::getStartC(){
+    return this->startC;
+}
+
+double Beam::getEndB(){
+    return this->endB;
+}
+
+double Beam::getEndC(){
+    return this->endC;
+}

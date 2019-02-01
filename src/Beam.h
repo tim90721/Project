@@ -34,11 +34,12 @@ class Beam{
         int getBeamIndex();
         int getSpanAngle();
         int getStartAngle();
+        int getEndAngle();
         int getLengthBeam();
         int getCellIndex();
-        double getStartA();
         double getStartB();
-        double getEndA();
+        double getStartC();
         double getEndB();
+        double getEndC();
 };
 #endif
