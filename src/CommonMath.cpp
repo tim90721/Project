@@ -52,6 +52,13 @@ bool isInArea(int x, int y, int startAngle, int endAngle, double startB, double 
     return false;
 }
 
+bool isInRange(int x1, int y1, int x2, int y2, int range){
+    double distance = sqrt(pow((x2 - x1), 2) + pow((y2 - y1), 2));
+    if(distance <= range)
+        return true;
+    return false;
+}
+
 // use point x get y from linear equation x + By + C = 0
 // x: point x, relative point
 // B: linear equation coefficient B

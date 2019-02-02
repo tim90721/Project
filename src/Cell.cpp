@@ -83,18 +83,22 @@ void Cell::findCellCoverAreaEquation(){
 void Cell::detectUE(UE *ue){
     //printf("start:%d\tend:%d\n", this->startAngle, this->endAngle);
     // detect ue is in cell span angle area
-    if(isInArea(ue->getX() - this->x, 
-            this->y - ue->getY(),
-            this->startAngle,
-            this->endAngle,
-            this->startB,
-            this->startC,
-            this->endB,
-            this->endC)){
+    if(isInRange(ue->getX(),
+                ue->getY(),
+                this->x,
+                this->y,
+                this->cellSupportDistance / 2)
+            && isInArea(ue->getX() - this->x, 
+                this->y - ue->getY(),
+                this->startAngle,
+                this->endAngle,
+                this->startB,
+                this->startC,
+                this->endB,
+                this->endC)){
         printf("UE id %d is In cell index %d area!\n", ue->getID(), this->cellIndex);
     }
     //TODO: add ue to vector
-    //TODO: detect ue with distance
 }
 
 // get cell support distance
