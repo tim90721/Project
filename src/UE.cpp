@@ -3,8 +3,9 @@
 // constructor
 // x: point x of ue
 // y: point y of ue
-UE::UE(int x, int y){
+UE::UE(int x, int y, int id){
     setXY(x, y);
+    this->id = id;
     this->beamIndex = -1;
     this->cellIndex = -1;
     this->beamStrength = -1;
@@ -29,6 +30,12 @@ int UE::getX(){
 // return: point y of ue
 int UE::getY(){
     return this->y;
+}
+
+// get ue's id
+// return: ue's id
+int UE::getID(){
+    return this->id;
 }
 
 // get ue's best beam index

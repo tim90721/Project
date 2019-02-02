@@ -9,7 +9,7 @@ Model::Model(){
     cellType = Macro;
     countPressedReleased = 0;
     tempCell = NULL;
-    ue = new UE(300, 200);
+    ue = new UE(300, 200, UEs.size());
     UEs.push_back(ue);
 }
 
