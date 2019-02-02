@@ -1,6 +1,8 @@
 #ifndef BEAM
 #define BEAM
+#include "includefile.h"
 #include <QPainter>
+#include "UE.h"
 #include <math.h>
 
 class Beam{
@@ -29,6 +31,7 @@ class Beam{
         void setLengthBeam(int lengthBeam);
         void setCellIndex(int cellIndex);
         void findBeamCoverAreaEquation();
+        void detectUE(UE *ue);
         int getX();
         int getY();
         int getBeamIndex();

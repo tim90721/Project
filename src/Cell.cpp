@@ -98,7 +98,7 @@ void Cell::detectUE(UE *ue){
                 this->endC)){
         printf("UE id %d is In cell index %d area!\n", ue->getID(), this->cellIndex);
     }
-    //TODO: add ue to vector
+    //TODO: maybe add ue to vector for storing
 }
 
 // get cell support distance
