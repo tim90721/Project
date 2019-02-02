@@ -7,11 +7,11 @@ class Beam{
     private:
         int beamIndex;
         int spanAngle;
-        int startAngle;
         int x;
         int y;
         int lengthBeam;
         int cellIndex;
+        double startAngle;
         double startB;
         double startC;
         double endB;
@@ -25,7 +25,7 @@ class Beam{
         void setBeamIndex(int beamIndex);
         void setSpanAngle(int spanAngle);
         void setStartAngle(int beamIndex, int spanAngle);
-        void setStartAngle(int startAngle);
+        void setStartAngle(double startAngle);
         void setLengthBeam(int lengthBeam);
         void setCellIndex(int cellIndex);
         void findBeamCoverAreaEquation();
@@ -33,7 +33,7 @@ class Beam{
         int getY();
         int getBeamIndex();
         int getSpanAngle();
-        int getStartAngle();
+        double getStartAngle();
         int getEndAngle();
         int getLengthBeam();
         int getCellIndex();

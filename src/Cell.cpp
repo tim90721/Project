@@ -51,6 +51,7 @@ void Cell::setCellSupportDistance(int supportDistance){
 // diffY: the difference of y1 and y2
 void Cell::setBeamStartAngle(int diffX, int diffY){
     beamStartAngle = atan2(diffY, diffX) * 180 / M_PI;
+    //printf("%f\n", beamStartAngle);
 }
 
 // set cell index
@@ -76,10 +77,14 @@ void Cell::findCellCoverAreaEquation(){
     this->endAngle = beam->getEndAngle();
 }
 
+// detect ue is this cell's area
+// if ue is in this cell, add this ue to this cell's ue vector
+// ue: the ue to be detected
 void Cell::detectUE(UE *ue){
-    printf("start:%d\tend:%d\n", this->startAngle, this->endAngle);
-    if(isInArea(ue->getX(), 
-            ue->getY(),
+    //printf("start:%d\tend:%d\n", this->startAngle, this->endAngle);
+    // detect ue is in cell span angle area
+    if(isInArea(ue->getX() - this->x, 
+            this->y - ue->getY(),
             this->startAngle,
             this->endAngle,
             this->startB,
@@ -88,6 +93,8 @@ void Cell::detectUE(UE *ue){
             this->endC)){
         printf("is In cell index %d area!\n", this->cellIndex);
     }
+    //TODO: add ue to vector
+    //TODO: detect ue with distance
 }
 
 // get cell support distance

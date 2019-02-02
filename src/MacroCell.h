@@ -1,6 +1,7 @@
 #ifndef MACROCELL
 #define MACROCELL
 #include "Cell.h"
+#include "CommonMath.h"
 
 class MacroCell : public Cell{
     public:

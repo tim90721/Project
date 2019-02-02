@@ -65,7 +65,7 @@ void Beam::setStartAngle(int beamIndex, int spanAngle){
 // set this beam's start angle
 // beam will draw from (start angle) to ((start angle) + (span angle))
 // startAngle: the start drawing angle of this beam
-void Beam::setStartAngle(int startAngle){
+void Beam::setStartAngle(double startAngle){
     if(startAngle < 0){
         startAngle += 360;
     }
@@ -83,10 +83,15 @@ void Beam::setCellIndex(int cellIndex){
 // startB, startC is the coefficient of beam start angle equation
 // endB, endC is the coefficient of beam end angle equation
 void Beam::findBeamCoverAreaEquation(){
-    startB = -1.0 * tan(startAngle);
-    startC = -1.0 * ((double)this->x + startB * (double)this->y);
-    endB = -1.0 * tan(startAngle + spanAngle);
-    endC = -1.0 * ((double)this->x + endB * (double)this->y);
+    //startB = -1.0 * tan(startAngle);
+    //startC = -1.0 * ((double)this->x + startB * (double)this->y);
+    //endB = -1.0 * tan(startAngle + spanAngle);
+    //endC = -1.0 * ((double)this->x + endB * (double)this->y);
+    //printf("startAngle: %f\n", startAngle);
+    startB = -1.0 * tan((-1.0) * (startAngle - 90) * (M_PI / 180));
+    startC = 0;
+    endB = -1.0 * tan((-1.0) * (startAngle + spanAngle - 90) * (M_PI / 180));
+    endC = 0;
     //printf("%3.2f %3.2f %3.2f %3.2f\n", floor(startB), floor(startC), floor(endB), floor(endC));
     //printf("%3.2f %3.2f\n", floor(startAngle), floor(startAngle + spanAngle));
     //printf("%3d\n", getEndAngle());
@@ -120,7 +125,7 @@ int Beam::getSpanAngle(){
 // get this beam's start angle
 // the beam will cover the area from (start angle) to ((start angle) + (span angle))
 // return: this beam's start angle 
-int Beam::getStartAngle(){
+double Beam::getStartAngle(){
     return this->startAngle;
 }
 
@@ -155,18 +160,26 @@ void Beam::drawBeam(QPainter &painter){
             spanAngle * 16);
 }
 
+// get this beam's startB with linear equation x + By + C = 0
+// return: coefficient B of start line
 double Beam::getStartB(){
     return this->startB;
 }
 
+// get this beam's startC with linear equation x + By + C = 0
+// return: coefficient C of start line
 double Beam::getStartC(){
     return this->startC;
 }
 
+// get this beam's endB with linear equation x + By + C = 0
+// return: coefficient B of end line
 double Beam::getEndB(){
     return this->endB;
 }
 
+// get this beam's endC with linear equation x + By + C = 0
+// return: coefficient C of end line
 double Beam::getEndC(){
     return this->endC;
 }

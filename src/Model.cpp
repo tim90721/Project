@@ -26,6 +26,8 @@ void Model::setMouseXY(int x, int y){
         // do things when mouse click second time
         tempCell->updateBeamsAngle(x - tempCell->getX(),
                 tempCell->getY() - y);
+        //tempCell->updateBeamsAngle(x - tempCell->getX(),
+        //        y - tempCell->getY());
     }
     if(countPressedReleased >= 1)
         notifyAll();
@@ -102,6 +104,7 @@ void Model::registerPaintObservor(IPaintObservor *observor){
     observors.push_back(observor);
 }
 
+// traverse all UEs and detect them is in cell or not
 void Model::traverseUEs(){
     UE *ue;
     Cell *cell;
