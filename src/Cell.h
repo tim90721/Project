@@ -13,6 +13,7 @@ enum CellType{
 };
 
 class Beam;
+class UE;
 
 class Cell{
     public:

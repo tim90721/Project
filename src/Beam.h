@@ -8,6 +8,7 @@
 #include "CommonMath.h"
 
 class Cell;
+//class UE;
 
 class Beam{
     private:
@@ -37,7 +38,6 @@ class Beam{
         void setCellIndex(int cellIndex);
         void findBeamCoverAreaEquation();
         void detectUE(UE *ue, double power);
-        void broadcastSI(UE *ue);
         int getX();
         int getY();
         int getBeamIndex();

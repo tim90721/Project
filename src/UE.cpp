@@ -28,13 +28,22 @@ void UE::setXY(int x, int y){
 // beamstrength: beam strength, power
 void UE::setBeam(int cellIndex, int beamIndex, int beamStrength){
     if(beamStrength > this->beamStrength){
+        // new beam is better
         //printf("new beam is better than original one\n");
         this->cellIndex = cellIndex;
         this->beamIndex = beamIndex;
         this->beamStrength = beamStrength;
         return;
     }
+    // old beam is better
     //printf("old beam is better\n");
+}
+
+void UE::receiveSI(Cell *cell){
+    if(cell->getCellIndex() == this->cellIndex){
+        // TODO: set ssb-perrach-OccasionAndCBRA-preambles
+        // TODO: set CRE(future work)
+    }
 }
 
 // get ue's point x
