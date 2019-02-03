@@ -99,7 +99,8 @@ void Cell::detectUE(UE *ue){
         Beam *beam;
         for(unsigned int i = 0;i < beams.size();i++){
             beam = beams.at(i);
-            beam->detectUE(ue, 0);
+            beam->detectUE(ue, 
+                    ((double)(this->cellSupportDistance / 2)) - distance);
         }
     }
     //TODO: maybe add ue to vector for storing

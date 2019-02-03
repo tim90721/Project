@@ -99,7 +99,7 @@ void Beam::findBeamCoverAreaEquation(){
 }
 
 // detect UE is in this beam's area
-void Beam::detectUE(UE *ue, int distance){
+void Beam::detectUE(UE *ue, double power){
     if(isInArea(ue->getX() - getX(),
                 getY() - ue->getY(),
                 this->startAngle,
@@ -112,6 +112,7 @@ void Beam::detectUE(UE *ue, int distance){
                 ue->getID(),
                 parent->getCellIndex(),
                 getBeamIndex());
+        ue->setBeam(this->cellIndex, this->beamIndex, power);
     }
 }
 

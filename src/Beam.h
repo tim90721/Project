@@ -36,7 +36,7 @@ class Beam{
         void setLengthBeam(int lengthBeam);
         void setCellIndex(int cellIndex);
         void findBeamCoverAreaEquation();
-        void detectUE(UE *ue, int distance);
+        void detectUE(UE *ue, double power);
         void broadcastSI(UE *ue);
         int getX();
         int getY();

@@ -20,6 +20,23 @@ void UE::setXY(int x, int y){
     this->y = y;
 }
 
+// set cell index, beam index, beam strength
+// if new beam strength is higher than old beam strength
+// update information to new beam
+// cellIndex: cell index related to the beam
+// beamIndex: beam index
+// beamstrength: beam strength, power
+void UE::setBeam(int cellIndex, int beamIndex, int beamStrength){
+    if(beamStrength > this->beamStrength){
+        //printf("new beam is better than original one\n");
+        this->cellIndex = cellIndex;
+        this->beamIndex = beamIndex;
+        this->beamStrength = beamStrength;
+        return;
+    }
+    //printf("old beam is better\n");
+}
+
 // get ue's point x
 // return: point x of ue
 int UE::getX(){
