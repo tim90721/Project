@@ -2,7 +2,6 @@
 #define MODEL
 
 #include "includefile.h"
-//#include <QPainter>
 #include "IPaintSubject.h"
 #include <stdio.h>
 

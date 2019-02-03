@@ -12,6 +12,8 @@ enum CellType{
     Femto
 };
 
+class Beam;
+
 class Cell{
     public:
         Cell(int x, int y,int cellIndex, int nBeams, CellType cellType);

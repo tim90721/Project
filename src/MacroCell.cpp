@@ -38,7 +38,7 @@ void MacroCell::drawCell(QPainter &painter){
 void MacroCell::initializeBeams(int nBeams){
     int spanAngle = cellAngle / nBeams;
     for(int i = 0;i < nBeams;i++){
-        Beam *beam = new Beam(this->x, this->y, cellIndex, i + 1, cellSupportDistance, spanAngle);
+        Beam *beam = new Beam(this, cellIndex, i + 1, cellSupportDistance, spanAngle);
         beams.push_back(beam); 
     }
 }

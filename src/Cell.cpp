@@ -17,21 +17,21 @@ Cell::Cell(int x, int y, int cellIndex, int nBeams, CellType cellType){
 // Set gNB x position
 void Cell::setX(int x){
     this->x = x;
-    Beam *beam;
-    for(int i = 0;i < (int)beams.size();i++){
-        beam = beams.at(i);
-        beam->setX(x);
-    }
+    //Beam *beam;
+    //for(int i = 0;i < (int)beams.size();i++){
+    //    beam = beams.at(i);
+    //    beam->setX(x);
+    //}
 }
 
 // Set gNB y position
 void Cell::setY(int y){
     this->y = y;
-    Beam *beam;
-    for(int i = 0;i < (int)beams.size();i++){
-        beam = beams.at(i);
-        beam->setY(y);
-    }
+    //Beam *beam;
+    //for(int i = 0;i < (int)beams.size();i++){
+    //    beam = beams.at(i);
+    //    beam->setY(y);
+    //}
 }
 
 // set gNB number of support beams
@@ -96,7 +96,11 @@ void Cell::detectUE(UE *ue){
                 this->startC,
                 this->endB,
                 this->endC)){
-        printf("UE id %d is In cell index %d area!\n", ue->getID(), this->cellIndex);
+        Beam *beam;
+        for(unsigned int i = 0;i < beams.size();i++){
+            beam = beams.at(i);
+            beam->detectUE(ue, 0);
+        }
     }
     //TODO: maybe add ue to vector for storing
 }
