@@ -25,15 +25,23 @@ public:
     MainGUI(QWidget *parent = 0);
 private:
     void initialRadioButton();
-    void initialArrivalRateArea();
     void initialSIBPeriodArea();
+    void initialArrivalRateArea();
+    void initialSimulationTimeArea();
+    void initialSystemArea(); // for start save area
     void initialMainLayout();
     QLabel *labelArrivalRate;
     QLabel *labelSIBPeriod;
+    QLabel *labelSimulationTime;
     QLabel *labelUnitms;
     QLabel *labelUnitArrivalRate;
+    QLabel *labelUnitSimulationTime;
     QPushButton *btnArrivalRate;
     QPushButton *btnSIBPeriod;
+    QPushButton *btnSimulationTime;
+    QPushButton *btnStart;
+    QPushButton *btnSaveConfig;
+    QPushButton *btnLoadConfig;
     QRadioButton *rBtnMarcogNB;
     QRadioButton *rBtnFemtogNB;
     QRadioButton *rBtnFR1;
@@ -60,6 +68,7 @@ private:
     QGroupBox *groupPreambleFormat;
     QLineEdit *lEditArrivalRate;
     QLineEdit *lEditSIBPeriod;
+    QLineEdit *lEditSimulationTime;
     QGridLayout *layoutSetting;
     QGridLayout *layoutMain;
     QHBoxLayout *layoutgNBType;
@@ -68,6 +77,8 @@ private:
     QHBoxLayout *layoutPreambleFormat;
     QHBoxLayout *layoutSIBPeriod;
     QHBoxLayout *layoutArrivalRate;
+    QHBoxLayout *layoutSimulationTime;
+    QHBoxLayout *layoutSystem; // for button start, save...
     QVBoxLayout *layoutPreambleFormatLeft;
     QVBoxLayout *layoutPreambleFormatRight;
     QWidget *widgetSetting;
@@ -78,11 +89,12 @@ private:
 
     std::string sProjectName = "project";
     std::string sgNBType = "gNB Type";
-    std::string sNumberOfBeams = "Number of SSB: ";
+    std::string sNumberOfBeams = "Number of SSB ";
     std::string sArrivalRate = "UE Arrival Rate: ";
     std::string sFR = "FR";
     std::string sPreambleFormat = "Preamble Format";
     std::string sSIBPeriod = "SIB Period: ";
+    std::string sSimulationTime = "Simulation Time: ";
     std::string sMarcogNB = "Marco gNB";
     std::string sFemtogNB = "Femto gNB";
     std::string sFR1 = "FR1";
@@ -106,8 +118,12 @@ private:
     std::string sBtnSet = "Set";
     std::string sUnitms = "ms";
     std::string sUnitArrivalRate = "/ms";
+    std::string sUnitSimulationTime = "s";
+    std::string sBtnStart = "Start";
+    std::string sBtnSaveConfig = "Save Config";
+    std::string sBtnLoadConfig = "Load Config";
     int widthWindow = 515;
-    int heightWindow = 600;
+    int heightWindow = 700;
 };
 #endif
 

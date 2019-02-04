@@ -23,6 +23,8 @@ MainGUI::MainGUI(QWidget *parent):
     initialRadioButton();
     initialSIBPeriodArea();
     initialArrivalRateArea();
+    initialSimulationTimeArea();
+    initialSystemArea();
     initialMainLayout();
 }
 
@@ -137,6 +139,11 @@ void MainGUI::initialArrivalRateArea(){
 
     // LineEdit setting
     lEditArrivalRate = new QLineEdit(this);
+    lEditArrivalRate->setMaximumSize(50, 50);
+    sp = lEditArrivalRate->sizePolicy();
+    sp.setVerticalPolicy(QSizePolicy::Preferred);
+    sp.setHorizontalPolicy(QSizePolicy::Maximum);
+    lEditArrivalRate->setSizePolicy(sp);
 
     // PushButton setting
     btnArrivalRate = new QPushButton(this);
@@ -153,6 +160,66 @@ void MainGUI::initialArrivalRateArea(){
     layoutArrivalRate->addWidget(lEditArrivalRate);
     layoutArrivalRate->addWidget(labelUnitArrivalRate);
     layoutArrivalRate->addWidget(btnArrivalRate);
+}
+
+// configuration simulation time Area
+void MainGUI::initialSimulationTimeArea(){
+    // Label setting
+    labelSimulationTime = new QLabel(this);
+    labelUnitSimulationTime = new QLabel(this);
+
+    labelSimulationTime->setText(QString::fromStdString(sSimulationTime));
+    labelUnitSimulationTime->setText(QString::fromStdString(sUnitSimulationTime));
+
+    // LineEdit setting
+    lEditSimulationTime = new QLineEdit(this);
+    lEditSimulationTime->setMaximumSize(50, 50);
+    sp = lEditSimulationTime->sizePolicy();
+    sp.setVerticalPolicy(QSizePolicy::Preferred);
+    sp.setHorizontalPolicy(QSizePolicy::Maximum);
+    lEditSimulationTime->setSizePolicy(sp);
+
+    // PushButton setting
+    btnSimulationTime = new QPushButton(this);
+    btnSimulationTime->setText(QString::fromStdString(sBtnSet));
+    btnSimulationTime->setMaximumSize(50, 50);
+    sp = btnSimulationTime->sizePolicy();
+    sp.setVerticalPolicy(QSizePolicy::Preferred);
+    sp.setHorizontalPolicy(QSizePolicy::Maximum);
+    btnSimulationTime->setSizePolicy(sp);
+
+    // Simulation time area setting
+    layoutSimulationTime = new QHBoxLayout;
+    layoutSimulationTime->addWidget(labelSimulationTime);
+    layoutSimulationTime->addWidget(lEditSimulationTime);
+    layoutSimulationTime->addWidget(labelUnitSimulationTime);
+    layoutSimulationTime->addWidget(btnSimulationTime);
+}
+
+// initial area for button start or load, save config area
+void MainGUI::initialSystemArea(){
+    // initialize load config button
+    btnLoadConfig = new QPushButton(this);
+    btnLoadConfig->setText(QString::fromStdString(sBtnLoadConfig));
+
+    // initialize save config button
+    btnSaveConfig = new QPushButton(this);
+    btnSaveConfig->setText(QString::fromStdString(sBtnSaveConfig));
+    
+    // initialize start button
+    btnStart = new QPushButton(this);
+    btnStart->setText(QString::fromStdString(sBtnStart));
+    btnStart->setMaximumSize(50, 50);
+    sp = btnStart->sizePolicy();
+    sp.setVerticalPolicy(QSizePolicy::Preferred);
+    sp.setHorizontalPolicy(QSizePolicy::Maximum);
+    btnStart->setSizePolicy(sp);
+
+    // initialize system layout for button start, save, load area
+    layoutSystem = new QHBoxLayout;
+    layoutSystem->addWidget(btnLoadConfig);
+    layoutSystem->addWidget(btnSaveConfig);
+    layoutSystem->addWidget(btnStart);
 }
 
 // Configuration Main Layout
@@ -173,6 +240,8 @@ void MainGUI::initialMainLayout(){
     layoutSetting->addWidget(groupPreambleFormat, 1, 1, 3, 1);
     layoutSetting->addLayout(layoutSIBPeriod, 4, 0);
     layoutSetting->addLayout(layoutArrivalRate, 4, 1);
+    layoutSetting->addLayout(layoutSimulationTime, 5, 0);
+    layoutSetting->addLayout(layoutSystem, 5, 1);
 
     // Main Area Setting
     layoutMain = new QGridLayout(this);
