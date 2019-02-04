@@ -108,6 +108,7 @@ void Model::registerPaintObservor(IPaintObservor *observor){
 void Model::traverseUEs(){
     UE *ue;
     Cell *cell;
+    printf("=================info=================\n");
     for(unsigned int i = 0;i < UEs.size();i++){
         ue = UEs.at(i);
         for(unsigned int j = 0;j < cells.size();j++){
@@ -115,4 +116,5 @@ void Model::traverseUEs(){
             cell->detectUE(ue);
         }
     }
+    printf("=================info=================\n");
 }

@@ -35,6 +35,7 @@ void MacroCell::drawCell(QPainter &painter){
 }
 
 // initialize gNB's beams
+// nBeams: number of beams
 void MacroCell::initializeBeams(int nBeams){
     int spanAngle = cellAngle / nBeams;
     for(int i = 0;i < nBeams;i++){

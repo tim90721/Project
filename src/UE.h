@@ -28,5 +28,6 @@ class UE{
         int cellIndex;
         int beamStrength;
         int UEPixelSize;
+        Cell *candidateCell;
 };
 #endif

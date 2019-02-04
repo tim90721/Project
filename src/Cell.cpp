@@ -102,8 +102,14 @@ void Cell::detectUE(UE *ue){
             beam->detectUE(ue, 
                     ((double)(this->cellSupportDistance / 2)) - distance);
         }
+        broadcastSI(ue);
     }
     //TODO: maybe add ue to vector for storing
+}
+
+void Cell::broadcastSI(UE *ue){
+    printf("Broadcast cell index %d system information\n", this->cellIndex);
+    ue->receiveSI(this);
 }
 
 // get cell support distance

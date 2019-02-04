@@ -43,7 +43,11 @@ void UE::receiveSI(Cell *cell){
     if(cell->getCellIndex() == this->cellIndex){
         // TODO: set ssb-perrach-OccasionAndCBRA-preambles
         // TODO: set CRE(future work)
+        printf("UE %d receive cell index %d system information\n", this->id, cell->getCellIndex());
+        this->candidateCell = cell;
+        return;
     }
+    printf("Other cell is better, doesn't need to receive cell index %d SI\n", cell->getCellIndex());
 }
 
 // get ue's point x
