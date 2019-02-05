@@ -30,6 +30,7 @@ private:
     void initialSimulationTimeArea();
     void initialSystemArea(); // for start save area
     void initialMainLayout();
+    void connectSignals();
     QLabel *labelArrivalRate;
     QLabel *labelSIBPeriod;
     QLabel *labelSimulationTime;
@@ -124,6 +125,8 @@ private:
     std::string sBtnLoadConfig = "Load Config";
     int widthWindow = 515;
     int heightWindow = 700;
+private slots:
+    void handleButtonStartClick();
 };
 #endif
 

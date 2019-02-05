@@ -64,7 +64,6 @@ void Model::setMousePressed(bool isPressed){
         cells.push_back(tempCell);
         tempCell = NULL;
         notifyAll();
-        traverseUEs();
     }
 }
 
@@ -117,4 +116,8 @@ void Model::traverseUEs(){
         }
     }
     printf("=================info=================\n");
+}
+
+void Model::startSimulation(){
+    traverseUEs();
 }

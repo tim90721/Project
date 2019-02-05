@@ -26,6 +26,8 @@ MainGUI::MainGUI(QWidget *parent):
     initialSimulationTimeArea();
     initialSystemArea();
     initialMainLayout();
+
+    connectSignals();
 }
 
 // Initialize radio button 
@@ -247,4 +249,15 @@ void MainGUI::initialMainLayout(){
     layoutMain = new QGridLayout(this);
     layoutMain->addWidget(canvas, 1, 0);
     layoutMain->addWidget(widgetSetting, 2, 0);
+}
+
+// connect all singals
+void MainGUI::connectSignals(){
+    connect(btnStart, SIGNAL(clicked()), this, SLOT(handleButtonStartClick()));
+}
+
+// handle start button click event
+void MainGUI::handleButtonStartClick(){
+    printf("start button click\n");
+    model->startSimulation();
 }

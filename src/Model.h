@@ -8,7 +8,6 @@
 #include "Cell.h"
 #include "MacroCell.h"
 #include "UE.h"
-using namespace std;
 
 class Model : public IPaintSubject{
     public:
@@ -25,6 +24,7 @@ class Model : public IPaintSubject{
         void notifyAll();
         void registerPaintObservor(IPaintObservor *observor);
         void traverseUEs();
+        void startSimulation();
     private:
         int mouseX;
         int mouseY;
