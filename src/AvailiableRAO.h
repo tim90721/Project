@@ -2,14 +2,15 @@
 #define AVAILIABLE_RAO
 
 #include <stdio.h>
+#include "IAvailiable.h"
 
-class AvailiableRAO{
+class AvailiableRAO : IAvailiableRAO{
     private:
         int nSSB;
         int msg1FDM;
         int nPreambles;
         double ssbPerRAO;
-        // preamble format//
+        // preamble format?//
     public:
         AvailiableRAO();
         AvailiableRAO(int nRAO, int msg1FDM, int nPreambles, double ssbPerRAO);
