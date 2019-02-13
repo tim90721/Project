@@ -1,4 +1,7 @@
+#!/bin/bash
+
 export project_name=project
 export INCLUDEPATH="/home/daitor/Qt/5.12.0/gcc_64/include"
 export QT=widgets
-export workfile="src/mainGUI.cpp src/SimulationCanvas.cpp src/Model.cpp src/Cell.cpp src/Beam.cpp src/MacroCell.cpp src/UE.cpp src/CommonMath.cpp"
+export workfile_UI="src/mainGUI.cpp src/SimulationCanvas.cpp src/Model.cpp src/Cell.cpp src/Beam.cpp src/MacroCell.cpp src/UE.cpp src/CommonMath.cpp"
+export workfile_RA="src/IPRACHConfig.h src/PRACHConfig.cpp src/PRACHConfigFR1Paired.cpp src/PreambleFormat.h src/AvailiableRAO.cpp"
