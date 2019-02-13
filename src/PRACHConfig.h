@@ -7,9 +7,10 @@ class PRACHConfig : IPRACHConfig{
     protected:
         int prachConfigIndex;
         int nPRACHSlot;
-        int nTimeDomainRAO;
+        int nTimeDomainRAOPerPrachSlot;
         int sizeofRASubframe;
         int *nRASubframe;
+        int prachConfigPeriod;
     public:
         PRACHConfig(int prachConfigIndex);
         ~PRACHConfig();
@@ -17,9 +18,12 @@ class PRACHConfig : IPRACHConfig{
         void setNumberofPrachSlot(int nPRACHSlot);
         void setNumberofTimeDomainRAO(int nTimeDomainRAO);
         int getPrachConfigIndex();
+        int getPrachConfigPeriod();
         int* getRASubframe(int *returnSize);
         int getNumberofPRACHSlotinSubframe();
+        int getNumberofTimeDomainRAOPerPrachSlot();
         int getNumberofTimeDomainRAO();
-        virtual void RAConfig();
+        int getNumberofRASubframe();
+        virtual void configRA() = 0;
 };
 #endif
