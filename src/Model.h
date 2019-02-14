@@ -25,6 +25,7 @@ class Model : public IPaintSubject{
         void registerPaintObservor(IPaintObservor *observor);
         void traverseUEs();
         void startSimulation();
+        void setSimulationTime(int simulationTime);
     private:
         int mouseX;
         int mouseY;
@@ -36,6 +37,7 @@ class Model : public IPaintSubject{
         CellType cellType;
         bool mousePressed;
         int countPressedReleased;
+        int simulationTime;
 };
         
 #endif

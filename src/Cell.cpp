@@ -12,6 +12,8 @@ Cell::Cell(int x, int y, int cellIndex, int nBeams, CellType cellType){
     setnBeams(nBeams);
     this->cellType = cellType;
     this->cellPixelSize = 10;
+    this->subframeIndex = 0;
+    this->frameIndex = 0;
 }
 
 // Set gNB x position
@@ -112,6 +114,19 @@ void Cell::broadcastSI(UE *ue){
     ue->receiveSI(this);
 }
 
+void Cell::updateSubframe(){
+    ++subframeIndex;
+    if(subframeIndex == 10){
+        frameIndex++;
+        subframeIndex %= 10;
+    }
+}
+
+void Cell::resetFrame(){
+    this->frameIndex = 0;
+    this->subframeIndex = 0;
+}
+
 // get cell support distance
 int Cell::getCellSupportDistance(){
     return this->cellSupportDistance;
@@ -148,6 +163,14 @@ double Cell::getBeamStartAngle(){
 // return: cell index
 int Cell::getCellIndex(){
     return this->cellIndex;
+}
+
+int Cell::getSubframeIndex(){
+    return this->subframeIndex;
+}
+
+int Cell::getFrameIndex(){
+    return this->frameIndex;
 }
 
 // Get gNB celltype

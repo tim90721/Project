@@ -11,6 +11,7 @@ Model::Model(){
     tempCell = NULL;
     ue = new UE(300, 200, UEs.size());
     UEs.push_back(ue);
+    simulationTime = 0;
 }
 
 // Set mouse XY position
@@ -119,5 +120,24 @@ void Model::traverseUEs(){
 }
 
 void Model::startSimulation(){
-    traverseUEs();
+    if(simulationTime == 0)
+        return;
+    for(unsigned int i = 0;i < cells.size();i++){
+        cells.at(i)->resetFrame();
+    }
+    for(int i = 0;i < simulationTime;i++){
+        printf("frame: %d\nsubframe: %d\n", 
+                cells.at(0)->getFrameIndex(),
+                cells.at(0)->getSubframeIndex());
+        traverseUEs();
+        for(unsigned int j = 0;j < cells.size();j++){
+            cells.at(j)->updateSubframe();
+        } 
+    }
+}
+
+void Model::setSimulationTime(int simulationTime){
+    // model store simulation time in msec
+    this->simulationTime = simulationTime * 10;
+    //printf("%d\n", this->simulationTime);
 }

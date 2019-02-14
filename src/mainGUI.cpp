@@ -175,6 +175,7 @@ void MainGUI::initialSimulationTimeArea(){
 
     // LineEdit setting
     lEditSimulationTime = new QLineEdit(this);
+    lEditSimulationTime->setValidator(new QIntValidator(lEditSimulationTime));
     lEditSimulationTime->setMaximumSize(50, 50);
     sp = lEditSimulationTime->sizePolicy();
     sp.setVerticalPolicy(QSizePolicy::Preferred);
@@ -259,5 +260,6 @@ void MainGUI::connectSignals(){
 // handle start button click event
 void MainGUI::handleButtonStartClick(){
     printf("start button click\n");
+    model->setSimulationTime(lEditSimulationTime->text().toInt());
     model->startSimulation();
 }

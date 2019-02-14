@@ -29,6 +29,8 @@ class Cell{
         void findCellCoverAreaEquation();
         void detectUE(UE *ue);
         void broadcastSI(UE *ue);
+        void updateSubframe();
+        void resetFrame();
         virtual void initializeBeams(int nBeams) = 0;
         virtual void updateBeamsAngle(int diffX, int diffY) = 0;
         int getX();
@@ -37,6 +39,8 @@ class Cell{
         int getCellSupportDistance();
         double getBeamStartAngle();
         int getCellIndex();
+        int getSubframeIndex();
+        int getFrameIndex();
         CellType getCellType();
     protected:
         int x;
@@ -48,6 +52,8 @@ class Cell{
         int cellAngle;
         int startAngle;
         int endAngle;
+        int subframeIndex;
+        int frameIndex;
         double beamStartAngle;
         double startB;
         double startC;

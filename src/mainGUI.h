@@ -13,6 +13,7 @@
 #include <QGroupBox>
 #include <QString>
 #include <QSizePolicy>
+#include <QIntValidator>
 #include <string>
 #include "Model.h"
 
