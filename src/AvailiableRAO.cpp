@@ -70,15 +70,34 @@ double AvailiableRAO::getSSBPerRAO(){
     return this->ssbPerRAO;
 }
 
-bool AvailiableRAO::isRASubframe(int frameIndex, int subframeIndex, int ssbIndex){
-    int times;
-    int raoIndex;
+bool AvailiableRAO::isRASubframe(int frameIndex, int subframeIndex, const int ssbIndex){
+    // calculate start rao index for ssb index
+    int raoIndex = ssbIndex / getSSBPerRAO(); 
+    int frame = frameIndex;     // copy of frameIndex
     if(totalNeedRAO > totalRAOPerFrame){
         // total need RAO for SSB mapping is lager than 1 frame of RAO
         // this implies that for all SSB mapping to RAO once
         // system needs more than 1 frame to complete
-        times = totalNeedRAO / totalRAOPerFrame;
-        raoIndex = getSSBPerRAO() * ssbIndex;
+        
+        // calculate association period for this PRACH configuration
+        int associationPeriod = (totalNeedRAO / totalRAOPerFrame) *
+            prachConfig->getPrachConfigPeriod();
+        // total need frame for all ssb mapping to 
+        // rao at least once 
+        int associationFrame = associationPeriod / 10;
+        // mod frame index with total need frame for all ssb mapping
+        frameIndex %= associationFrame;
+        // start rao index locate frame number
+        int raStartFrameIndex = (raoIndex / totalRAOPerFrame) * 
+            (prachConfig->getPrachConfigPeriod() / 10);
+        int raEndFrameIndex = (raoIndex + 
+                (1 / ssbPerRAO) / totalRAOPerFrame) *
+            (prachConfig->getPrachConfigPeriod() / 10);
+        //int raStartSubframeIndex = (raoIndex / totalRAOPerSubframe); 
+        if(frameIndex >= raStartFrameIndex 
+                || frameIndex <= raEndFrameIndex){
+            // current frame index is for this ssb index
+        }
     }
     else{
         // total need RAO for SSB mapping is less than 1 frame of RAO
