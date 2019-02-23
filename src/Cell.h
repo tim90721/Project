@@ -6,6 +6,9 @@
 #include "Beam.h"
 #include "UE.h"
 #include "CommonMath.h"
+//#include "PRACHConfig.h"
+#include "PRACHConfigFR1Paired.h"
+#include "AvailiableRAO.h"
 
 enum CellType{
     Macro,
@@ -17,7 +20,7 @@ class UE;
 
 class Cell{
     public:
-        Cell(int x, int y,int cellIndex, int nBeams, CellType cellType);
+        Cell(int x, int y,int cellIndex, int nBeams, CellType cellType, int prachConfigIndex);
         virtual void drawCell(QPainter &painter) = 0;
         void setCellType(CellType cellType);
         void setX(int x);
@@ -28,7 +31,7 @@ class Cell{
         void setCellIndex(int cellIndex);
         void findCellCoverAreaEquation();
         void detectUE(UE *ue);
-        void broadcastSI(UE *ue);
+        void broadcastSI();
         void updateSubframe();
         void resetFrame();
         virtual void initializeBeams(int nBeams) = 0;
@@ -42,6 +45,8 @@ class Cell{
         int getSubframeIndex();
         int getFrameIndex();
         CellType getCellType();
+        IPRACHConfig *getPRACHConfig();
+        IAvailiableRAO *getAvailiableRAO();
     protected:
         int x;
         int y;
@@ -61,6 +66,9 @@ class Cell{
         double endC;
         CellType cellType;
         vector<Beam*> beams;
+        vector<UE*> ues;
+        PRACHConfig *prachConfig;
+        AvailiableRAO *availiableRAO;
 };
 
 #endif

@@ -24,6 +24,8 @@ class Model : public IPaintSubject{
         void notifyAll();
         void registerPaintObservor(IPaintObservor *observor);
         void traverseUEs();
+        void broadcastCellSI();
+        void checkUERA();
         void startSimulation();
         void setSimulationTime(int simulationTime);
     private:

@@ -50,7 +50,7 @@ void Model::setMousePressed(bool isPressed){
     countPressedReleased++;
     if(mousePressed){
         if(countPressedReleased == 1)
-            tempCell = new MacroCell(mouseX, mouseY, cells.size(), 4, cellType); 
+            tempCell = new MacroCell(mouseX, mouseY, cells.size(), 4, cellType, 16); 
         else if(countPressedReleased == 3){
             // TODO
             // do mouse pressed second time
@@ -108,31 +108,53 @@ void Model::registerPaintObservor(IPaintObservor *observor){
 void Model::traverseUEs(){
     UE *ue;
     Cell *cell;
-    printf("=================info=================\n");
     for(unsigned int i = 0;i < UEs.size();i++){
         ue = UEs.at(i);
+        //if(!ue->isBindCell()){
+        //}
         for(unsigned int j = 0;j < cells.size();j++){
             cell = cells.at(j);
             cell->detectUE(ue);
         }
     }
-    printf("=================info=================\n");
+}
+
+void Model::broadcastCellSI(){
+    Cell *cell;
+    for(unsigned int i = 0;i < cells.size();i++){
+        cell = cells.at(i);
+        cell->broadcastSI();
+    }
+}
+
+void Model::checkUERA(){
+    UE *ue;
+    for(unsigned int i = 0;i < UEs.size();i++){
+        ue = UEs.at(i);
+        ue->checkRA();
+    }
 }
 
 void Model::startSimulation(){
-    if(simulationTime == 0)
+    if(simulationTime == 0 || cells.size() == 0){
+        printf("no cell in simulation or simualtion time is 0\n");
         return;
+    }
     for(unsigned int i = 0;i < cells.size();i++){
         cells.at(i)->resetFrame();
     }
     for(int i = 0;i < simulationTime;i++){
+        printf("=================info=================\n");
         printf("frame: %d\nsubframe: %d\n", 
                 cells.at(0)->getFrameIndex(),
                 cells.at(0)->getSubframeIndex());
         traverseUEs();
+        broadcastCellSI();
+        checkUERA();
         for(unsigned int j = 0;j < cells.size();j++){
             cells.at(j)->updateSubframe();
         } 
+        printf("=================info=================\n");
     }
 }
 

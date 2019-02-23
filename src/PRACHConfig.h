@@ -3,14 +3,17 @@
 
 #include "IPRACHConfig.h"
 
-class PRACHConfig : IPRACHConfig{
+class PRACHConfig : public IPRACHConfig{
     protected:
         int prachConfigIndex;
         int nPRACHSlot;
         int nTimeDomainRAOPerPrachSlot;
-        int sizeofRASubframe;
-        int *nRASubframe;
+        //int sizeofRASubframe;
+        //int *nRASubframe;
         int prachConfigPeriod;
+        int x;
+        int y;
+        vector<int> raSubframes;
     public:
         PRACHConfig(int prachConfigIndex);
         ~PRACHConfig();
@@ -18,8 +21,10 @@ class PRACHConfig : IPRACHConfig{
         void setNumberofPrachSlot(int nPRACHSlot);
         void setNumberofTimeDomainRAO(int nTimeDomainRAO);
         int getPrachConfigIndex();
+        int getX();
+        int getY();
         int getPrachConfigPeriod();
-        int* getRASubframe(int *returnSize);
+        vector<int>& getRASubframe();
         int getNumberofPRACHSlotinSubframe();
         int getNumberofTimeDomainRAOPerPrachSlot();
         int getNumberofTimeDomainRAO();

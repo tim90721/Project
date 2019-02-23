@@ -3,7 +3,7 @@
 
 #include "PRACHConfig.h"
 
-class PRACHConfigFR1 : PRACHConfig{
+class PRACHConfigFR1 : public PRACHConfig{
     private:
         int a;
     public:

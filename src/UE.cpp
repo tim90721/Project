@@ -10,6 +10,9 @@ UE::UE(int x, int y, int id){
     this->cellIndex = -1;
     this->beamStrength = -1;
     this->UEPixelSize = 6;
+    this->candidateCell = NULL;
+    startRAO = 0;
+    endRAO = 0;
 }
 
 // set ue's point x and y
@@ -43,11 +46,45 @@ void UE::receiveSI(Cell *cell){
     if(cell->getCellIndex() == this->cellIndex){
         // TODO: set ssb-perrach-OccasionAndCBRA-preambles
         // TODO: set CRE(future work)
-        printf("UE %d receive cell index %d system information\n", this->id, cell->getCellIndex());
+        printf("UE %d receive cell index %d, beam index %d system information\n", 
+                this->id,
+                cell->getCellIndex(),
+                beamIndex);
         this->candidateCell = cell;
+        prachConfig = cell->getPRACHConfig();
+        availiableRAO = cell->getAvailiableRAO();
+        startRAO = beamIndex / availiableRAO->getSSBPerRAO();
+        int nRAO = 1 / availiableRAO->getSSBPerRAO();
+        if(nRAO > 0)
+            nRAO -= 1;
+        endRAO = startRAO + nRAO;
         return;
     }
     printf("Other cell is better, doesn't need to receive cell index %d SI\n", cell->getCellIndex());
+}
+
+void UE::checkRA(){
+    int frameIndex = candidateCell->getFrameIndex();
+    int subframeIndex = candidateCell->getSubframeIndex();
+    if(availiableRAO->isRASubframe(frameIndex, subframeIndex)){
+        printf("UE %d: frame index: %d, subframe Index: %d is for RA\n",
+                id,
+                frameIndex,
+                subframeIndex);
+        printf("UE %d: start RAO: %d, end RAO: %d\n",
+                id,
+                startRAO,
+                endRAO);
+        printf("subframe start RAO: %d, subframe end RAO: %d\n", 
+                availiableRAO->getStartRAOofSubframe(),
+                availiableRAO->getEndRAOofSubframe());
+    }
+    else{
+        printf("UE %d: frame index: %d, subframe index: %d not for RA\n", 
+                id,
+                frameIndex,
+                subframeIndex);
+    }
 }
 
 // get ue's point x
@@ -84,6 +121,12 @@ int UE::getCellIndex(){
 // return: best beam's strength
 int UE::getBeamStrength(){
     return this->beamStrength;
+}
+
+bool UE::isBindCell(){
+    if(candidateCell)
+        return true;
+    return false;
 }
 
 // draw ue

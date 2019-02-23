@@ -5,7 +5,6 @@ PRACHConfig::PRACHConfig(int prachConfigIndex){
 }
 
 PRACHConfig::~PRACHConfig(){
-    delete[] nRASubframe;
 }
 
 void PRACHConfig::setPrachConfigIndex(int prachConfigIndex){
@@ -24,13 +23,20 @@ int PRACHConfig::getPrachConfigIndex(){
     return this->prachConfigIndex;
 }
 
+int PRACHConfig::getX(){
+    return x;
+}
+
+int PRACHConfig::getY(){
+    return y;
+}
+
 int PRACHConfig::getPrachConfigPeriod(){
     return this->prachConfigPeriod;
 }
 
-int* PRACHConfig::getRASubframe(int *returnSize){
-    *returnSize = sizeofRASubframe;
-    return nRASubframe;
+vector<int>& PRACHConfig::getRASubframe(){
+    return raSubframes;
 }
 
 int PRACHConfig::getNumberofPRACHSlotinSubframe(){
@@ -46,5 +52,5 @@ int PRACHConfig::getNumberofTimeDomainRAO(){
 }
 
 int PRACHConfig::getNumberofRASubframe(){
-    return this->sizeofRASubframe;
+    return raSubframes.size();
 }

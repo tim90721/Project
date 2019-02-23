@@ -2,10 +2,10 @@
 #define AVAILIABLE_RAO
 
 #include <stdio.h>
-#include "IAvailiable.h"
+#include "IAvailiableRAO.h"
 #include "IPRACHConfig.h"
 
-class AvailiableRAO : IAvailiableRAO{
+class AvailiableRAO : public IAvailiableRAO{
     private:
         int nSSB;
         int msg1FDM;
@@ -16,6 +16,10 @@ class AvailiableRAO : IAvailiableRAO{
         int totalRAOPerSubframe;
         int totalRAOPerFrame;
         int totalNeedRAO;   // for all ssb
+        int associationPeriod;
+        int associationFrame;
+        int startRAO;
+        int endRAO;
         double ssbPerRAO;
         IPRACHConfig *prachConfig;
         // preamble format?//
@@ -26,13 +30,16 @@ class AvailiableRAO : IAvailiableRAO{
         void setNumberofPreambles(int nPreambles);
         void setSSBPeriod(int ssbPeriod);
         void setSSBPerRAO(double ssbPerRAO);
+        void updateStartandEndRAOofSubframe(const int frameIndex, const int subframeIndex);
         int getNumberofSSB();
         int getMsg1FDM();
         int getNumberofPreambles();
         int getSSBPeriod();
         int getStartNumberofPreamble(int ssbIndex);
         int getStartNumberofRAO(int ssbIndex);
+        int getStartRAOofSubframe();
+        int getEndRAOofSubframe();
         double getSSBPerRAO();
-        bool isRASubframe(int frameIndex, int subframeIndex, int ssbIndex);
+        bool isRASubframe(const int frameIndex, const int subframeIndex);
 };
 #endif

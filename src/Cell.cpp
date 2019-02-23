@@ -5,15 +5,18 @@
 // x: gNB x position
 // y: gNB y position
 // cellType: gNB CellType, Macro or Femto //FIXME maybe reduntant
-Cell::Cell(int x, int y, int cellIndex, int nBeams, CellType cellType){
-    this->x = x;
-    this->y = y;
-    this->cellIndex = cellIndex;
-    setnBeams(nBeams);
-    this->cellType = cellType;
-    this->cellPixelSize = 10;
-    this->subframeIndex = 0;
-    this->frameIndex = 0;
+Cell::Cell(int x, int y, int cellIndex, int nBeams, CellType cellType, int prachConfigIndex) : x(x), y(y), cellIndex(cellIndex), nBeams(nBeams), cellPixelSize(10), subframeIndex(0), frameIndex(0), cellType(cellType){
+    //this->x = x;
+    //this->y = y;
+    //this->cellIndex = cellIndex;
+    //setnBeams(nBeams);
+    //this->cellType = cellType;
+    //this->cellPixelSize = 10;
+    //this->subframeIndex = 0;
+    //this->frameIndex = 0;
+    prachConfig = new PRACHConfigFR1(prachConfigIndex);
+    availiableRAO = new AvailiableRAO(nBeams, 1, 1, 64, 160, prachConfig);
+    availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
 }
 
 // Set gNB x position
@@ -104,14 +107,31 @@ void Cell::detectUE(UE *ue){
             beam->detectUE(ue, 
                     ((double)(this->cellSupportDistance / 2)) - distance);
         }
-        broadcastSI(ue);
+        UE *temp;
+        bool found = false;
+        for(unsigned int i = 0;i < ues.size();i++){
+            temp = ues[i];
+            if(temp->getID() == ue->getID()){
+                printf("UE %d already added\n", temp->getID());
+                found = true;
+                break;
+            }
+        }
+        if(!found)
+            ues.push_back(ue);
+        //broadcastSI(ue);
     }
     //TODO: maybe add ue to vector for storing
 }
 
-void Cell::broadcastSI(UE *ue){
+void Cell::broadcastSI(){
     printf("Broadcast cell index %d system information\n", this->cellIndex);
-    ue->receiveSI(this);
+    UE *ue;
+    for(unsigned int i = 0;i < ues.size();i++){
+        ue = ues.at(i);
+        ue->receiveSI(this);
+    }
+    //ue->receiveSI(this);
 }
 
 void Cell::updateSubframe(){
@@ -120,6 +140,7 @@ void Cell::updateSubframe(){
         frameIndex++;
         subframeIndex %= 10;
     }
+    availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
 }
 
 void Cell::resetFrame(){
@@ -176,4 +197,12 @@ int Cell::getFrameIndex(){
 // Get gNB celltype
 CellType Cell::getCellType(){
     return this->cellType;
+}
+
+IPRACHConfig* Cell::getPRACHConfig(){
+    return prachConfig;
+}
+
+IAvailiableRAO* Cell::getAvailiableRAO(){
+    return availiableRAO;
 }

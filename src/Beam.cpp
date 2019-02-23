@@ -60,7 +60,7 @@ void Beam::setSpanAngle(int spanAngle){
 // beamIndex: the index of this beam
 // spanAngle: the angle covered by this beam
 void Beam::setStartAngle(int beamIndex, int spanAngle){
-    this->startAngle = (beamIndex - 1) * spanAngle;
+    this->startAngle = (beamIndex) * spanAngle;
 }
 
 // set this beam's start angle
