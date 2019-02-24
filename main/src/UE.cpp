@@ -89,6 +89,7 @@ void UE::doRA(){
 void UE::checkRA(){
     int frameIndex = candidateCell->getFrameIndex();
     int subframeIndex = candidateCell->getSubframeIndex();
+    raos.clear();
     if(availiableRAO->isRASubframe(frameIndex, subframeIndex)){
         printf("UE %d: frame index: %d, subframe Index: %d is for RA\n",
                 id,
@@ -118,7 +119,6 @@ void UE::updateRAOforRA(){
             availiableRAO->getEndRAOofSubframe());
     raStartRAO = startRAO;
     raEndRAO = endRAO;
-    raos.clear();
     if((subframeStartRAO <= startRAO && startRAO <= subframeEndRAO)
             || (subframeStartRAO <= endRAO && endRAO <= subframeEndRAO)){
         if(endRAO >= subframeEndRAO)
@@ -233,3 +233,6 @@ void UE::drawUE(QPainter &painter){
             UEPixelSize);
 }
 
+vector<int>& UE::getRAOs(){
+    return raos;
+}

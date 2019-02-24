@@ -25,6 +25,7 @@ class UE{
         int getBeamStrength();
         bool isBindCell();
         void drawUE(QPainter &painter);
+        vector<int>& getRAOs();
     private:
         void checkRA();
         void updateRAOforRA();

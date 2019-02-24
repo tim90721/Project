@@ -139,10 +139,12 @@ void Cell::resetFrame(){
 
 void Cell::setMsg1FDM(int msg1FDM){
     availiableRAO->setMsg1FDM(msg1FDM);
+    availiableRAO->updateAssociationFrame();
 }
 
 void Cell::setSSBPerRAO(double ssbPerRAO){
     availiableRAO->setSSBPerRAO(ssbPerRAO);
+    availiableRAO->updateAssociationFrame();
 }
 
 void Cell::setPrachConfigIndex(int prachConfigIndex){

@@ -12,20 +12,7 @@ AvailiableRAO::AvailiableRAO(int nSSB, double ssbPerRAO, int msg1FDM, int nPream
     setSSBPerRAO(ssbPerRAO);
     setMsg1FDM(msg1FDM);
     //setSSBPeriod(ssbPeriod);
-    
-    // calculate association period for this PRACH configuration
-    //associationPeriod = ((totalNeedRAO / totalRAOPerFrame) + 1) *
-    //    prachConfig->getPrachConfigPeriod();
-    associationPeriod = (totalNeedRAO / totalRAOPerFrame);
-    printf("totalNeedRAO: %d\ntotalRAOPerFrame: %d\n", 
-            totalNeedRAO,
-            totalRAOPerFrame);
-    if(totalNeedRAO % totalRAOPerFrame)
-        associationPeriod += 1;
-    // total need frame for all ssb mapping to 
-    // rao at least once 
-    associationFrame = (associationPeriod  * prachConfig->getPrachConfigPeriod() / 10);
-    printf("associationFrame: %d\n", associationFrame);
+    updateAssociationFrame();
 }
 
 void AvailiableRAO::setNumberofSSB(int nSSB){
@@ -79,6 +66,22 @@ void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const i
         }
         endRAO = startRAO + totalRAOPerSubframe - 1;
     }
+}
+
+void AvailiableRAO::updateAssociationFrame(){
+    // calculate association period for this PRACH configuration
+    //associationPeriod = ((totalNeedRAO / totalRAOPerFrame) + 1) *
+    //    prachConfig->getPrachConfigPeriod();
+    associationPeriod = (totalNeedRAO / totalRAOPerFrame);
+    printf("totalNeedRAO: %d\ntotalRAOPerFrame: %d\n", 
+            totalNeedRAO,
+            totalRAOPerFrame);
+    if(totalNeedRAO % totalRAOPerFrame)
+        associationPeriod += 1;
+    // total need frame for all ssb mapping to 
+    // rao at least once 
+    associationFrame = (associationPeriod  * prachConfig->getPrachConfigPeriod() / 10);
+    printf("associationFrame: %d\n", associationFrame);
 }
 
 int AvailiableRAO::getNumberofSSB(){
