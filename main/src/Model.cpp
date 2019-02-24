@@ -50,7 +50,7 @@ void Model::setMousePressed(bool isPressed){
     countPressedReleased++;
     if(mousePressed){
         if(countPressedReleased == 1)
-            tempCell = new MacroCell(mouseX, mouseY, cells.size(), 4, cellType, 16); 
+            tempCell = new MacroCell(mouseX, mouseY, cells.size(), 4, cellType, 27); 
         else if(countPressedReleased == 3){
             // TODO
             // do mouse pressed second time
@@ -131,7 +131,7 @@ void Model::checkUERA(){
     UE *ue;
     for(unsigned int i = 0;i < UEs.size();i++){
         ue = UEs.at(i);
-        ue->checkRA();
+        ue->doRA();
     }
 }
 

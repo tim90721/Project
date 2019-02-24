@@ -15,7 +15,7 @@ Cell::Cell(int x, int y, int cellIndex, int nBeams, CellType cellType, int prach
     //this->subframeIndex = 0;
     //this->frameIndex = 0;
     prachConfig = new PRACHConfigFR1(prachConfigIndex);
-    availiableRAO = new AvailiableRAO(nBeams, 1, 1, 64, 160, prachConfig);
+    availiableRAO = new AvailiableRAO(nBeams, 1 , 1, 64, 160, prachConfig);
     availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
 }
 
@@ -88,6 +88,8 @@ void Cell::findCellCoverAreaEquation(){
 void Cell::detectUE(UE *ue){
     //printf("start:%d\tend:%d\n", this->startAngle, this->endAngle);
     // detect ue is in cell span angle area
+    if(checkUEisExist(ue))
+        return;
     double distance = calculateDistance(ue->getX(),
             ue->getY(),
             this->x,
@@ -107,21 +109,24 @@ void Cell::detectUE(UE *ue){
             beam->detectUE(ue, 
                     ((double)(this->cellSupportDistance / 2)) - distance);
         }
-        UE *temp;
-        bool found = false;
-        for(unsigned int i = 0;i < ues.size();i++){
-            temp = ues[i];
-            if(temp->getID() == ue->getID()){
-                printf("UE %d already added\n", temp->getID());
-                found = true;
-                break;
-            }
-        }
-        if(!found)
-            ues.push_back(ue);
+        ues.push_back(ue);
         //broadcastSI(ue);
     }
     //TODO: maybe add ue to vector for storing
+}
+
+bool Cell::checkUEisExist(UE *ue){
+    UE *temp;
+    for(unsigned int i = 0;i < ues.size();i++){
+        temp = ues[i];
+        if(temp->getID() == ue->getID()){
+            printf("UE %d already be added to Cell %d\n", 
+                    temp->getID(),
+                    cellIndex);
+            return true;
+        }
+    }
+    return false;
 }
 
 void Cell::broadcastSI(){

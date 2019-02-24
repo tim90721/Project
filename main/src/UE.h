@@ -6,6 +6,7 @@
 #include "Cell.h"
 #include "IPRACHConfig.h"
 #include "IAvailiableRAO.h"
+#include "includefile.h"
 
 class Cell;
 
@@ -15,7 +16,7 @@ class UE{
         void setXY(int x, int y);
         void setBeam(int cellIndex, int beamIndex, int beamStrength);
         void receiveSI(Cell *beam);
-        void checkRA();
+        void doRA();
         int getX();
         int getY();
         int getID();
@@ -25,6 +26,9 @@ class UE{
         bool isBindCell();
         void drawUE(QPainter &painter);
     private:
+        void checkRA();
+        void updateRAOforRA();
+        void storeRAOsforRA(int subframeStartRAO, int subframeEndRAO);
         int x;
         int y;
         int id;
@@ -34,8 +38,11 @@ class UE{
         int UEPixelSize;
         int startRAO;
         int endRAO;
+        int raStartRAO;
+        int raEndRAO;
         Cell *candidateCell;
         IPRACHConfig *prachConfig;
         IAvailiableRAO *availiableRAO;
+        vector<int> raos;
 };
 #endif

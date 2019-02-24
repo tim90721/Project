@@ -60,8 +60,24 @@ void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const i
         for(unsigned int i = 0;subframeIndex != RASubframe[i];i++){
             startRAO += totalRAOPerSubframe;
         }
+        if(associationFrame == 1){
+            int times = totalRAOPerFrame / totalNeedRAO;
+            if((startRAO / totalNeedRAO) >= times){
+                startRAO = -1;
+                endRAO = -1;
+                return;
+            }
+            else{
+                startRAO %= totalNeedRAO;
+                endRAO = startRAO + totalRAOPerSubframe - 1;
+                if(endRAO / totalNeedRAO >= times){
+                    endRAO = times * totalNeedRAO - 1;
+                }
+                //endRAO %= totalNeedRAO;
+                return;
+            }
+        }
         endRAO = startRAO + totalRAOPerSubframe - 1;
-        //printf("startRAO: %d\nendRAO: %d\n", startRAO, endRAO);
     }
 }
 
@@ -100,6 +116,14 @@ int AvailiableRAO::getStartRAOofSubframe(){
 
 int AvailiableRAO::getEndRAOofSubframe(){
     return endRAO;
+}
+
+int AvailiableRAO::getTotalNeedRAO(){
+    return totalNeedRAO;
+}
+
+int AvailiableRAO::getTotalRAOPerSubframe(){
+    return totalRAOPerSubframe;
 }
 
 double AvailiableRAO::getSSBPerRAO(){

@@ -69,6 +69,9 @@ class Cell{
         vector<UE*> ues;
         PRACHConfig *prachConfig;
         AvailiableRAO *availiableRAO;
+    private:
+        bool checkUEisExist(UE *ue);
+
 };
 
 #endif
