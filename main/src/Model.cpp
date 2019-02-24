@@ -12,6 +12,7 @@ Model::Model(){
     ue = new UE(300, 200, UEs.size());
     UEs.push_back(ue);
     simulationTime = 0;
+
 }
 
 // Set mouse XY position

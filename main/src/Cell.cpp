@@ -6,37 +6,21 @@
 // y: gNB y position
 // cellType: gNB CellType, Macro or Femto //FIXME maybe reduntant
 Cell::Cell(int x, int y, int cellIndex, int nBeams, CellType cellType, int prachConfigIndex) : x(x), y(y), cellIndex(cellIndex), nBeams(nBeams), cellPixelSize(10), subframeIndex(0), frameIndex(0), cellType(cellType){
-    //this->x = x;
-    //this->y = y;
-    //this->cellIndex = cellIndex;
-    //setnBeams(nBeams);
-    //this->cellType = cellType;
-    //this->cellPixelSize = 10;
-    //this->subframeIndex = 0;
-    //this->frameIndex = 0;
     prachConfig = new PRACHConfigFR1(prachConfigIndex);
+    prachConfig->configRA();
     availiableRAO = new AvailiableRAO(nBeams, 1 , 1, 64, 160, prachConfig);
     availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
+    
 }
 
 // Set gNB x position
 void Cell::setX(int x){
     this->x = x;
-    //Beam *beam;
-    //for(int i = 0;i < (int)beams.size();i++){
-    //    beam = beams.at(i);
-    //    beam->setX(x);
-    //}
 }
 
 // Set gNB y position
 void Cell::setY(int y){
     this->y = y;
-    //Beam *beam;
-    //for(int i = 0;i < (int)beams.size();i++){
-    //    beam = beams.at(i);
-    //    beam->setY(y);
-    //}
 }
 
 // set gNB number of support beams
@@ -110,9 +94,9 @@ void Cell::detectUE(UE *ue){
                     ((double)(this->cellSupportDistance / 2)) - distance);
         }
         ues.push_back(ue);
-        //broadcastSI(ue);
+        printf("UE %d is in cell %d range\n", ue->getID(), cellIndex);
     }
-    //TODO: maybe add ue to vector for storing
+    //TODO: maybe add ue to vector for storing UE(already added?)
 }
 
 bool Cell::checkUEisExist(UE *ue){
@@ -153,6 +137,18 @@ void Cell::resetFrame(){
     this->subframeIndex = 0;
 }
 
+void Cell::setMsg1FDM(int msg1FDM){
+    availiableRAO->setMsg1FDM(msg1FDM);
+}
+
+void Cell::setSSBPerRAO(double ssbPerRAO){
+    availiableRAO->setSSBPerRAO(ssbPerRAO);
+}
+
+void Cell::setPrachConfigIndex(int prachConfigIndex){
+    prachConfig->setPrachConfigIndex(prachConfigIndex);
+}
+
 // get cell support distance
 int Cell::getCellSupportDistance(){
     return this->cellSupportDistance;
@@ -179,12 +175,6 @@ int Cell::getnBeams(){
     return this->nBeams;
 }
 
-// get cell start angle
-// return: cell start angle
-double Cell::getBeamStartAngle(){
-    return this->beamStartAngle;
-}
-
 // get cell index
 // return: cell index
 int Cell::getCellIndex(){
@@ -197,6 +187,20 @@ int Cell::getSubframeIndex(){
 
 int Cell::getFrameIndex(){
     return this->frameIndex;
+}
+
+int Cell::getMsg1FDM(){
+    return availiableRAO->getMsg1FDM();
+}
+
+// get cell start angle
+// return: cell start angle
+double Cell::getBeamStartAngle(){
+    return this->beamStartAngle;
+}
+
+double Cell::getSSBPerRAO(){
+    return availiableRAO->getSSBPerRAO();
 }
 
 // Get gNB celltype

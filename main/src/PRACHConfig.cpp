@@ -9,6 +9,7 @@ PRACHConfig::~PRACHConfig(){
 
 void PRACHConfig::setPrachConfigIndex(int prachConfigIndex){
     this->prachConfigIndex = prachConfigIndex;
+    configRA();
 }
 
 void PRACHConfig::setNumberofPrachSlot(int nPRACHSlot){

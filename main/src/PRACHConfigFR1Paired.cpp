@@ -1,7 +1,6 @@
 #include "PRACHConfigFR1Paired.h"
 
 PRACHConfigFR1::PRACHConfigFR1(int prachConfigIndex) : PRACHConfig(prachConfigIndex){
-    configRA();
 }
 
 void PRACHConfigFR1::configRA(){
