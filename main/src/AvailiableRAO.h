@@ -31,6 +31,7 @@ class AvailiableRAO : public IAvailiableRAO{
         void setSSBPeriod(int ssbPeriod);
         void setSSBPerRAO(double ssbPerRAO);
         void updateStartandEndRAOofSubframe(const int frameIndex, const int subframeIndex);
+        void updateAssociationFrame();
         int getNumberofSSB();
         int getMsg1FDM();
         int getNumberofPreambles();
