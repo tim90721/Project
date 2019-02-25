@@ -8,7 +8,7 @@
 Cell::Cell(int x, int y, int cellIndex, int nBeams, CellType cellType, int prachConfigIndex) : x(x), y(y), cellIndex(cellIndex), nBeams(nBeams), cellPixelSize(10), subframeIndex(0), frameIndex(0), cellType(cellType){
     prachConfig = new PRACHConfigFR1(prachConfigIndex);
     prachConfig->configRA();
-    availiableRAO = new AvailiableRAO(nBeams, 1 , 1, 64, 160, prachConfig);
+    availiableRAO = new AvailiableRAO(nBeams, 1, 1, 64, 160, prachConfig);
     availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
     
 }
@@ -140,15 +140,19 @@ void Cell::resetFrame(){
 void Cell::setMsg1FDM(int msg1FDM){
     availiableRAO->setMsg1FDM(msg1FDM);
     availiableRAO->updateAssociationFrame();
+    availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
 }
 
 void Cell::setSSBPerRAO(double ssbPerRAO){
     availiableRAO->setSSBPerRAO(ssbPerRAO);
     availiableRAO->updateAssociationFrame();
+    availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
 }
 
 void Cell::setPrachConfigIndex(int prachConfigIndex){
     prachConfig->setPrachConfigIndex(prachConfigIndex);
+    prachConfig->configRA();
+    availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
 }
 
 // get cell support distance

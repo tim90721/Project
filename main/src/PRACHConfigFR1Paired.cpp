@@ -20,6 +20,7 @@ void PRACHConfigFR1::configRA(){
         case 27:
             nPRACHSlot = 1;
             nTimeDomainRAOPerPrachSlot = 1;
+            raSubframes.clear();
             //sizeofRASubframe = 10;
             //nRASubframe = new int[10];
             //for(int i = 0;i < 10;i++)
@@ -33,6 +34,7 @@ void PRACHConfigFR1::configRA(){
         case 101:
             nPRACHSlot = 2;
             nTimeDomainRAOPerPrachSlot = 6;
+            raSubframes.clear();
             //sizeofRASubframe = 1;
             //nRASubframe = new int [1];
             //nRASubframe[0] = 4;
@@ -44,6 +46,7 @@ void PRACHConfigFR1::configRA(){
         case 106:
             nPRACHSlot = 2;
             nTimeDomainRAOPerPrachSlot = 6;
+            raSubframes.clear();
             //sizeofRASubframe = 10;
             //nRASubframe = new int[10];
             //for(int i = 0;i < 10;i++)

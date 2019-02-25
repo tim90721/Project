@@ -23,6 +23,10 @@ void AvailiableRAO::setMsg1FDM(int msg1FDM){
     this->msg1FDM = msg1FDM;
     this->totalRAOPerSubframe = prachConfig->getNumberofTimeDomainRAO() * msg1FDM;
     this->totalRAOPerFrame = this->totalRAOPerSubframe * prachConfig->getNumberofRASubframe();
+    //printf("number of time domain raos: %d\n", 
+    //        prachConfig->getNumberofTimeDomainRAO());
+    //printf("number of ra subframe: %d\n",
+    //        prachConfig->getNumberofRASubframe());
 }
 
 void AvailiableRAO::setNumberofPreambles(int nPreambles){
@@ -44,9 +48,8 @@ void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const i
         frame = frame / (prachConfig->getPrachConfigPeriod() / 10);
         startRAO = frame * totalRAOPerFrame;
         vector<int> RASubframe = prachConfig->getRASubframe();
-        for(unsigned int i = 0;subframeIndex != RASubframe[i];i++){
+        for(unsigned int i = 0;subframeIndex != RASubframe[i];i++)
             startRAO += totalRAOPerSubframe;
-        }
         if(associationFrame == 1){
             int times = totalRAOPerFrame / totalNeedRAO;
             if((startRAO / totalNeedRAO) >= times){
@@ -57,14 +60,24 @@ void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const i
             else{
                 startRAO %= totalNeedRAO;
                 endRAO = startRAO + totalRAOPerSubframe - 1;
-                if(endRAO / totalNeedRAO >= times){
+                //printf("testing--->startRAO: %d, endRAO: %d\n", startRAO, endRAO);
+                if(endRAO / totalNeedRAO >= times)
                     endRAO = times * totalNeedRAO - 1;
-                }
-                //endRAO %= totalNeedRAO;
                 return;
             }
         }
-        endRAO = startRAO + totalRAOPerSubframe - 1;
+        else if(associationFrame > 1){
+            int times = 1;
+            if(startRAO / totalNeedRAO >= times){
+                startRAO= -1;
+                endRAO = -1;
+                return;
+            }
+            endRAO = startRAO + totalRAOPerSubframe - 1;
+            if(endRAO / totalNeedRAO >= times)
+                endRAO = times * totalNeedRAO - 1;
+        }
+        //endRAO = startRAO + totalRAOPerSubframe - 1;
     }
 }
 
@@ -73,9 +86,10 @@ void AvailiableRAO::updateAssociationFrame(){
     //associationPeriod = ((totalNeedRAO / totalRAOPerFrame) + 1) *
     //    prachConfig->getPrachConfigPeriod();
     associationPeriod = (totalNeedRAO / totalRAOPerFrame);
-    printf("totalNeedRAO: %d\ntotalRAOPerFrame: %d\n", 
+    printf("totalNeedRAO: %d\ntotalRAOPerFrame: %d\ntotalRAOPerSubframe: %d\n", 
             totalNeedRAO,
-            totalRAOPerFrame);
+            totalRAOPerFrame,
+            totalRAOPerSubframe);
     if(totalNeedRAO % totalRAOPerFrame)
         associationPeriod += 1;
     // total need frame for all ssb mapping to 
