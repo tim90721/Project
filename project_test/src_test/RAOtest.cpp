@@ -4,6 +4,8 @@
 #include "general_definition.h"
 #include "RAOtestPrachConfig16.cpp"
 #include "RAOtestPrachConfig27.cpp"
+#include "RAOtestPrachConfig101.cpp"
+#include "RAOtestPrachConfig106.cpp"
 
 //#include "../src/includefile.h"
 //#include "../src/Model.h"
@@ -657,30 +659,10 @@
 //}
 
 int main(){
-    testPrachIndex16_1();
-    testPrachIndex16_2();
-    testPrachIndex16_3();
-    testPrachIndex16_4();
-    testPrachIndex16_5();
-    testPrachIndex16_6();
-    testPrachIndex16_7();
-    testPrachIndex16_8();
-    testPrachIndex27_1();
-    testPrachIndex27_2();
-    testPrachIndex27_3();
-    testPrachIndex27_4();
-    testPrachIndex27_5();
-    testPrachIndex27_6();
-    testPrachIndex27_7();
-    testPrachIndex27_9();
-    testPrachIndex27_10();
-    testPrachIndex27_11();
-    testPrachIndex27_12();
-    testPrachIndex27_13();
-    testPrachIndex27_14();
-    testPrachIndex27_15();
-    testPrachIndex27_16();
-    testPrachIndex27_17();
+    testPrachIndex16();
+    testPrachIndex27();
+    testPrachIndex101();
+    testPrachIndex106();
     printf("test correct\n");
     return 0;
 }

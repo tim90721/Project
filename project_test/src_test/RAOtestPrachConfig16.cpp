@@ -345,4 +345,15 @@ void testPrachIndex16_1(){
     validation(expected, simulationTime, prachConfigIndex, msg1FDM, ssbPerRAO);
     destory();
 }
+
+void testPrachIndex16(){
+    testPrachIndex16_1();
+    testPrachIndex16_2();
+    testPrachIndex16_3();
+    testPrachIndex16_4();
+    testPrachIndex16_5();
+    testPrachIndex16_6();
+    testPrachIndex16_7();
+    testPrachIndex16_8();
+}
 #endif

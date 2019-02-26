@@ -564,4 +564,23 @@ void testPrachIndex27_1(){
     validation(expected, simulationTime, prachConfigIndex, msg1FDM, ssbPerRAO);
     destory();
 }
+
+void testPrachIndex27(){
+    testPrachIndex27_1();
+    testPrachIndex27_2();
+    testPrachIndex27_3();
+    testPrachIndex27_4();
+    testPrachIndex27_5();
+    testPrachIndex27_6();
+    testPrachIndex27_7();
+    testPrachIndex27_9();
+    testPrachIndex27_10();
+    testPrachIndex27_11();
+    testPrachIndex27_12();
+    testPrachIndex27_13();
+    testPrachIndex27_14();
+    testPrachIndex27_15();
+    testPrachIndex27_16();
+    testPrachIndex27_17();
+}
 #endif
