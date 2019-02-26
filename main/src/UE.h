@@ -29,6 +29,7 @@ class UE{
     private:
         void checkRA();
         void updateRAOforRA();
+        void updateRAOforRA(const int startRAO, const int endRAO, const int subframeStartRAO, const int subframeEndRAO, const int totalNeedRAO);
         void storeRAOsforRA(int subframeStartRAO, int subframeEndRAO);
         int x;
         int y;

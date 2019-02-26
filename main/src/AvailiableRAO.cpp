@@ -58,12 +58,18 @@ void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const i
                 return;
             }
             else{
-                startRAO %= totalNeedRAO;
                 endRAO = startRAO + totalRAOPerSubframe - 1;
+                if(endRAO / totalNeedRAO >= times){
+                    endRAO = times * totalNeedRAO - 1;
+                    startRAO %= totalNeedRAO;
+                    endRAO %= totalNeedRAO;
+                }
+                else{
+                    startRAO %= totalNeedRAO;
+                    endRAO = startRAO + totalRAOPerSubframe - 1;
+                }
                 //printf("testing--->startRAO: %d, endRAO: %d\n", startRAO, endRAO);
                 //printf("testing--->times: %d\n", times);
-                if(endRAO / totalNeedRAO >= times)
-                    endRAO = times * totalNeedRAO - 1;
                 return;
             }
         }

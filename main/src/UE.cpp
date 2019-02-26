@@ -108,8 +108,9 @@ void UE::checkRA(){
 }
 
 void UE::updateRAOforRA(){
-    int subframeStartRAO = availiableRAO->getStartRAOofSubframe();
-    int subframeEndRAO = availiableRAO->getEndRAOofSubframe();
+    const int subframeStartRAO = availiableRAO->getStartRAOofSubframe();
+    const int subframeEndRAO = availiableRAO->getEndRAOofSubframe();
+    const int totalNeedRAO = availiableRAO->getTotalNeedRAO();
     printf("UE %d: start RAO: %d, end RAO: %d\n",
             id,
             startRAO,
@@ -117,6 +118,24 @@ void UE::updateRAOforRA(){
     printf("subframe start RAO: %d, subframe end RAO: %d\n", 
             availiableRAO->getStartRAOofSubframe(),
             availiableRAO->getEndRAOofSubframe());
+    updateRAOforRA(startRAO, 
+            endRAO, 
+            subframeStartRAO, 
+            subframeEndRAO, 
+            totalNeedRAO);
+    //TODO: still testing
+    //if(raStartRAO == -1 && raEndRAO == -1
+    //        && (subframeEndRAO - subframeStartRAO + 1) / totalNeedRAO > 0){
+    if(raStartRAO == -1 && raEndRAO == -1){
+        updateRAOforRA(startRAO + totalNeedRAO, 
+                endRAO + totalNeedRAO,
+                subframeStartRAO,
+                subframeEndRAO,
+                totalNeedRAO);
+    }
+}
+
+void UE::updateRAOforRA(const int startRAO, const int endRAO, const int subframeStartRAO, const int subframeEndRAO, const int totalNeedRAO){
     raStartRAO = startRAO;
     raEndRAO = endRAO;
     if((subframeStartRAO <= startRAO && startRAO <= subframeEndRAO)
