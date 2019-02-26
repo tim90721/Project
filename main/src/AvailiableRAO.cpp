@@ -61,6 +61,7 @@ void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const i
                 startRAO %= totalNeedRAO;
                 endRAO = startRAO + totalRAOPerSubframe - 1;
                 //printf("testing--->startRAO: %d, endRAO: %d\n", startRAO, endRAO);
+                //printf("testing--->times: %d\n", times);
                 if(endRAO / totalNeedRAO >= times)
                     endRAO = times * totalNeedRAO - 1;
                 return;
@@ -95,6 +96,17 @@ void AvailiableRAO::updateAssociationFrame(){
     // total need frame for all ssb mapping to 
     // rao at least once 
     associationFrame = (associationPeriod  * prachConfig->getPrachConfigPeriod() / 10);
+    if(!(associationFrame == 1 
+            || associationFrame == 2
+            || associationFrame == 4
+            || associationFrame == 8
+            || associationFrame == 16)){
+        int association = 2;
+        while(associationFrame / association != 0){
+            association *= 2;
+        }
+        associationFrame = association;
+    }
     printf("associationFrame: %d\n", associationFrame);
 }
 
