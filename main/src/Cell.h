@@ -37,6 +37,8 @@ class Cell{
         void setMsg1FDM(int msg1FDM);
         void setSSBPerRAO(double ssbPerRAO);
         void setPrachConfigIndex(int prachConfigIndex);
+        void setRaResponseWindow(const int raResponseWindw);
+        void receivePreamble(const int raoIndex, const int preambleIndex);
         virtual void initializeBeams(int nBeams) = 0;
         virtual void updateBeamsAngle(int diffX, int diffY) = 0;
         int getX();
@@ -47,6 +49,7 @@ class Cell{
         int getSubframeIndex();
         int getFrameIndex();
         int getMsg1FDM();
+        int getRaResponseWindow();
         double getBeamStartAngle();
         double getSSBPerRAO();
         CellType getCellType();
@@ -64,6 +67,7 @@ class Cell{
         int endAngle;
         int subframeIndex;
         int frameIndex;
+        int raResponseWindow;
         double beamStartAngle;
         double startB;
         double startC;

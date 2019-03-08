@@ -15,6 +15,7 @@ UE::UE(int x, int y, int id){
     endRAO = 0;
     raStartRAO = -1;
     raEndRAO = -1;
+    preambleTransmitted = false;
 }
 
 // set ue's point x and y
@@ -80,6 +81,7 @@ void UE::doRA(){
         for(unsigned int i = 0;i < raos.size();i++)
             printf("%4d", raos[i]);
         printf("\n");
+        transmitMsg1();
     }
     else{
         printf("current subframe is not for UE %d RA\n", id);
@@ -124,8 +126,6 @@ void UE::updateRAOforRA(){
             subframeEndRAO, 
             totalNeedRAO);
     //TODO: still testing
-    //if(raStartRAO == -1 && raEndRAO == -1
-    //        && (subframeEndRAO - subframeStartRAO + 1) / totalNeedRAO > 0){
     if(raStartRAO == -1 && raEndRAO == -1){
         updateRAOforRA(startRAO + totalNeedRAO, 
                 endRAO + totalNeedRAO,
@@ -160,8 +160,6 @@ void UE::storeRAOsforRA(const int subframeStartRAO, const int subframeEndRAO){
     const int totalNeedRAO = availiableRAO->getTotalNeedRAO();
     const int totalRAOPerSubframe = availiableRAO->getTotalRAOPerSubframe();
 
-//    if(raStartRAO == -1 || raEndRAO == -1)
-//        return;
     printf("raStartRAO: %d, raEndRAO: %d\n", raStartRAO, raEndRAO);
     for(int i = 0;i < raEndRAO - raStartRAO + 1;i++){
         raos.push_back(raStartRAO + i);
@@ -178,7 +176,6 @@ void UE::storeRAOsforRA(const int subframeStartRAO, const int subframeEndRAO){
             raStartRAO += totalNeedRAO;
             if(raStartRAO + nRAO < subframeEndRAO){
                 raEndRAO = raStartRAO + nRAO;
-                //raEndRAO += nRAO;
             }
             else if(raStartRAO + nRAO > subframeEndRAO){
                 raEndRAO = subframeEndRAO;
@@ -186,19 +183,18 @@ void UE::storeRAOsforRA(const int subframeStartRAO, const int subframeEndRAO){
             for(int i = 0;i < raEndRAO - raStartRAO + 1;i++)
                 raos.push_back(raStartRAO + i);
         }
-        // original
-        //if(raStartRAO + totalNeedRAO < subframeEndRAO){
-        //    raStartRAO += totalNeedRAO;
-        //    if(raEndRAO + nRAO < subframeEndRAO){
-        //        raEndRAO += nRAO;
-        //    }
-        //    else if(raEndRAO + nRAO > subframeEndRAO){
-        //        raEndRAO = subframeEndRAO;
-        //    }
-        //    for(int i = 0;i < raEndRAO - raStartRAO + 1;i++)
-        //        raos.push_back(raStartRAO + i);
-        //}
     }
+}
+
+void UE::transmitMsg1(){
+    const int startPreamble = availiableRAO->getStartNumberofPreamble(beamIndex);
+    const int nPreambles = availiableRAO->getNumberofPreambles();
+    printf("%d\t%d\n", startPreamble, nPreambles);
+    const int preambleIndex = getRnd(startPreamble, startPreamble + nPreambles);
+    const int raoIndex = getRnd(0, raos.size() - 1);
+    printf("%d\t%d\n", preambleIndex, raos[raoIndex]);
+    candidateCell->receivePreamble(raos[raoIndex], preambleIndex);
+    preambleTransmitted = true;
 }
 
 // get ue's point x
@@ -241,6 +237,10 @@ bool UE::isBindCell(){
     if(candidateCell)
         return true;
     return false;
+}
+
+bool UE::isPreambleTransmit(){
+    return preambleTransmitted;
 }
 
 // draw ue

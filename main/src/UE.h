@@ -2,11 +2,13 @@
 #define UE_DEFINE
 
 #include <QPainter>
+#include <random>
 #include "Beam.h"
 #include "Cell.h"
 #include "IPRACHConfig.h"
 #include "IAvailiableRAO.h"
 #include "includefile.h"
+#include "CommonMath.h"
 
 class Cell;
 
@@ -24,6 +26,7 @@ class UE{
         int getCellIndex();
         int getBeamStrength();
         bool isBindCell();
+        bool isPreambleTransmit();
         void drawUE(QPainter &painter);
         vector<int>& getRAOs();
     private:
@@ -31,6 +34,7 @@ class UE{
         void updateRAOforRA();
         void updateRAOforRA(const int startRAO, const int endRAO, const int subframeStartRAO, const int subframeEndRAO, const int totalNeedRAO);
         void storeRAOsforRA(int subframeStartRAO, int subframeEndRAO);
+        void transmitMsg1();
         int x;
         int y;
         int id;
@@ -42,6 +46,7 @@ class UE{
         int endRAO;
         int raStartRAO;
         int raEndRAO;
+        bool preambleTransmitted;
         Cell *candidateCell;
         IPRACHConfig *prachConfig;
         IAvailiableRAO *availiableRAO;

@@ -4,6 +4,7 @@
 #include "includefile.h"
 #include "IPaintSubject.h"
 #include <stdio.h>
+#include <random>
 
 #include "Cell.h"
 #include "MacroCell.h"

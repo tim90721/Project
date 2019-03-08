@@ -5,12 +5,11 @@
 // x: gNB x position
 // y: gNB y position
 // cellType: gNB CellType, Macro or Femto //FIXME maybe reduntant
-Cell::Cell(int x, int y, int cellIndex, int nBeams, CellType cellType, int prachConfigIndex) : x(x), y(y), cellIndex(cellIndex), nBeams(nBeams), cellPixelSize(10), subframeIndex(0), frameIndex(0), cellType(cellType){
+Cell::Cell(int x, int y, int cellIndex, int nBeams, CellType cellType, int prachConfigIndex) : x(x), y(y), cellIndex(cellIndex), nBeams(nBeams), cellPixelSize(10), subframeIndex(0), frameIndex(0), raResponseWindow(1), cellType(cellType){
     prachConfig = new PRACHConfigFR1(prachConfigIndex);
     prachConfig->configRA();
     availiableRAO = new AvailiableRAO(nBeams, 1, 1, 64, 160, prachConfig);
     availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
-    
 }
 
 // Set gNB x position
@@ -155,6 +154,13 @@ void Cell::setPrachConfigIndex(int prachConfigIndex){
     availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
 }
 
+void Cell::setRaResponseWindow(const int raResponseWindow){
+    this->raResponseWindow = raResponseWindow;
+}
+
+void Cell::receivePreamble(const int raoIndex, const int preambleIndex){
+}
+
 // get cell support distance
 int Cell::getCellSupportDistance(){
     return this->cellSupportDistance;
@@ -197,6 +203,10 @@ int Cell::getFrameIndex(){
 
 int Cell::getMsg1FDM(){
     return availiableRAO->getMsg1FDM();
+}
+
+int Cell::getRaResponseWindow(){
+    return raResponseWindow;
 }
 
 // get cell start angle

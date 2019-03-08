@@ -133,8 +133,8 @@ int AvailiableRAO::getSSBPeriod(){
 }
 
 int AvailiableRAO::getStartNumberofPreamble(int ssbIndex){
-    if(this->ssbPerRAO >= 1){
-        int start = ssbIndex * (this->nPreambles / this->ssbPerRAO);
+    if(this->ssbPerRAO > 1){
+        int start = (ssbIndex % (int)ssbPerRAO) * (this->nPreambles / this->ssbPerRAO);
         return start;
     }
     else

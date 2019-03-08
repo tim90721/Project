@@ -9,10 +9,9 @@ Model::Model(){
     cellType = Macro;
     countPressedReleased = 0;
     tempCell = NULL;
+    simulationTime = 0;
     ue = new UE(300, 200, UEs.size());
     UEs.push_back(ue);
-    simulationTime = 0;
-
 }
 
 // Set mouse XY position

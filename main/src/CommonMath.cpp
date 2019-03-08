@@ -1,5 +1,10 @@
 #include "CommonMath.h"
 
+#include <random>
+
+std::random_device rd;
+std::mt19937 gen(rd());
+
 // detect point x and y is in two line's area 
 // two line from startAngle to endAngle
 // two line with x + By + C = 0
@@ -62,4 +67,9 @@ double calculateDistance(int x1, int y1, int x2, int y2){
 // C: linear equation coefficient C
 int XgetY(int x, double B, double C){
     return ((-1.0) * ((double)x + C)) / B;
+}
+
+int getRnd(int start, int end){
+    std::uniform_int_distribution<int> distribution(start, end);
+    return distribution(gen);
 }
