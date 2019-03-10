@@ -10,6 +10,7 @@ Model::Model(){
     countPressedReleased = 0;
     tempCell = NULL;
     simulationTime = 0;
+    simulationCounter = 0;
     ue = new UE(300, 200, UEs.size());
     UEs.push_back(ue);
 }
@@ -168,6 +169,7 @@ void Model::startSimulation(){
         } 
         printf("=================info=================\n");
     }
+    printf("simulation: %d complete\n", simulationCounter++);
 }
 
 void Model::setSimulationTime(int simulationTime){

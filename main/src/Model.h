@@ -41,6 +41,7 @@ class Model : public IPaintSubject{
         bool mousePressed;
         int countPressedReleased;
         int simulationTime;
+        int simulationCounter;
 };
         
 #endif
