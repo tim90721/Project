@@ -50,7 +50,7 @@ void Model::setMousePressed(bool isPressed){
     countPressedReleased++;
     if(mousePressed){
         if(countPressedReleased == 1)
-            tempCell = new MacroCell(mouseX, mouseY, cells.size(), 4, cellType, 27); 
+            tempCell = new MacroCell(mouseX, mouseY, cells.size(), 4, cellType, 106); 
         else if(countPressedReleased == 3){
             // TODO
             // do mouse pressed second time
@@ -75,15 +75,20 @@ bool Model::isMousePressed(){
 
 // Draw Cells and UEs
 void Model::draw(QPainter &painter){
+    Cell *cell;
+    UE *ue;
     for(unsigned int i = 0;i < cells.size();i++){
-        Cell *cell = cells.at(i);
+        cell = cells.at(i);
         cell->drawCell(painter);
     }
     if(countPressedReleased >= 1 && countPressedReleased < 4){
         tempCell->drawCell(painter);
     }
     painter.setBrush(QBrush(QColor(200, 128, 255, 255), Qt::SolidPattern));
-    ue->drawUE(painter);
+    for(auto i = 0;i < UEs.size();i++){
+        ue = UEs[i];
+        ue->drawUE(painter);
+    }
 }
 
 // get number of mouse pressed count
@@ -110,6 +115,10 @@ void Model::traverseUEs(){
     Cell *cell;
     for(unsigned int i = 0;i < UEs.size();i++){
         ue = UEs.at(i);
+        if(ue->isRASuccess()){
+            UEs.erase(UEs.begin() + i);
+            continue;
+        }
         //if(!ue->isBindCell()){
         //}
         for(unsigned int j = 0;j < cells.size();j++){
@@ -119,15 +128,17 @@ void Model::traverseUEs(){
     }
 }
 
-void Model::broadcastCellSI(){
+void Model::transmitDL(){
     Cell *cell;
     for(unsigned int i = 0;i < cells.size();i++){
         cell = cells.at(i);
         cell->broadcastSI();
+        cell->transmitRAR();
+        cell->transmitCR();
     }
 }
 
-void Model::checkUERA(){
+void Model::transmitUL(){
     UE *ue;
     for(unsigned int i = 0;i < UEs.size();i++){
         ue = UEs.at(i);
@@ -149,8 +160,9 @@ void Model::startSimulation(){
                 cells.at(0)->getFrameIndex(),
                 cells.at(0)->getSubframeIndex());
         traverseUEs();
-        broadcastCellSI();
-        checkUERA();
+        notifyAll();
+        transmitDL();
+        transmitUL();
         for(unsigned int j = 0;j < cells.size();j++){
             cells.at(j)->updateSubframe();
         } 

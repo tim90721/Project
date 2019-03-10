@@ -9,6 +9,7 @@
 //#include "PRACHConfig.h"
 #include "PRACHConfigFR1Paired.h"
 #include "AvailiableRAO.h"
+#include "random_access.h"
 
 enum CellType{
     Macro,
@@ -39,6 +40,9 @@ class Cell{
         void setPrachConfigIndex(int prachConfigIndex);
         void setRaResponseWindow(const int raResponseWindw);
         void receivePreamble(const int raoIndex, const int preambleIndex);
+        void transmitRAR();
+        void receiveMsg3(Msg3& msg3);
+        void transmitCR();
         virtual void initializeBeams(int nBeams) = 0;
         virtual void updateBeamsAngle(int diffX, int diffY) = 0;
         int getX();
@@ -52,6 +56,7 @@ class Cell{
         int getRaResponseWindow();
         double getBeamStartAngle();
         double getSSBPerRAO();
+        bool hasRAR();
         CellType getCellType();
         IPRACHConfig *getPRACHConfig();
         IAvailiableRAO *getAvailiableRAO();
@@ -76,6 +81,8 @@ class Cell{
         CellType cellType;
         vector<Beam*> beams;
         vector<UE*> ues;
+        vector<vector<RAR*>> rars;
+        vector<Msg3*> msg3s;
         PRACHConfig *prachConfig;
         AvailiableRAO *availiableRAO;
     private:

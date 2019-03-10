@@ -8,8 +8,9 @@
 Cell::Cell(int x, int y, int cellIndex, int nBeams, CellType cellType, int prachConfigIndex) : x(x), y(y), cellIndex(cellIndex), nBeams(nBeams), cellPixelSize(10), subframeIndex(0), frameIndex(0), raResponseWindow(1), cellType(cellType){
     prachConfig = new PRACHConfigFR1(prachConfigIndex);
     prachConfig->configRA();
-    availiableRAO = new AvailiableRAO(nBeams, 1, 1, 64, 160, prachConfig);
+    availiableRAO = new AvailiableRAO(nBeams, 1, 8, 64, 160, prachConfig);
     availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
+    rars = vector<vector<RAR*>>(10);
 }
 
 // Set gNB x position
@@ -159,6 +160,85 @@ void Cell::setRaResponseWindow(const int raResponseWindow){
 }
 
 void Cell::receivePreamble(const int raoIndex, const int preambleIndex){
+    int respondSubframe = (subframeIndex + raResponseWindow) % 10;
+    vector<RAR*>& subframeRars = rars[respondSubframe];
+    RAR *rar = new RAR;
+    rar->raoIndex = raoIndex;
+    rar->preambleIndex = preambleIndex;
+    rar->uplinkResourceIndex = subframeRars.size() + 1;
+    rar->tc_rnti = subframeRars.size() + 1;
+    //printf("size: %d\n", subframeRars.size());
+
+    //printf("rao index: %d, preamble index: %d\n", 
+    //        rar->raoIndex, 
+    //        rar->preambleIndex);
+    int insertIndex = searchRAR(subframeRars, *rar);
+    //printf("insert index: %d\n", insertIndex);
+    if(subframeRars.size() == insertIndex)
+        subframeRars.push_back(rar);
+    else if(subframeRars.size() > 0 
+            && subframeRars[insertIndex]->raoIndex == rar->raoIndex 
+            && subframeRars[insertIndex]->preambleIndex == rar->preambleIndex){
+        printf("rao: %d, preamble: %d already exist in RAR\n",
+                rar->raoIndex,
+                rar->preambleIndex);
+    }
+    else{
+        subframeRars.insert(subframeRars.begin() + insertIndex, rar);
+    }
+}
+
+void Cell::transmitRAR(){
+    if(!hasRAR())
+        return;
+    printf("transmitting RARs\n");
+    vector<RAR*>& subframeRar = rars[subframeIndex];
+    UE *ue;
+    printf("rar size: %d\n" ,subframeRar.size());
+    for(auto i = 0;i < ues.size();i++){
+        ue = ues.at(i);
+        ue->receiveRAR(subframeRar);
+    }
+    for(auto i = 0;i < subframeRar.size();i++){
+        delete subframeRar[i];
+    }
+    subframeRar.clear();
+    printf("rar size: %d\n" ,subframeRar.size());
+}
+
+void Cell::receiveMsg3(Msg3& msg3){
+    int insertIndex = searchMsg3(msg3s, msg3);
+    if(insertIndex == msg3s.size())
+        msg3s.push_back(&msg3);
+    else if(msg3s.size() > 0 
+            && msg3s[insertIndex]->tc_rnti == msg3.tc_rnti){
+        printf("tc_rnti: %d, already exist in RAR\n",
+                msg3.tc_rnti);
+    }
+    else{
+        msg3s.insert(msg3s.begin() + insertIndex, &msg3);
+    }
+}
+
+void Cell::transmitCR(){
+    if(!msg3s.size())
+        return;
+    printf("transmitting contention resolution\n");
+    UE *ue;
+    for(auto i = 0;i < ues.size();i++){
+        ue = ues.at(i);
+        ue->receiveCR(msg3s);
+        if(ue->isRASuccess()){
+            printf("removing UE id: %d from cell index: %d\n", 
+                    ue->getID(),
+                    cellIndex);
+            ues.erase(ues.begin() + i);
+        }
+    }
+    for(auto i = 0;i < msg3s.size();i++){
+        delete msg3s[i];
+    }
+    msg3s.clear();
 }
 
 // get cell support distance
@@ -217,6 +297,12 @@ double Cell::getBeamStartAngle(){
 
 double Cell::getSSBPerRAO(){
     return availiableRAO->getSSBPerRAO();
+}
+
+bool Cell::hasRAR(){
+    if(rars[subframeIndex].size())
+        return true;
+    return false;
 }
 
 // Get gNB celltype
