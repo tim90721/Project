@@ -140,6 +140,13 @@ void Model::traverseUEs(){
     }
 }
 
+// transmit cells downlink
+// first broadcast all cells' system information
+// for ue to deregister from the cell that SINR is not the best one
+// since when traverse all UEs, cell will first store all detected UE
+// then when ue receive SI, it will deregister from the cell 
+// that it does not select
+// second, cell will then transmit RAR and CR later
 void Model::transmitDL(){
     Cell *cell;
     for(auto it = cells.begin();it != cells.end();it++){
@@ -153,6 +160,7 @@ void Model::transmitDL(){
     }
 }
 
+// transmit all UEs' uplink aka performing RA
 void Model::transmitUL(){
     UE *ue;
     for(unsigned int i = 0;i < UEs.size();i++){
@@ -165,6 +173,14 @@ void Model::transmitUL(){
     }
 }
 
+// start the simulation
+// if simulation time or no cell is in the canvas
+// it won't start the simulation
+// otherwise, frame, subframe number, ueIndex counter,
+// remaining UEs will be reset
+// then, run the simulation for simulationTime in ms
+// finally, if there are UEs remain after simulationTime,
+// simulation will then proceed until all UEs success
 void Model::startSimulation(){
     //ueIndex = 0;
     remainingUEs = 0;
@@ -194,12 +210,22 @@ void Model::startSimulation(){
     printf("simulation: %d complete\n", simulationCounter++);
 }
 
+// set the simulation time
+// simulationTime: the simulation time for simulation
+// it will be stored in ms
 void Model::setSimulationTime(int simulationTime){
     // model store simulation time in msec
     this->simulationTime = simulationTime * 10;
     //printf("%d\n", this->simulationTime);
 }
 
+// run the simulation
+// first, traverse each UEs stored in model to detect 
+// whether UE is in the cell
+// second, transmit cell's DL
+// third, transmit UE's UL
+// isTimesUp: when simulationTime is 0, set this value to true
+// for proceeding remaining UEs RA
 void Model::run(bool isTimesUp){
     //for(int i = 0;i < 1;i++){
     printf("=================info=================\n");
@@ -221,6 +247,16 @@ void Model::run(bool isTimesUp){
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
+// generate random number UEs based on ueArrivalRate
+// first random select a cell
+// second random select an angle
+// third random select a distance from the cell centor
+// FIXME////////////////////////FIXME
+// notice that random generated angle has a 5 degree tolerance
+// and random generated distance has a 10 tolerance
+// for decreasing the probability of cell cannot detect ue
+// FIXME////////////////////////FIXME
+// then calculate random x, y point based on distance and angle
 void Model::generateRandomUEs(){
     Cell *cell;
     printf("generating ues\n");

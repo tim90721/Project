@@ -5,9 +5,16 @@ using namespace std;
 // constructor
 // x: point x of ue
 // y: point y of ue
+// id: ue ID
 UE::UE(int x, int y, unsigned long id) : UE(x, y, id, false){
 }
 
+// constructor
+// x: point x of ue
+// y: point y of ue
+// id: ue ID
+// isTest: if this class is used by testing, this value is true, 
+// otherwise false
 UE::UE(int x, int y, unsigned long id, bool isTest){
     setXY(x, y);
     this->id = id;
@@ -58,6 +65,13 @@ void UE::setBeam(int cellIndex, int beamIndex, int beamStrength){
     //printf("old beam is better\n");
 }
 
+// receive SI
+// if received SI's cell is better than original cell,
+// deregister the original cell and change candidate cell 
+// to the received SI's cell
+// if original cell is better, 
+// deregister the received SI's cell since when detect UE procedure 
+// will store UE context in cell
 int UE::receiveSI(Cell *cell){
     if(cell->getCellIndex() == this->cellIndex){
         // TODO: set ssb-perrach-OccasionAndCBRA-preambles
@@ -69,6 +83,7 @@ int UE::receiveSI(Cell *cell){
         if(candidateCell && candidateCell->getCellIndex() != cellIndex){
             candidateCell->deregisterCell(this);
         }
+        // storing cell's configuration
         this->candidateCell = cell;
         prachConfig = cell->getPRACHConfig();
         availiableRAO = cell->getAvailiableRAO();
@@ -87,6 +102,8 @@ int UE::receiveSI(Cell *cell){
     return 1;
 }
 
+// do the RA procedure
+// if is testing, UE won't send preamble
 void UE::doRA(){
     printf("UE %lu doing RA\n", id);
     if(isTest || !preambleTransmitted){
@@ -97,6 +114,7 @@ void UE::doRA(){
                     id,
                     raStartRAO,
                     raEndRAO);
+            // store raos index with subframeRAOStart to subframeRAOEnd
             storeRAOsforRA(availiableRAO->getStartRAOofSubframe(),
                     availiableRAO->getEndRAOofSubframe());
             printf("number of rao: %d\n", raos.size());
@@ -113,10 +131,11 @@ void UE::doRA(){
             printf("current subframe is not for UE %lu RA\n", id);
         }
     }
-    else if (preambleTransmitted && !msg3Transmitted){
+    else if (preambleTransmitted && rarReceived && !msg3Transmitted){
+        // if preamble is transmitted and rar received
         transmitMsg3();
     }
-    else if(preambleTransmitted && msg3Transmitted && raSuccess){
+    else if(preambleTransmitted && rarReceived && msg3Transmitted && raSuccess){
         printf("RA already success, wait for remove from simulation\n");
     }
     else{
@@ -125,6 +144,9 @@ void UE::doRA(){
     }
 }
 
+// receive RAR
+// rars: cell transmits rar
+// cellIndex: cell index
 void UE::receiveRAR(const vector<RAR*>& rars, const int cellIndex){
     printf("rar cell index: %d, select cell index: %d\n",
             cellIndex, candidateCell->getCellIndex());
@@ -146,6 +168,13 @@ void UE::receiveRAR(const vector<RAR*>& rars, const int cellIndex){
     printf("receive complete\n");
 }
 
+// receive CR
+// if received CR and contained ue ID the same as itself
+// RA is success
+// otherwise
+// RA failed, and perform RA from preamble transmission again
+// CRs: CR transmitted by cell
+// cellIndex: cell index
 void UE::receiveCR(const vector<Msg3*>& CRs, const int cellIndex){
     if(cellIndex != candidateCell->getCellIndex() || !msg3Transmitted)
         return;
@@ -171,6 +200,9 @@ void UE::receiveCR(const vector<Msg3*>& CRs, const int cellIndex){
     }
 }
 
+// check current timing can do RA or not
+// if RA can be performed, update raStartRAO and raEndRAO
+// otherwise, raStartRAO and raEndRAO is -1
 void UE::checkRA(){
     printf("checking ra availiable\n");
     int frameIndex = candidateCell->getFrameIndex();
@@ -194,6 +226,12 @@ void UE::checkRA(){
     }
 }
 
+// call by checkRA
+// update RAOs for RA
+// is current timing contain RAOs for UE to perform RA
+// update raos
+// this procedure will do twice if subframeStartRAO is larger than
+// ue startRAO
 void UE::updateRAOforRA(){
     const int subframeStartRAO = availiableRAO->getStartRAOofSubframe();
     const int subframeEndRAO = availiableRAO->getEndRAOofSubframe();
@@ -220,6 +258,19 @@ void UE::updateRAOforRA(){
     }
 }
 
+// call by updateRAOforRA
+// the second time to update
+// check if subframeStartRAO is larger than ue's start RAO once time
+// startRAO: start rao
+// endRAO: end rao
+// subframeStartRAO: subframe start rao
+// subframeEndRAO: subframe end rao
+// totalNeedRAO: totalNeedRAO for all ssb
+// 
+// will call by the condition like this
+//
+// |----totalNeedRAO----|----totalNeedRAO----|-----------------------------|
+// startRAO--------endRAO--subframeStartRAO-------------------subframeEndRAO
 void UE::updateRAOforRA(const int startRAO, const int endRAO, const int subframeStartRAO, const int subframeEndRAO, const int totalNeedRAO){
     raStartRAO = startRAO;
     raEndRAO = endRAO;
@@ -240,6 +291,11 @@ void UE::updateRAOforRA(const int startRAO, const int endRAO, const int subframe
     }
 }
 
+// store raos for RA
+// raStartRAO and raEndRAO only stored the range 
+// raos stores the each of RAO can perform RA
+// subframeStartRAO: subframe start RAO
+// subframeEndRAO: subframe end RAO
 void UE::storeRAOsforRA(const int subframeStartRAO, const int subframeEndRAO){
     int nRAO = 1 / availiableRAO->getSSBPerRAO();
     const int totalNeedRAO = availiableRAO->getTotalNeedRAO();
@@ -250,6 +306,8 @@ void UE::storeRAOsforRA(const int subframeStartRAO, const int subframeEndRAO){
         raos.push_back(raStartRAO + i);
     }
     
+    // if subframe contains the number of RAOs larger than totalNeedRAO
+    // means that all ssb can map to this subframe more than one time
     if(totalRAOPerSubframe > totalNeedRAO){
         while(raEndRAO + totalNeedRAO <= subframeEndRAO){
             raStartRAO += totalNeedRAO;

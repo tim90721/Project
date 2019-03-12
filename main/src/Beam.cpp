@@ -16,26 +16,6 @@ Beam::Beam(Cell *parent, int cellIndex, int beamIndex, int lengthBeam, int spanA
     setStartAngle(beamIndex, spanAngle);
 }
 
-// set beam's x position
-// x: x position of cell center
-//void Beam::setX(int x){
-//    this->x = x;
-//}
-
-// set beam's y position
-// y: y position of cell center
-//void Beam::setY(int y){
-//    this->y = y;
-//}
-
-// set beam's x and y position
-// x: x position of cell center
-// y: y position of cell center 
-//void Beam::setXY(int x, int y){
-//    this->x = x;
-//    this->y = y;
-//}
-
 // set beam's index
 // beamIndex: the index of beam
 void Beam::setBeamIndex(int beamIndex){

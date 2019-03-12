@@ -26,9 +26,6 @@ class Beam{
     public:
         Beam(Cell *parent, int cellIndex, int beamIndex, int lengthBeam, int spanAngle);
         void drawBeam(QPainter &painter);
-        //void setX(int x);
-        //void setY(int y);
-        //void setXY(int x, int y);
         void setBeamIndex(int beamIndex);
         void setSpanAngle(int spanAngle);
         void setStartAngle(int beamIndex, int spanAngle);
