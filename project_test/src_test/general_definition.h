@@ -19,7 +19,7 @@ void initialize(){
     cell->updateBeamsAngle(0, 0);
     cell->findCellCoverAreaEquation();
     printf("%f\n", cell->getBeamStartAngle());
-    ue = new UE(110, 90, 0);
+    ue = new UE(110, 90, 0, true);
     cell->detectUE(ue);
 }
 
