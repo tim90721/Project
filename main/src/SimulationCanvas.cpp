@@ -45,5 +45,5 @@ void SimulationCanvas::paintEvent(QPaintEvent *event){
 
 // IPaintSubject notify IPaintObservor update canvas
 void SimulationCanvas::updateCanvas(){
-    update();
+    repaint();
 }
