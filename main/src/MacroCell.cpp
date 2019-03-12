@@ -7,8 +7,7 @@
 // cellType: gNB CellType, Macro or Femto //FIXME maybe reduntant
 MacroCell::MacroCell(int x, int y, int cellIndex, int nBeams, CellType cellType, int prachConfigIndex):Cell(x, y, cellIndex, nBeams, cellType, prachConfigIndex){
     this->cellAngle = 120;
-    setCellSupportDistance(200);
-    initializeBeams(getnBeams());
+    this->cellSupportDistance = 200;
 }
 
 // Draw Macro Cell
@@ -36,8 +35,8 @@ void MacroCell::drawCell(QPainter &painter){
 
 // initialize gNB's beams
 // nBeams: number of beams
-void MacroCell::initializeBeams(int nBeams){
-    int spanAngle = cellAngle / nBeams;
+void MacroCell::initializeBeams(){
+    double spanAngle = cellAngle / nBeams;
     for(int i = 0;i < nBeams;i++){
         Beam *beam = new Beam(this, cellIndex, i, cellSupportDistance, spanAngle);
         beams.push_back(beam); 
@@ -51,7 +50,7 @@ void MacroCell::initializeBeams(int nBeams){
 void MacroCell::updateBeamsAngle(int diffX, int diffY){
     Cell::setBeamStartAngle(diffX, diffY);
     Beam *beam;
-    int spanAngle = cellAngle / getnBeams(); 
+    double spanAngle = cellAngle / getnBeams(); 
     for(unsigned int i = 0;i < beams.size();i++){
         beam = beams.at(i);
         beam->setStartAngle(beamStartAngle + i * spanAngle);

@@ -94,6 +94,7 @@ int binarySeachMsg3(const vector<Msg3*>& msg3s, const int tc_rnti){
 int searchRAR(const vector<RAR*>& subframeRars, const int raoIndex, const int preambleIndex){
     int raoLeft, raoRight;
     int raoInsertIndex = binarySearchRAO(subframeRars, &raoLeft, &raoRight, raoIndex);
+    
     //printf("raoLeft: %d, raoRight: %d\n", 
     //        raoLeft,
     //        raoRight);

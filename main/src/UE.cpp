@@ -5,7 +5,10 @@ using namespace std;
 // constructor
 // x: point x of ue
 // y: point y of ue
-UE::UE(int x, int y, int id){
+UE::UE(int x, int y, unsigned long id) : UE(x, y, id, false){
+}
+
+UE::UE(int x, int y, unsigned long id, bool isTest){
     setXY(x, y);
     this->id = id;
     this->beamIndex = -1;
@@ -25,6 +28,7 @@ UE::UE(int x, int y, int id){
     rarReceived = false;
     msg3Transmitted = false;
     raSuccess = false;
+    this->isTest = isTest;
 }
 
 // set ue's point x and y
@@ -54,14 +58,17 @@ void UE::setBeam(int cellIndex, int beamIndex, int beamStrength){
     //printf("old beam is better\n");
 }
 
-void UE::receiveSI(Cell *cell){
+int UE::receiveSI(Cell *cell){
     if(cell->getCellIndex() == this->cellIndex){
         // TODO: set ssb-perrach-OccasionAndCBRA-preambles
         // TODO: set CRE(future work)
-        printf("UE %d receive cell index %d, beam index %d system information\n", 
-                this->id,
+        printf("UE %lu receive cell index %d, beam index %d system information\n", 
+                id,
                 cell->getCellIndex(),
                 beamIndex);
+        if(candidateCell && candidateCell->getCellIndex() != cellIndex){
+            candidateCell->deregisterCell(this);
+        }
         this->candidateCell = cell;
         prachConfig = cell->getPRACHConfig();
         availiableRAO = cell->getAvailiableRAO();
@@ -70,17 +77,23 @@ void UE::receiveSI(Cell *cell){
         if(nRAO > 0)
             nRAO -= 1;
         endRAO = startRAO + nRAO;
-        return;
+        return 0;
     }
-    printf("Other cell is better, doesn't need to receive cell index %d SI\n", cell->getCellIndex());
+    printf("UE: %lu Other cell is better, doesn't need to receive cell index %d SI\n", id, cell->getCellIndex());
+    printf("UE: %lu deregister from cell :%d\n", 
+            id,
+            cell->getCellIndex());
+    cell->deregisterCell(this);
+    return 1;
 }
 
 void UE::doRA(){
-    if(!preambleTransmitted){
+    printf("UE %lu doing RA\n", id);
+    if(isTest || !preambleTransmitted){
         checkRA();
         if(raStartRAO != -1 && raEndRAO != -1){
-            printf("current subframe is for UE %d RA\n", id);
-            printf("UE %d: ra start RAO: %d\tra end RAO: %d\n", 
+            printf("current subframe is for UE %lu RA\n", id);
+            printf("UE %lu: ra start RAO: %d\tra end RAO: %d\n", 
                     id,
                     raStartRAO,
                     raEndRAO);
@@ -91,10 +104,13 @@ void UE::doRA(){
             for(unsigned int i = 0;i < raos.size();i++)
                 printf("%4d", raos[i]);
             printf("\n");
-            transmitMsg1();
+            if(!isTest)
+                transmitMsg1();
+            else
+                printf("testing\n");
         }
         else{
-            printf("current subframe is not for UE %d RA\n", id);
+            printf("current subframe is not for UE %lu RA\n", id);
         }
     }
     else if (preambleTransmitted && !msg3Transmitted){
@@ -104,12 +120,19 @@ void UE::doRA(){
         printf("RA already success, wait for remove from simulation\n");
     }
     else{
+        printf("%d, %d, %d\n", preambleTransmitted, msg3Transmitted, raSuccess);
         printf("something wrong!!!\n");
     }
 }
 
-void UE::receiveRAR(const vector<RAR*>& rars){
-    int index = searchRAR(rars, selectRAOIndex, selectPreambleIndex);
+void UE::receiveRAR(const vector<RAR*>& rars, const int cellIndex){
+    printf("rar cell index: %d, select cell index: %d\n",
+            cellIndex, candidateCell->getCellIndex());
+    if(cellIndex != candidateCell->getCellIndex() 
+            || (!preambleTransmitted || msg3Transmitted))
+        return;
+    printf("UE %lu receiving RAR\n", id);
+    int index = searchRAR(rars, raos[selectRAOIndex], selectPreambleIndex);
     printf("rar index: %d\n", index);
     printf("select rao index: %d, searched rao index: %d\n",
             raos[selectRAOIndex],
@@ -120,15 +143,18 @@ void UE::receiveRAR(const vector<RAR*>& rars){
     uplinkResourceIndex = rars[index]->uplinkResourceIndex;
     tc_rnti = rars[index]->tc_rnti;
     rarReceived = true;
+    printf("receive complete\n");
 }
 
-void UE::receiveCR(const vector<Msg3*>& CRs){
+void UE::receiveCR(const vector<Msg3*>& CRs, const int cellIndex){
+    if(cellIndex != candidateCell->getCellIndex() || !msg3Transmitted)
+        return;
     int index = searchMsg3(CRs, tc_rnti);
     printf("contention resolution index: %d\n", index);
     printf("UE TC-RNTI: %d, searched TC-RNTI: %d\n",
             tc_rnti,
             CRs[index]->tc_rnti);
-    printf("UE id: %d, searched UE id: %d\n",
+    printf("UE id: %lu, searched UE id: %lu\n",
             id,
             CRs[index]->ueIndex);
     if(tc_rnti == CRs[index]->tc_rnti
@@ -146,18 +172,20 @@ void UE::receiveCR(const vector<Msg3*>& CRs){
 }
 
 void UE::checkRA(){
+    printf("checking ra availiable\n");
     int frameIndex = candidateCell->getFrameIndex();
     int subframeIndex = candidateCell->getSubframeIndex();
+    printf("frame: %d, subframe: %d\n", frameIndex, subframeIndex);
     raos.clear();
     if(availiableRAO->isRASubframe(frameIndex, subframeIndex)){
-        printf("UE %d: frame index: %d, subframe Index: %d is for RA\n",
+        printf("UE %lu: frame index: %d, subframe Index: %d is for RA\n",
                 id,
                 frameIndex,
                 subframeIndex);
         updateRAOforRA();
     }
     else{
-        printf("UE %d: frame index: %d, subframe index: %d not for RA\n", 
+        printf("UE %lu: frame index: %d, subframe index: %d not for RA\n", 
                 id,
                 frameIndex,
                 subframeIndex);
@@ -170,7 +198,7 @@ void UE::updateRAOforRA(){
     const int subframeStartRAO = availiableRAO->getStartRAOofSubframe();
     const int subframeEndRAO = availiableRAO->getEndRAOofSubframe();
     const int totalNeedRAO = availiableRAO->getTotalNeedRAO();
-    printf("UE %d: start RAO: %d, end RAO: %d\n",
+    printf("UE %lu: start RAO: %d, end RAO: %d\n",
             id,
             startRAO,
             endRAO);
@@ -256,10 +284,6 @@ void UE::transmitMsg1(){
             selectPreambleIndex);
     candidateCell->receivePreamble(raos[selectRAOIndex], 
             selectPreambleIndex);
-    //for(int i = 0;i < 50;i++){
-    //    candidateCell->receivePreamble(raos[getRnd(0 , raos.size() - 1)], 
-    //            getRnd(startPreamble, startPreamble + nPreambles - 1));
-    //}
     preambleTransmitted = true;
 }
 
@@ -286,7 +310,7 @@ int UE::getY(){
 
 // get ue's id
 // return: ue's id
-int UE::getID(){
+unsigned long UE::getID(){
     return this->id;
 }
 

@@ -15,16 +15,17 @@ class Cell;
 
 class UE{
     public:
-        UE(int x, int y, int id);
+        UE(int x, int y, unsigned long id);
+        UE(int x, int y, unsigned long id, bool isTest);
         void setXY(int x, int y);
         void setBeam(int cellIndex, int beamIndex, int beamStrength);
-        void receiveSI(Cell *beam);
+        int receiveSI(Cell *beam);
         void doRA();
-        void receiveRAR(const std::vector<RAR*>& rars);
-        void receiveCR(const std::vector<Msg3*>& CRs);
+        void receiveRAR(const std::vector<RAR*>& rars, const int cellIndex);
+        void receiveCR(const std::vector<Msg3*>& CRs, const int cellIndex);
+        unsigned long getID();
         int getX();
         int getY();
-        int getID();
         int getBeamIndex();
         int getCellIndex();
         int getBeamStrength();
@@ -41,9 +42,9 @@ class UE{
         void storeRAOsforRA(int subframeStartRAO, int subframeEndRAO);
         void transmitMsg1();
         void transmitMsg3();
+        unsigned long id;
         int x;
         int y;
-        int id;
         int beamIndex;
         int cellIndex;
         int beamStrength;
@@ -60,6 +61,7 @@ class UE{
         bool rarReceived;
         bool msg3Transmitted;
         bool raSuccess;
+        bool isTest;
         Cell *candidateCell;
         IPRACHConfig *prachConfig;
         IAvailiableRAO *availiableRAO;

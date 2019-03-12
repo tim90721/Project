@@ -4,11 +4,13 @@
 #include "includefile.h"
 #include "IPaintSubject.h"
 #include <stdio.h>
-#include <random>
+#include <chrono>
+#include <thread>
 
 #include "Cell.h"
 #include "MacroCell.h"
 #include "UE.h"
+#include "CommonMath.h"
 
 class Model : public IPaintSubject{
     public:
@@ -30,6 +32,12 @@ class Model : public IPaintSubject{
         void startSimulation();
         void setSimulationTime(int simulationTime);
     private:
+        void run(bool isTimesUp);
+        void generateRandomUEs();
+
+        unsigned long ueIndex;
+        int cellIndex;
+        int ueArrivalRate;
         int mouseX;
         int mouseY;
         vector<Cell*> cells;
@@ -42,6 +50,7 @@ class Model : public IPaintSubject{
         int countPressedReleased;
         int simulationTime;
         int simulationCounter;
+        int remainingUEs;
 };
         
 #endif

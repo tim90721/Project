@@ -8,7 +8,6 @@
 #include "CommonMath.h"
 
 class Cell;
-//class UE;
 
 class Beam{
     private:

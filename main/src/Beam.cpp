@@ -108,7 +108,7 @@ void Beam::detectUE(UE *ue, double power){
                 this->startC,
                 this->endB,
                 this->endC)){
-        printf("UE id %d is in cell index %d beam index %d\n",
+        printf("UE id %lu is in cell index %d beam index %d\n",
                 ue->getID(),
                 parent->getCellIndex(),
                 getBeamIndex());

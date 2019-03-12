@@ -33,6 +33,7 @@ class Cell{
         void findCellCoverAreaEquation();
         void detectUE(UE *ue);
         void broadcastSI();
+        void deregisterCell(UE *ue);
         void updateSubframe();
         void resetFrame();
         void setMsg1FDM(int msg1FDM);
@@ -43,7 +44,7 @@ class Cell{
         void transmitRAR();
         void receiveMsg3(Msg3& msg3);
         void transmitCR();
-        virtual void initializeBeams(int nBeams) = 0;
+        virtual void initializeBeams() = 0;
         virtual void updateBeamsAngle(int diffX, int diffY) = 0;
         int getX();
         int getY();
@@ -56,6 +57,7 @@ class Cell{
         int getRaResponseWindow();
         double getBeamStartAngle();
         double getSSBPerRAO();
+        double getCellSpanAngle();
         bool hasRAR();
         CellType getCellType();
         IPRACHConfig *getPRACHConfig();
@@ -67,12 +69,12 @@ class Cell{
         int cellSupportDistance;
         int nBeams;
         int cellPixelSize;
-        int cellAngle;
-        int startAngle;
-        int endAngle;
         int subframeIndex;
         int frameIndex;
         int raResponseWindow;
+        double cellAngle;
+        double startAngle;
+        double endAngle;
         double beamStartAngle;
         double startB;
         double startC;

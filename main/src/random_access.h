@@ -13,7 +13,7 @@ struct RAR{
 struct Msg3{
     int uplinkResourceIndex;
     int tc_rnti;
-    int ueIndex;
+    unsigned long ueIndex;
 };
 
 int binarySearchPreamble(const std::vector<RAR*>& subframeRars, const int raoLeft, const int raoRight, const int raoFoundIndex, const int preambleIndex);
@@ -23,6 +23,5 @@ int searchRAR(const vector<RAR*>& subframeRars, const int raoIndex, const int pr
 int searchRAR(const std::vector<RAR*>& subframeRars, RAR &rar);
 int searchMsg3(const std::vector<Msg3*>& msg3s, int tc_rnti);
 int searchMsg3(const std::vector<Msg3*>& msg3s, Msg3& msg3);
-
 
 #endif

@@ -60,10 +60,12 @@ void Cell::findCellCoverAreaEquation(){
     this->startB = beam->getStartB();
     this->startC = beam->getStartC();
     this->startAngle = beam->getStartAngle();
+    //printf("start angle: %lf\n", startAngle);
     beam = beams.at(beams.size() - 1);
     this->endB = beam->getEndB();
     this->endC = beam->getEndC();
     this->endAngle = beam->getEndAngle();
+    //printf("end angle: %lf\n", endAngle);
 }
 
 // detect ue is this cell's area
@@ -94,7 +96,7 @@ void Cell::detectUE(UE *ue){
                     ((double)(this->cellSupportDistance / 2)) - distance);
         }
         ues.push_back(ue);
-        printf("UE %d is in cell %d range\n", ue->getID(), cellIndex);
+        printf("UE %lu is in cell %d range\n", ue->getID(), cellIndex);
     }
     //TODO: maybe add ue to vector for storing UE(already added?)
 }
@@ -104,7 +106,7 @@ bool Cell::checkUEisExist(UE *ue){
     for(unsigned int i = 0;i < ues.size();i++){
         temp = ues[i];
         if(temp->getID() == ue->getID()){
-            printf("UE %d already be added to Cell %d\n", 
+            printf("UE %lu already be added to Cell %d\n", 
                     temp->getID(),
                     cellIndex);
             return true;
@@ -118,9 +120,22 @@ void Cell::broadcastSI(){
     UE *ue;
     for(unsigned int i = 0;i < ues.size();i++){
         ue = ues.at(i);
-        ue->receiveSI(this);
+        if(ue->receiveSI(this))
+            i--;
     }
     //ue->receiveSI(this);
+}
+
+void Cell::deregisterCell(UE *ue){
+    for(auto it = ues.begin();it != ues.end();it++){
+        if((*it)->getID() == ue->getID()){
+            printf("UE: %d removing from cell: %d\n",
+                    (*it)->getID(),
+                    cellIndex);
+            ues.erase(it);
+            break;
+        }
+    }
 }
 
 void Cell::updateSubframe(){
@@ -160,6 +175,7 @@ void Cell::setRaResponseWindow(const int raResponseWindow){
 }
 
 void Cell::receivePreamble(const int raoIndex, const int preambleIndex){
+    printf("receiving preamble\n");
     int respondSubframe = (subframeIndex + raResponseWindow) % 10;
     vector<RAR*>& subframeRars = rars[respondSubframe];
     RAR *rar = new RAR;
@@ -186,24 +202,31 @@ void Cell::receivePreamble(const int raoIndex, const int preambleIndex){
     else{
         subframeRars.insert(subframeRars.begin() + insertIndex, rar);
     }
+    printf("receive complete\n");
 }
 
 void Cell::transmitRAR(){
     if(!hasRAR())
         return;
-    printf("transmitting RARs\n");
+    printf("Cell: %d transmitting RARs\n", cellIndex);
     vector<RAR*>& subframeRar = rars[subframeIndex];
-    UE *ue;
-    printf("rar size: %d\n" ,subframeRar.size());
-    for(auto i = 0;i < ues.size();i++){
-        ue = ues.at(i);
-        ue->receiveRAR(subframeRar);
+    for(auto i = subframeRar.begin();i != subframeRar.end();i++){
+        printf("%d\t%d\n", (*i)->raoIndex, (*i)->preambleIndex);
     }
-    for(auto i = 0;i < subframeRar.size();i++){
+    UE *ue;
+    printf("rar size: %lu\n" ,subframeRar.size());
+    for(decltype(ues.size()) i = 0;i < ues.size();i++){
+        ue = ues.at(i);
+        printf("Cell: %d transmitting RAR to UE :%d\n",
+                cellIndex,
+                ue->getID());
+        ue->receiveRAR(subframeRar, cellIndex);
+    }
+    for(decltype(subframeRar.size()) i = 0;i < subframeRar.size();i++){
         delete subframeRar[i];
     }
     subframeRar.clear();
-    printf("rar size: %d\n" ,subframeRar.size());
+    printf("RARs transmit complete\n");
 }
 
 void Cell::receiveMsg3(Msg3& msg3){
@@ -225,17 +248,18 @@ void Cell::transmitCR(){
         return;
     printf("transmitting contention resolution\n");
     UE *ue;
-    for(auto i = 0;i < ues.size();i++){
+    for(decltype(ues.size()) i = 0;i < ues.size();i++){
         ue = ues.at(i);
-        ue->receiveCR(msg3s);
+        ue->receiveCR(msg3s, cellIndex);
         if(ue->isRASuccess()){
-            printf("removing UE id: %d from cell index: %d\n", 
+            printf("removing UE id: %lu from cell index: %d\n", 
                     ue->getID(),
                     cellIndex);
             ues.erase(ues.begin() + i);
+            i--;
         }
     }
-    for(auto i = 0;i < msg3s.size();i++){
+    for(decltype(msg3s.size()) i = 0;i < msg3s.size();i++){
         delete msg3s[i];
     }
     msg3s.clear();
@@ -297,6 +321,10 @@ double Cell::getBeamStartAngle(){
 
 double Cell::getSSBPerRAO(){
     return availiableRAO->getSSBPerRAO();
+}
+
+double Cell::getCellSpanAngle(){
+    return cellAngle;
 }
 
 bool Cell::hasRAR(){
