@@ -231,10 +231,10 @@ void Model::generateRandomUEs(){
         double cellStartAngle = cell->getBeamStartAngle();
         double cellSpanAngle = cell->getCellSpanAngle();
 
-        int rndAngle = getRnd(cellStartAngle, 
-                cellStartAngle + cellSpanAngle);
+        int rndAngle = getRnd(cellStartAngle + 5, 
+                cellStartAngle + cellSpanAngle - 5);
         //printf("%d\n", cell->getCellSupportDistance());
-        int rndDistance = getRnd(0, cell->getCellSupportDistance() / 2);
+        int rndDistance = getRnd(10, cell->getCellSupportDistance() / 2);
         int rndX = rndDistance * cos(rndAngle * M_PI / 180.0);
         int rndY = rndDistance * sin(rndAngle * M_PI / 180.0);
         //printf("random angle: %d, random distance: %d\n",
