@@ -21,7 +21,6 @@ MainGUI::MainGUI(QWidget *parent):
     canvas->setSizePolicy(sp);
 
     initialRadioButton();
-    initialSIBPeriodArea();
     initialArrivalRateArea();
     initialSimulationTimeArea();
     initialSystemArea();
@@ -33,11 +32,11 @@ MainGUI::MainGUI(QWidget *parent):
 // Initialize radio button 
 void MainGUI::initialRadioButton(){
     // gNBType setting
-    rBtnMarcogNB = new QRadioButton(QString::fromStdString(sMarcogNB), this);
+    rBtnMacrogNB = new QRadioButton(QString::fromStdString(sMarcogNB), this);
     rBtnFemtogNB = new QRadioButton(QString::fromStdString(sFemtogNB), this);
-    rBtnMarcogNB->setChecked(true);
+    rBtnMacrogNB->setChecked(true);
     layoutgNBType = new QHBoxLayout;
-    layoutgNBType->addWidget(rBtnMarcogNB);
+    layoutgNBType->addWidget(rBtnMacrogNB);
     layoutgNBType->addWidget(rBtnFemtogNB);
     groupgNBType = new QGroupBox(QString::fromStdString(sgNBType), this);
     groupgNBType->setLayout(layoutgNBType);
@@ -101,35 +100,6 @@ void MainGUI::initialRadioButton(){
     groupPreambleFormat->setLayout(layoutPreambleFormat);
 }
 
-// Configuration SIB Period Area
-void MainGUI::initialSIBPeriodArea(){
-    // Label Setting
-    labelSIBPeriod = new QLabel(this);
-    labelUnitms = new QLabel(this);
-
-    labelSIBPeriod->setText(QString::fromStdString(sSIBPeriod));
-    labelUnitms->setText(QString::fromStdString(sUnitms));
-
-    // LineEdit Setting
-    lEditSIBPeriod = new QLineEdit(this);
-
-    // PushButton Setting
-    btnSIBPeriod = new QPushButton(this);
-    btnSIBPeriod->setText(QString::fromStdString(sBtnSet));
-    btnSIBPeriod->setMaximumSize(50, 50);
-    sp = btnSIBPeriod->sizePolicy();
-    sp.setVerticalPolicy(QSizePolicy::Preferred);
-    sp.setHorizontalPolicy(QSizePolicy::Maximum);
-    btnSIBPeriod->setSizePolicy(sp);
-
-    // SIBPeriod area setting
-    layoutSIBPeriod = new QHBoxLayout;
-    layoutSIBPeriod->addWidget(labelSIBPeriod);
-    layoutSIBPeriod->addWidget(lEditSIBPeriod);
-    layoutSIBPeriod->addWidget(labelUnitms);
-    layoutSIBPeriod->addWidget(btnSIBPeriod);
-}
-
 // configuration ArrivalRate Area
 void MainGUI::initialArrivalRateArea(){
     // Label setting
@@ -141,27 +111,20 @@ void MainGUI::initialArrivalRateArea(){
 
     // LineEdit setting
     lEditArrivalRate = new QLineEdit(this);
-    lEditArrivalRate->setMaximumSize(50, 50);
-    sp = lEditArrivalRate->sizePolicy();
-    sp.setVerticalPolicy(QSizePolicy::Preferred);
-    sp.setHorizontalPolicy(QSizePolicy::Maximum);
-    lEditArrivalRate->setSizePolicy(sp);
-
-    // PushButton setting
-    btnArrivalRate = new QPushButton(this);
-    btnArrivalRate->setText(QString::fromStdString(sBtnSet));
-    btnArrivalRate->setMaximumSize(50, 50);
-    sp = btnArrivalRate->sizePolicy();
-    sp.setVerticalPolicy(QSizePolicy::Preferred);
-    sp.setHorizontalPolicy(QSizePolicy::Maximum);
-    btnArrivalRate->setSizePolicy(sp);
+    //lEditArrivalRate->setMaximumSize(50, 50);
+    lEditArrivalRate->setValidator(new QIntValidator(lEditArrivalRate));
+    lEditArrivalRate->setText(QString::number(10));
+    lEditArrivalRate->setAlignment(Qt::AlignRight);
+    //sp = lEditArrivalRate->sizePolicy();
+    //sp.setVerticalPolicy(QSizePolicy::Preferred);
+    //sp.setHorizontalPolicy(QSizePolicy::Maximum);
+    //lEditArrivalRate->setSizePolicy(sp);
 
     // Arrival rate area setting
     layoutArrivalRate = new QHBoxLayout;
     layoutArrivalRate->addWidget(labelArrivalRate);
     layoutArrivalRate->addWidget(lEditArrivalRate);
     layoutArrivalRate->addWidget(labelUnitArrivalRate);
-    layoutArrivalRate->addWidget(btnArrivalRate);
 }
 
 // configuration simulation time Area
@@ -171,32 +134,24 @@ void MainGUI::initialSimulationTimeArea(){
     labelUnitSimulationTime = new QLabel(this);
 
     labelSimulationTime->setText(QString::fromStdString(sSimulationTime));
+    //labelSimulationTime->setMinimumSize(200, 20);
     labelUnitSimulationTime->setText(QString::fromStdString(sUnitSimulationTime));
 
     // LineEdit setting
     lEditSimulationTime = new QLineEdit(this);
     lEditSimulationTime->setValidator(new QIntValidator(lEditSimulationTime));
-    lEditSimulationTime->setMaximumSize(50, 50);
-    sp = lEditSimulationTime->sizePolicy();
-    sp.setVerticalPolicy(QSizePolicy::Preferred);
-    sp.setHorizontalPolicy(QSizePolicy::Maximum);
-    lEditSimulationTime->setSizePolicy(sp);
-
-    // PushButton setting
-    btnSimulationTime = new QPushButton(this);
-    btnSimulationTime->setText(QString::fromStdString(sBtnSet));
-    btnSimulationTime->setMaximumSize(50, 50);
-    sp = btnSimulationTime->sizePolicy();
-    sp.setVerticalPolicy(QSizePolicy::Preferred);
-    sp.setHorizontalPolicy(QSizePolicy::Maximum);
-    btnSimulationTime->setSizePolicy(sp);
+    //lEditSimulationTime->setMaximumSize(50, 50);
+    lEditSimulationTime->setAlignment(Qt::AlignRight);
+    //sp = lEditSimulationTime->sizePolicy();
+    //sp.setVerticalPolicy(QSizePolicy::Preferred);
+    //sp.setHorizontalPolicy(QSizePolicy::Maximum);
+    //lEditSimulationTime->setSizePolicy(sp);
 
     // Simulation time area setting
     layoutSimulationTime = new QHBoxLayout;
     layoutSimulationTime->addWidget(labelSimulationTime);
     layoutSimulationTime->addWidget(lEditSimulationTime);
     layoutSimulationTime->addWidget(labelUnitSimulationTime);
-    layoutSimulationTime->addWidget(btnSimulationTime);
 }
 
 // initial area for button start or load, save config area
@@ -241,9 +196,8 @@ void MainGUI::initialMainLayout(){
     layoutSetting->addWidget(groupgNBType, 2, 0);
     layoutSetting->addWidget(groupBeams, 3, 0);
     layoutSetting->addWidget(groupPreambleFormat, 1, 1, 3, 1);
-    layoutSetting->addLayout(layoutSIBPeriod, 4, 0);
+    layoutSetting->addLayout(layoutSimulationTime, 4, 0);
     layoutSetting->addLayout(layoutArrivalRate, 4, 1);
-    layoutSetting->addLayout(layoutSimulationTime, 5, 0);
     layoutSetting->addLayout(layoutSystem, 5, 1);
 
     // Main Area Setting
@@ -255,11 +209,61 @@ void MainGUI::initialMainLayout(){
 // connect all singals
 void MainGUI::connectSignals(){
     connect(btnStart, SIGNAL(clicked()), this, SLOT(handleButtonStartClick()));
+    connect(rBtn4Beams, SIGNAL(clicked()), this, SLOT(handle4BeamsRadBtnClick()));
+    connect(rBtn8Beams, SIGNAL(clicked()), this, SLOT(handle8BeamsRadBtnClick()));
+    connect(rBtn64Beams, SIGNAL(clicked()), this, SLOT(handle64BeamsRadBtnClick()));
+    connect(rBtnMacrogNB, SIGNAL(clicked()), this, SLOT(handleMacroRadBtnClick()));
+    connect(rBtnFemtogNB, SIGNAL(clicked()), this, SLOT(handleFemtoRadBtnClick()));
+    connect(rBtnFR1, SIGNAL(clicked()), this, SLOT(handleFR1RadBtnClick()));
+    connect(rBtnFR2, SIGNAL(clicked()), this, SLOT(handleFR2RadBtnClick()));
 }
 
 // handle start button click event
 void MainGUI::handleButtonStartClick(){
     printf("start button click\n");
     model->setSimulationTime(lEditSimulationTime->text().toInt());
+    model->setArrivalRate(lEditArrivalRate->text().toInt());
     model->startSimulation();
+}
+
+// handle radio button 4 beams click event
+void MainGUI::handle4BeamsRadBtnClick(){
+    printf("4 beams\n");
+    model->setnBeams(beams4);
+}
+
+// handle radio button 8 beams click event
+void MainGUI::handle8BeamsRadBtnClick(){
+    printf("8 beams\n");
+    model->setnBeams(beams8);
+}
+
+// handle radio button 64 beams click event
+void MainGUI::handle64BeamsRadBtnClick(){
+    printf("64 beams\n");
+    model->setnBeams(beams64);
+}
+
+// handle radio button marco click event
+void MainGUI::handleMacroRadBtnClick(){
+    printf("Macro gNB selected\n");
+    model->setCellType(celltype::Macro);
+}
+
+// handle radio button femto click event
+void MainGUI::handleFemtoRadBtnClick(){
+    printf("Femto gNB selected\n");
+    model->setCellType(celltype::Femto);
+}
+
+// handle FR1 radio button click event
+void MainGUI::handleFR1RadBtnClick(){
+    printf("FR1 selected\n");
+    model->setFR(iFR1);
+}
+
+// handle FR2 radio button click event
+void MainGUI::handleFR2RadBtnClick(){
+    printf("FR2 selected\n");
+    model->setFR(iFR2);
 }

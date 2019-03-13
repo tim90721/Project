@@ -11,19 +11,21 @@
 #include "AvailiableRAO.h"
 #include "random_access.h"
 
-enum CellType{
-    Macro,
-    Femto
-};
+namespace celltype{
+    enum CellType{
+        Macro,
+        Femto
+    };
+}
 
 class Beam;
 class UE;
 
 class Cell{
     public:
-        Cell(int x, int y,int cellIndex, int nBeams, CellType cellType, int prachConfigIndex);
+        Cell(int x, int y,int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex);
         virtual void drawCell(QPainter &painter) = 0;
-        void setCellType(CellType cellType);
+        void setCellType(celltype::CellType cellType);
         void setX(int x);
         void setY(int y);
         void setnBeams(int nBeams);
@@ -59,7 +61,7 @@ class Cell{
         double getSSBPerRAO();
         double getCellSpanAngle();
         bool hasRAR();
-        CellType getCellType();
+        celltype::CellType getCellType();
         IPRACHConfig *getPRACHConfig();
         IAvailiableRAO *getAvailiableRAO();
     protected:
@@ -80,7 +82,7 @@ class Cell{
         double startC;
         double endB;
         double endC;
-        CellType cellType;
+        celltype::CellType cellType;
         vector<Beam*> beams;
         vector<UE*> ues;
         vector<vector<RAR*>> rars;

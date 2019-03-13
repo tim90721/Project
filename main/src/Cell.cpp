@@ -5,7 +5,7 @@
 // x: gNB x position
 // y: gNB y position
 // cellType: gNB CellType, Macro or Femto //FIXME maybe reduntant
-Cell::Cell(int x, int y, int cellIndex, int nBeams, CellType cellType, int prachConfigIndex) : x(x), y(y), cellIndex(cellIndex), nBeams(nBeams), cellPixelSize(10), subframeIndex(0), frameIndex(0), raResponseWindow(1), cellType(cellType){
+Cell::Cell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex) : x(x), y(y), cellIndex(cellIndex), nBeams(nBeams), cellPixelSize(10), subframeIndex(0), frameIndex(0), raResponseWindow(1), cellType(cellType){
     prachConfig = new PRACHConfigFR1(prachConfigIndex);
     prachConfig->configRA();
     availiableRAO = new AvailiableRAO(nBeams, 1, 8, 64, 160, prachConfig);
@@ -322,7 +322,7 @@ int Cell::getCellSupportDistance(){
 }
 
 // Set gNB cellType
-void Cell::setCellType(CellType cellType){
+void Cell::setCellType(celltype::CellType cellType){
     this->cellType = cellType;
 }
 
@@ -397,7 +397,7 @@ bool Cell::hasRAR(){
 }
 
 // Get gNB celltype
-CellType Cell::getCellType(){
+celltype::CellType Cell::getCellType(){
     return this->cellType;
 }
 

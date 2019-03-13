@@ -1,18 +1,18 @@
-#include "MacroCell.h"
+#include "FemtoCell.h"
 
 // Constructor
 // initialize macro cell
 // x: gNB x position
 // y: gNB y position
 // cellType: gNB CellType, Macro or Femto //FIXME maybe reduntant
-MacroCell::MacroCell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex):Cell(x, y, cellIndex, nBeams, cellType, prachConfigIndex){
-    this->cellAngle = 120;
-    this->cellSupportDistance = 300;
+FemtoCell::FemtoCell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex):Cell(x, y, cellIndex, nBeams, cellType, prachConfigIndex){
+    this->cellAngle = 360; //FIXME
+    this->cellSupportDistance = 100;
 }
 
-// Draw Macro Cell
+// Draw Femto Cell
 // painter: QPainter use for painting
-void MacroCell::drawCell(QPainter &painter){
+void FemtoCell::drawCell(QPainter &painter){
     painter.setBrush(QBrush(QColor(0, 0, 0, 255), Qt::SolidPattern));
     painter.drawEllipse(x - cellPixelSize / 2,
             y - cellPixelSize / 2,
@@ -25,17 +25,11 @@ void MacroCell::drawCell(QPainter &painter){
         beam = beams.at(i);
         beam->drawBeam(painter);
     }
-    //int y1 = XgetY(0, this->startB, this->startC);
-    //int y2 = XgetY(150, this->startB, this->startC);
-    //painter.drawLine(this->x, this->y - y1, this->x + 150, this->y - y2);
-    //y1 = XgetY(0, this->endB, this->endC);
-    //y2 = XgetY(150, this->endB, this->endC);
-    //painter.drawLine(this->x, this->y - y1, this->x + 150, this->y - y2);
 }
 
 // initialize gNB's beams
 // nBeams: number of beams
-void MacroCell::initializeBeams(){
+void FemtoCell::initializeBeams(){
     double spanAngle = cellAngle / nBeams;
     for(int i = 0;i < nBeams;i++){
         Beam *beam = new Beam(this, cellIndex, i, cellSupportDistance, spanAngle);
@@ -47,7 +41,7 @@ void MacroCell::initializeBeams(){
 // second mouse click coordinate
 // diffX: the difference of x1 and x2
 // diffY: the difference of y1 and y2
-void MacroCell::updateBeamsAngle(int diffX, int diffY){
+void FemtoCell::updateBeamsAngle(int diffX, int diffY){
     Cell::setBeamStartAngle(diffX, diffY);
     Beam *beam;
     double spanAngle = cellAngle / getnBeams(); 

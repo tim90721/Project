@@ -9,6 +9,7 @@
 
 #include "Cell.h"
 #include "MacroCell.h"
+#include "FemtoCell.h"
 #include "UE.h"
 #include "CommonMath.h"
 
@@ -31,11 +32,16 @@ class Model : public IPaintSubject{
         void transmitUL();
         void startSimulation();
         void setSimulationTime(int simulationTime);
+        void setnBeams(const int nBeams);
+        void setCellType(const celltype::CellType type);
+        void setFR(const unsigned int FR);
+        void setArrivalRate(const unsigned int arrivalRate);
     private:
         void run(bool isTimesUp);
         void generateRandomUEs();
 
         unsigned long ueIndex;
+        int remainingUEs;
         int cellIndex;
         int ueArrivalRate;
         int mouseX;
@@ -45,12 +51,13 @@ class Model : public IPaintSubject{
         vector<IPaintObservor*> observors;
         Cell *tempCell;
         UE *ue;
-        CellType cellType;
+        celltype::CellType cellType;
         bool mousePressed;
         int countPressedReleased;
         int simulationTime;
         int simulationCounter;
-        int remainingUEs;
+        int nBeams;
+        unsigned int FR;
 };
         
 #endif

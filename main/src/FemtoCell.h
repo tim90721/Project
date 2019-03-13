@@ -1,11 +1,11 @@
-#ifndef MACROCELL
-#define MACROCELL
+#ifndef FEMTOCELL
+#define FEMTOCELL
 #include "Cell.h"
 #include "CommonMath.h"
 
-class MacroCell : public Cell{
+class FemtoCell : public Cell{
     public:
-        MacroCell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex);
+        FemtoCell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex);
         void drawCell(QPainter &painter);
         void initializeBeams();
         void setBeamStartAngle(int diffX, int diffY);

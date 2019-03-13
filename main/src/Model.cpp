@@ -9,13 +9,13 @@ Model::Model(){
     ueArrivalRate = 10;
     tempCell = NULL;
     mousePressed = false;
-    cellType = Macro;
+    cellType = celltype::Macro;
     countPressedReleased = 0;
     tempCell = NULL;
     simulationTime = 0;
     simulationCounter = 0;
-    ue = new UE(300, 200, ueIndex++);
-    UEs.push_back(ue);
+    nBeams = 4;
+    FR = 0;
 }
 
 // Set mouse XY position
@@ -54,7 +54,10 @@ void Model::setMousePressed(bool isPressed){
     countPressedReleased++;
     if(mousePressed){
         if(countPressedReleased == 1){
-            tempCell = new MacroCell(mouseX, mouseY, cellIndex++, 4, cellType, 106); 
+            if(cellType == celltype::Macro)
+                tempCell = new MacroCell(mouseX, mouseY, cellIndex++, nBeams, cellType, 106); 
+            else
+                tempCell = new FemtoCell(mouseX, mouseY, cellIndex++, nBeams, cellType, 106);
             tempCell->initializeBeams();
         }
         
@@ -182,7 +185,7 @@ void Model::transmitUL(){
 // finally, if there are UEs remain after simulationTime,
 // simulation will then proceed until all UEs success
 void Model::startSimulation(){
-    //ueIndex = 0;
+    ueIndex = 0;
     remainingUEs = 0;
     bool isTimesUp = false;
     if(simulationTime == 0 || cells.size() == 0){
@@ -217,6 +220,31 @@ void Model::setSimulationTime(int simulationTime){
     // model store simulation time in msec
     this->simulationTime = simulationTime * 10;
     //printf("%d\n", this->simulationTime);
+}
+
+// set number of beams
+// nBeams: number of beams
+void Model::setnBeams(const int nBeams){
+    this->nBeams = nBeams;
+}
+
+// set cell type
+// type: cell type
+void Model::setCellType(const celltype::CellType type){
+    cellType = type;
+}
+
+// set UE arrival rate
+// arrivalRate: ue arrival rate
+void Model::setArrivalRate(const unsigned int arrivalRate){
+    printf("arrival rate: %lu\n", arrivalRate);
+    ueArrivalRate = arrivalRate;
+}
+
+// set FR
+// FR: FR
+void Model::setFR(const unsigned int FR){
+    this->FR = FR;
 }
 
 // run the simulation
@@ -285,3 +313,4 @@ void Model::generateRandomUEs(){
         UEs.push_back(ue);
     }
 }
+

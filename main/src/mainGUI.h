@@ -15,7 +15,9 @@
 #include <QSizePolicy>
 #include <QIntValidator>
 #include <string>
+
 #include "Model.h"
+#include "Cell.h"
 
 #include "SimulationCanvas.h"
 
@@ -26,25 +28,20 @@ public:
     MainGUI(QWidget *parent = 0);
 private:
     void initialRadioButton();
-    void initialSIBPeriodArea();
     void initialArrivalRateArea();
     void initialSimulationTimeArea();
     void initialSystemArea(); // for start save area
     void initialMainLayout();
     void connectSignals();
     QLabel *labelArrivalRate;
-    QLabel *labelSIBPeriod;
     QLabel *labelSimulationTime;
     QLabel *labelUnitms;
     QLabel *labelUnitArrivalRate;
     QLabel *labelUnitSimulationTime;
-    QPushButton *btnArrivalRate;
-    QPushButton *btnSIBPeriod;
-    QPushButton *btnSimulationTime;
     QPushButton *btnStart;
     QPushButton *btnSaveConfig;
     QPushButton *btnLoadConfig;
-    QRadioButton *rBtnMarcogNB;
+    QRadioButton *rBtnMacrogNB;
     QRadioButton *rBtnFemtogNB;
     QRadioButton *rBtnFR1;
     QRadioButton *rBtnFR2;
@@ -69,7 +66,6 @@ private:
     QGroupBox *groupBeams;
     QGroupBox *groupPreambleFormat;
     QLineEdit *lEditArrivalRate;
-    QLineEdit *lEditSIBPeriod;
     QLineEdit *lEditSimulationTime;
     QGridLayout *layoutSetting;
     QGridLayout *layoutMain;
@@ -77,7 +73,6 @@ private:
     QHBoxLayout *layoutFR;
     QHBoxLayout *layoutBeams;
     QHBoxLayout *layoutPreambleFormat;
-    QHBoxLayout *layoutSIBPeriod;
     QHBoxLayout *layoutArrivalRate;
     QHBoxLayout *layoutSimulationTime;
     QHBoxLayout *layoutSystem; // for button start, save...
@@ -95,7 +90,6 @@ private:
     std::string sArrivalRate = "UE Arrival Rate: ";
     std::string sFR = "FR";
     std::string sPreambleFormat = "Preamble Format";
-    std::string sSIBPeriod = "SIB Period: ";
     std::string sSimulationTime = "Simulation Time: ";
     std::string sMarcogNB = "Marco gNB";
     std::string sFemtogNB = "Femto gNB";
@@ -119,15 +113,29 @@ private:
     std::string sFormatC2 = "Format C2";
     std::string sBtnSet = "Set";
     std::string sUnitms = "ms";
-    std::string sUnitArrivalRate = "/ms";
-    std::string sUnitSimulationTime = "s";
+    std::string sUnitArrivalRate = "per ms";
+    std::string sUnitSimulationTime = "second(s)";
     std::string sBtnStart = "Start";
     std::string sBtnSaveConfig = "Save Config";
     std::string sBtnLoadConfig = "Load Config";
     int widthWindow = 515;
     int heightWindow = 700;
+    unsigned int FR1 = 0;
+    unsigned int FR2 = 1;
+    unsigned int beams4 = 4;
+    unsigned int beams8 = 8;
+    unsigned int beams64 = 64;
+    unsigned int iFR1 = 0;
+    unsigned int iFR2 = 1;
 private slots:
     void handleButtonStartClick();
+    void handle4BeamsRadBtnClick();
+    void handle8BeamsRadBtnClick();
+    void handle64BeamsRadBtnClick();
+    void handleMacroRadBtnClick();
+    void handleFemtoRadBtnClick();
+    void handleFR1RadBtnClick();
+    void handleFR2RadBtnClick();
 };
 #endif
 
