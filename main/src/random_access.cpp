@@ -2,9 +2,19 @@
 
 using namespace std;
 
-int binarySearchPreamble(const vector<RAR*>& subframeRars, const int raoLeft, const int raoRight, const int raoFoundIndex, const int preambleIndex){
+// binary search a preamble index from RARs
+// subframeRars: rars stored in a cell
+// raoLeft: the left rao index in a range of subframeRars
+// raoRight: the right rao index in a range of subframeRars
+// raoIndex: the index of searching rao
+// preambleIndex: the index of searching preamble
+// return: the index of searching rao index and preamble index
+// if there is no rao index and preamble index 
+// in this subframeRars, return the index that RAR should be 
+// inserted to
+int binarySearchPreamble(const vector<RAR*>& subframeRars, const int raoLeft, const int raoRight, const int raoIndex, const int preambleIndex){
     if(raoLeft == -1 && raoRight == -1)
-        return raoFoundIndex;
+        return raoIndex;
     int left = raoLeft;
     int right = raoRight;
     while(left <= right){
@@ -27,6 +37,16 @@ int binarySearchPreamble(const vector<RAR*>& subframeRars, const int raoLeft, co
     }
 }
 
+// binary search an rao from RARs
+// subframeRars: rars stored in a cell
+// raoIndex: the search index of rao
+// return: raoLeft, raoRight, searched index
+// raoLeft: the left rao index in a range of subframeRars
+// raoRight: the right rao index in a range of subframeRars
+// searched index: if rao index is contained in subframeRars
+// return the searched index of rao index
+// if rao index is not contained in subframeRars
+// return the index of rao index should be inserted to
 int binarySearchRAO(const vector<RAR*>& subframeRars, int* raoLeft, int* raoRight, const int raoIndex){
     *raoLeft = -1;
     *raoRight = -1;
@@ -69,6 +89,12 @@ int binarySearchRAO(const vector<RAR*>& subframeRars, int* raoLeft, int* raoRigh
     }
 }
 
+//binary search msg3
+//msg3s: the Msg3s stored in a cell
+//tc_rnti: the tc_rnti to be searched
+//return: the index of searched tc_rnti msg3
+//if msg3 is not found in this msg3s
+//return the index of msg3 should be inserted to 
 int binarySeachMsg3(const vector<Msg3*>& msg3s, const int tc_rnti){
     if(msg3s.size() == 0)
         return 0;
@@ -91,6 +117,13 @@ int binarySeachMsg3(const vector<Msg3*>& msg3s, const int tc_rnti){
         return left;
 }
 
+// search RAR
+// first search rao index with returned 
+// rao range(raoLeft, raoRight)
+// then search preamble index in rao range
+// subframeRars: the rars stored in a cell
+// raoIndex: the rao index to be searched
+// preambleIndex: the preamble index to be searched
 int searchRAR(const vector<RAR*>& subframeRars, const int raoIndex, const int preambleIndex){
     int raoLeft, raoRight;
     int raoInsertIndex = binarySearchRAO(subframeRars, &raoLeft, &raoRight, raoIndex);
@@ -105,14 +138,23 @@ int searchRAR(const vector<RAR*>& subframeRars, const int raoIndex, const int pr
     return preambleInsertIndex;
 }
 
+// search RAR 
+// subframeRars: rars stored in a cell
+// rar: the RAR to be searched 
 int searchRAR(const vector<RAR*>& subframeRars, RAR &rar){
     return searchRAR(subframeRars, rar.raoIndex, rar.preambleIndex);
 }
 
+// search Msg3
+// msg3s: Msg3 stored in a cell
+// tc_rnti: the tc_rnti to be searched
 int searchMsg3(const vector<Msg3*>& msg3s, const int tc_rnti){
     return binarySeachMsg3(msg3s, tc_rnti);
 }
 
+// search Msg3
+// msg3s: Msg3s stored in a cell
+// msg3: the msg3 to be searched
 int searchMsg3(const vector<Msg3*>& msg3s, Msg3& msg3){
     return searchMsg3(msg3s, msg3.tc_rnti);
 }

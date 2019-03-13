@@ -16,7 +16,6 @@ class PRACHConfig : public IPRACHConfig{
         vector<int> raSubframes;
     public:
         PRACHConfig(int prachConfigIndex);
-        ~PRACHConfig();
         void setPrachConfigIndex(int prachConfigIndex);
         void setNumberofPrachSlot(int nPRACHSlot);
         void setNumberofTimeDomainRAO(int nTimeDomainRAO);

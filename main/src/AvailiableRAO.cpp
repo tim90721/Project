@@ -5,20 +5,28 @@
 //    printf("%f", this->ssbPerRAO);
 //}
 
+// constructor
+// nSSB: number of ssb of the cell
+// ssbPerRAO: corresponding to TS 38.331 ssb-perRACH-Occasion
+// msg1FDM: corresponding to TS 38.331 msg1-FDM
+// nPreambles: total number of availiable contention preambles can use per rao per cell
+// ssbPeriod: corresponding to SSB rate matching period
+// prachConfig: PrachConfig
 AvailiableRAO::AvailiableRAO(int nSSB, double ssbPerRAO, int msg1FDM, int nPreambles, int ssbPeriod, IPRACHConfig *prachConfig) : nSSB(nSSB), nPreambles(nPreambles), ssbPeriod(ssbPeriod), prachConfig(prachConfig){
-    //this->prachConfig = prachConfig;
-    //this->nPreambles = nPreambles;
-    //setNumberofSSB(nSSB);
     setSSBPerRAO(ssbPerRAO);
     setMsg1FDM(msg1FDM);
-    //setSSBPeriod(ssbPeriod);
     updateAssociationFrame();
 }
 
+// set number of ssb of a cell
+// nSSB: number of ssb of a cell
 void AvailiableRAO::setNumberofSSB(int nSSB){
     this->nSSB = nSSB;
 }
 
+// set msg1FDM
+// and update the number of total rao persubframe and frame
+// msg1FDM: corresponding to TS 38.331 msg1-FDM
 void AvailiableRAO::setMsg1FDM(int msg1FDM){
     this->msg1FDM = msg1FDM;
     this->totalRAOPerSubframe = prachConfig->getNumberofTimeDomainRAO() * msg1FDM;
@@ -29,19 +37,30 @@ void AvailiableRAO::setMsg1FDM(int msg1FDM){
     //        prachConfig->getNumberofRASubframe());
 }
 
+// set number of contention preambles can use per rao per cell
+// nPreambles: number of contention preambles
 void AvailiableRAO::setNumberofPreambles(int nPreambles){
     this->nPreambles = nPreambles;
 }
 
+// set ssb period
+// ssbPeriod: corresponding to SSB rate matching period
 void AvailiableRAO::setSSBPeriod(int ssbPeriod){
     this->ssbPeriod = ssbPeriod;
 }
 
+// set ssb per rao
+// ssbPerRAO: corresponding to TS 38.331 ssb-perRACH-Occasion
 void AvailiableRAO::setSSBPerRAO(double ssbPerRAO){
     this->ssbPerRAO = ssbPerRAO;
     this->totalNeedRAO = this->nSSB / ssbPerRAO;
 }
 
+// update subframe start and end RAO of current subframe
+// if current frame of subframe does not have enough RAO for mapping all SSB one more time
+// startRAO and endRAO is -1
+// frameIndex: frame index
+// subframeIndex: subframe index
 void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const int subframeIndex){
     if(isRASubframe(frameIndex, subframeIndex)){
         int frame = frameIndex % associationFrame;
@@ -51,8 +70,13 @@ void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const i
         for(unsigned int i = 0;subframeIndex != RASubframe[i];i++)
             startRAO += totalRAOPerSubframe;
         if(associationFrame == 1){
+            // when total rao per frame can map all ssb more than 1 time
             int times = totalRAOPerFrame / totalNeedRAO;
             if((startRAO / totalNeedRAO) >= times){
+                // when remaining rao in the frame is not enough for 
+                // mapping all ssb one more time
+                // remaining rao can not use for RA
+                // corresponding to TS 38.213 8.1
                 startRAO = -1;
                 endRAO = -1;
                 return;
@@ -60,6 +84,8 @@ void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const i
             else{
                 endRAO = startRAO + totalRAOPerSubframe - 1;
                 if(endRAO / totalNeedRAO >= times){
+                    // if endRAO is larger than total rao of a frame can support
+                    // the endRAO is assigned to last RAO of this frame
                     endRAO = times * totalNeedRAO - 1;
                     startRAO %= totalNeedRAO;
                     endRAO %= totalNeedRAO;
@@ -74,6 +100,7 @@ void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const i
             }
         }
         else if(associationFrame > 1){
+            // a frame can not map all SSB to a RAO
             int times = 1;
             if(startRAO / totalNeedRAO >= times){
                 startRAO= -1;
@@ -88,10 +115,10 @@ void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const i
     }
 }
 
+// update association frame
+// corresponding to TS 38.213 8.1
 void AvailiableRAO::updateAssociationFrame(){
     // calculate association period for this PRACH configuration
-    //associationPeriod = ((totalNeedRAO / totalRAOPerFrame) + 1) *
-    //    prachConfig->getPrachConfigPeriod();
     associationPeriod = (totalNeedRAO / totalRAOPerFrame);
     printf("totalNeedRAO: %d\ntotalRAOPerFrame: %d\ntotalRAOPerSubframe: %d\n", 
             totalNeedRAO,
@@ -99,8 +126,10 @@ void AvailiableRAO::updateAssociationFrame(){
             totalRAOPerSubframe);
     if(totalNeedRAO % totalRAOPerFrame)
         associationPeriod += 1;
+
     // total need frame for all ssb mapping to 
     // rao at least once 
+    // associationFrame can only be 1, 2, 4, 8, 16
     associationFrame = (associationPeriod  * prachConfig->getPrachConfigPeriod() / 10);
     if(!(associationFrame == 1 
             || associationFrame == 2
@@ -116,22 +145,33 @@ void AvailiableRAO::updateAssociationFrame(){
     printf("associationFrame: %d\n", associationFrame);
 }
 
+// get number of SSB of a cell
+// return: number of SSB in a cell
 int AvailiableRAO::getNumberofSSB(){
     return this->nSSB;
 }
 
+// get number of msg1-FDM
+// return: msg1-FDM corresponding to TS 38.331 
 int AvailiableRAO::getMsg1FDM(){
     return this->msg1FDM;
 }
 
+// get number of contention preambles per rao per cell
+// return: number of contention preambles
 int AvailiableRAO::getNumberofPreambles(){
     return this->nPreambles;
 }
 
+// get ssb period
+// return: ssb period, corresponding to SSB rate matching period
 int AvailiableRAO::getSSBPeriod(){
     return this->ssbPeriod;
 }
 
+// get start number of preamble can use for RA based on ssb index
+// ssbIndex: the index of ssb
+// return: the start index of preamble
 int AvailiableRAO::getStartNumberofPreamble(int ssbIndex){
     if(this->ssbPerRAO > 1){
         int start = (ssbIndex % (int)ssbPerRAO) * (this->nPreambles / this->ssbPerRAO);
@@ -141,26 +181,38 @@ int AvailiableRAO::getStartNumberofPreamble(int ssbIndex){
         return 0;
 }
 
+// get start number of RAO can use for RA based on ssbIndex
+// return: the start index of RAO can use
 int AvailiableRAO::getStartNumberofRAO(int ssbIndex){
     return ssbIndex / this->ssbPerRAO;
 }
 
+// get start number of RAO for current subframe
+// return: start number of RAO for current subframe
 int AvailiableRAO::getStartRAOofSubframe(){
     return startRAO;
 }
 
+// get end number of RAO for current subframe
+// return: end index of RAO for current subframe
 int AvailiableRAO::getEndRAOofSubframe(){
     return endRAO;
 }
 
+// get total need RAO for mapping all SSB
+// return: total need RAO
 int AvailiableRAO::getTotalNeedRAO(){
     return totalNeedRAO;
 }
 
+// get total RAO of a subframe
+// return: total RAO of a subframe
 int AvailiableRAO::getTotalRAOPerSubframe(){
     return totalRAOPerSubframe;
 }
 
+// get ssb per rao
+// return: ssb per rao, corresponding to TS 38.331
 double AvailiableRAO::getSSBPerRAO(){
     return this->ssbPerRAO;
 }
@@ -169,8 +221,8 @@ double AvailiableRAO::getSSBPerRAO(){
 // for this ssb index RA
 // frameIndex: frame index
 // subframeIndex: subframe index
-// ssbIndex: ssb index
-// return: start number of rao can use for this ssb in this subframe
+// return true: if this subframe can perform RA
+// otherwise false
 bool AvailiableRAO::isRASubframe(const int frameIndex, const int subframeIndex){
     if(frameIndex % prachConfig->getX() != prachConfig->getY()){
         //printf("frame index: %d is not for RA\n", frameIndex);
@@ -182,73 +234,4 @@ bool AvailiableRAO::isRASubframe(const int frameIndex, const int subframeIndex){
         return false;
     }
     return true;
-    // calculate start rao index for ssb index
-    //int raoIndex = ssbIndex / getSSBPerRAO(); 
-    //int frame = frameIndex;     // copy of frameIndex
-    
-    //if(totalNeedRAO > totalRAOPerFrame){
-    //    // total need RAO for SSB mapping is lager than 1 frame of RAO
-    //    // this implies that for all SSB mapping to RAO once
-    //    // system needs more than 1 frame to complete
-    //    
-    //    // calculate association period for this PRACH configuration
-    //    int associationPeriod = (totalNeedRAO / totalRAOPerFrame) *
-    //        prachConfig->getPrachConfigPeriod();
-    //    // total need frame for all ssb mapping to 
-    //    // rao at least once 
-    //    int associationFrame = (associationPeriod / 10) + 1;
-    //    // mod frame index with total need frame for all ssb mapping
-    //    frameIndex %= associationFrame;
-    //    // start rao index locate frame number
-    //    int raStartFrameIndex = (raoIndex / totalRAOPerFrame) * 
-    //        (prachConfig->getPrachConfigPeriod() / 10);
-    //    int raEndFrameIndex = (raoIndex + ((1 / ssbPerRAO))
-    //            / totalRAOPerFrame) *
-    //        (prachConfig->getPrachConfigPeriod() / 10);
-    //    // start ra subframe index
-    //    int raStartSubframeIndex = (raoIndex / totalRAOPerSubframe); 
-    //    int accumulationRAO = (frameIndex - 1) * totalRAOPerFrame;
-    //    int i = 0;
-    //    while(raSubframes.at(i) <= subframeIndex){
-    //        accumulationRAO += totalRAOPerSubframe;
-    //    }
-    //    if((accumulationRAO <= raoIndex 
-    //                && (accumulationRAO + totalRAOPerSubframe) >= raoIndex)
-    //            || (accumulationRAO <= raoIndex + (1 / ssbPerRAO) 
-    //                && (accumulationRAO + totalRAOPerSubframe) >= raoIndex + (1 / ssbPerRAO))){
-    //        // current frame and subframe is for this ssb RA
-    //        if(raoIndex + (1 / ssbPerRAO) > (accumulationRAO + totalRAOPerSubframe)){
-    //            // current subframe can't support all of rao for this ssb
-    //            // and last of RAO is mapping to next subframe
-    //            printf("cut last\n");
-    //        }
-    //        if(raoIndex < accumulationRAO){
-    //            // current subframe can't support all of rao for this ssb
-    //            // and beginning of RAO is mapping to previous subframe
-    //            printf("cut beginning\n");
-
-    //        }
-    //    }
-    //    //if(frameIndex >= raStartFrameIndex 
-    //    //        || frameIndex <= raEndFrameIndex){
-    //    //    // current frame index is for this ssb index
-    //    //    int accumulationRAO = (frameIndex - 1) * totalRAOPerFrame;
-    //    //    int i = 0;
-    //    //    while(raSubframes.at(i) >= subframeIndex){
-    //    //        accumulationRAO += totalRAOPerSubframe;
-    //    //    }
-
-    //    //}
-    //    //else{
-    //    //    printf("current frame isn't for RA\n");
-    //    //}
-    //}
-    //else{
-    //    // total need RAO for SSB mapping is less than 1 frame of RAO
-    //    // this implies that for all SSB mapping to RAO once
-    //    // system needs less than 1 frame to accomplish
-    //    // in other words, the total RAO in 1 frame
-    //    // maybe can map SSB more than 1 time
-    //}
-    return false;
 }

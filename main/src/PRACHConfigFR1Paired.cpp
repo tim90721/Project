@@ -1,8 +1,11 @@
 #include "PRACHConfigFR1Paired.h"
 
+// constructor
+// prachConfigIndex: corresponding to TS 38.331 prach-ConfigurationIndex
 PRACHConfigFR1::PRACHConfigFR1(int prachConfigIndex) : PRACHConfig(prachConfigIndex){
 }
 
+// config ra parameters
 void PRACHConfigFR1::configRA(){
     switch(prachConfigIndex){
         case 16:

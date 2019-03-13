@@ -329,6 +329,9 @@ void UE::storeRAOsforRA(const int subframeStartRAO, const int subframeEndRAO){
     }
 }
 
+// transmit msg1 aka preamble
+// ue random select a preamble from availiable resource of current SSB
+// and select a random RAO from availiable resource of current SSB
 void UE::transmitMsg1(){
     const int startPreamble = availiableRAO->getStartNumberofPreamble(beamIndex);
     const int nPreambles = availiableRAO->getNumberofPreambles();
@@ -345,6 +348,7 @@ void UE::transmitMsg1(){
     preambleTransmitted = true;
 }
 
+// transmit Msg3
 void UE::transmitMsg3(){
     Msg3 *msg3 = new Msg3;
     msg3->uplinkResourceIndex = uplinkResourceIndex;
@@ -390,20 +394,24 @@ int UE::getBeamStrength(){
     return this->beamStrength;
 }
 
+// test whether ue has binded to a cell
 bool UE::isBindCell(){
     if(candidateCell)
         return true;
     return false;
 }
 
+// test whether ue has transmitted a preamble
 bool UE::isPreambleTransmit(){
     return preambleTransmitted;
 }
 
+// test whether ue has received a RAR
 bool UE::isRarReceived(){
     return rarReceived;
 }
 
+// test whether ue RA already success 
 bool UE::isRASuccess(){
     return raSuccess;
 }
@@ -417,6 +425,9 @@ void UE::drawUE(QPainter &painter){
             UEPixelSize);
 }
 
+// get stored RAOs
+// typicallly testing use this method
+// other cell may NOT using this method
 vector<int>& UE::getRAOs(){
     return raos;
 }

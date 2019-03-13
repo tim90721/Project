@@ -57,6 +57,12 @@ bool isInArea(int x, int y, int startAngle, int endAngle, double startB, double 
     return false;
 }
 
+// calculate distance between two x, y point
+// x1: first point x
+// y1: first point y
+// x2: second point x
+// y2: second point y
+// return: the distance bewteen two point
 double calculateDistance(int x1, int y1, int x2, int y2){
     return sqrt(pow((x2 - x1), 2) + pow((y2 - y1), 2));
 }
@@ -69,6 +75,9 @@ int XgetY(int x, double B, double C){
     return ((-1.0) * ((double)x + C)) / B;
 }
 
+// get a random number between start and end interval
+// start: the lower bound of random number
+// end: the upper bound of random number
 int getRnd(int start, int end){
     std::uniform_int_distribution<int> distribution(start, end);
     return distribution(gen);
