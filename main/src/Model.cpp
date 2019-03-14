@@ -16,6 +16,7 @@ Model::Model(){
     simulationCounter = 0;
     nBeams = 4;
     FR = 0;
+    prachConfigIndex = 16;
     //UE *ue = new UE(250, 200, 0);
     //UEs.push_back(ue);
 }
@@ -57,9 +58,9 @@ void Model::setMousePressed(bool isPressed){
     if(mousePressed){
         if(countPressedReleased == 1){
             if(cellType == celltype::Macro)
-                tempCell = new MacroCell(mouseX, mouseY, cellIndex++, nBeams, cellType, 16); 
+                tempCell = new MacroCell(mouseX, mouseY, cellIndex++, nBeams, cellType, prachConfigIndex); 
             else
-                tempCell = new FemtoCell(mouseX, mouseY, cellIndex++, nBeams, cellType, 16);
+                tempCell = new FemtoCell(mouseX, mouseY, cellIndex++, nBeams, cellType, prachConfigIndex);
             tempCell->initializeBeams();
         }
         
@@ -242,8 +243,19 @@ void Model::setCellType(const celltype::CellType type){
 // set UE arrival rate
 // arrivalRate: ue arrival rate
 void Model::setArrivalRate(const unsigned int arrivalRate){
-    printf("arrival rate: %lu\n", arrivalRate);
+    printf("arrival rate: %u\n", arrivalRate);
     ueArrivalRate = arrivalRate;
+}
+
+// set prach configuration index
+// s: input from GUI's combobox item text
+void Model::setPrachConfigIndex(string s){
+    cout << s << endl;
+    int spaceIndex = s.find(";");
+    int colonIndex = s.find(":");
+    string sPrachConfigIndex = s.substr(colonIndex + 1, spaceIndex - colonIndex - 1);
+    prachConfigIndex = stoi(sPrachConfigIndex);
+    cout << prachConfigIndex << endl;
 }
 
 // set FR

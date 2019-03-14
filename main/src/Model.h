@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <chrono>
 #include <thread>
+#include <iostream>
 
 #include "Cell.h"
 #include "MacroCell.h"
@@ -36,6 +37,7 @@ class Model : public IPaintSubject{
         void setCellType(const celltype::CellType type);
         void setFR(const unsigned int FR);
         void setArrivalRate(const unsigned int arrivalRate);
+        void setPrachConfigIndex(std::string s);
     private:
         void run(bool isTimesUp);
         void generateRandomUEs();
@@ -46,6 +48,7 @@ class Model : public IPaintSubject{
         int ueArrivalRate;
         int mouseX;
         int mouseY;
+        int prachConfigIndex;
         vector<Cell*> cells;
         vector<UE*> UEs;
         vector<IPaintObservor*> observors;
