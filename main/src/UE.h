@@ -61,6 +61,7 @@ class UE{
         bool rarReceived;
         bool msg3Transmitted;
         bool raSuccess;
+        bool collided;
         bool isTest;
         Cell *candidateCell;
         IPRACHConfig *prachConfig;

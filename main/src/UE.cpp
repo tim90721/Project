@@ -36,6 +36,7 @@ UE::UE(int x, int y, unsigned long id, bool isTest){
     msg3Transmitted = false;
     raSuccess = false;
     this->isTest = isTest;
+    collided = false;
 }
 
 // set ue's point x and y
@@ -197,6 +198,7 @@ void UE::receiveCR(const vector<Msg3*>& CRs, const int cellIndex){
         preambleTransmitted = false;
         rarReceived = false;
         msg3Transmitted = false;
+        collided = true;
     }
 }
 
@@ -419,10 +421,14 @@ bool UE::isRASuccess(){
 // draw ue
 // painter: QPainter
 void UE::drawUE(QPainter &painter){
+    if(collided)
+        painter.setBrush(QBrush(QColor(200, 0, 128, 255), Qt::SolidPattern));
     painter.drawEllipse(x - UEPixelSize / 2, 
             y - UEPixelSize / 2,
             UEPixelSize,
             UEPixelSize);
+    if(collided)
+        painter.setBrush(QBrush(QColor(200, 128, 255, 255), Qt::SolidPattern));
 }
 
 // get stored RAOs
