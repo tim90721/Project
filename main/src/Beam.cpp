@@ -133,7 +133,7 @@ int Beam::getCellIndex(){
 
 // draw beam
 // painter: QPainter for drawing
-void Beam::drawBeam(QPainter &painter){
+void Beam::draw(QPainter &painter){
     painter.drawPie(getX() - lengthBeam / 2, 
             getY() - lengthBeam / 2,
             lengthBeam,
@@ -141,27 +141,3 @@ void Beam::drawBeam(QPainter &painter){
             startAngle * 16,
             spanAngle * 16);
 }
-
-// get this beam's startB with linear equation x + By + C = 0
-// return: coefficient B of start line
-//double Beam::getStartB(){
-//    return this->startB;
-//}
-
-// get this beam's startC with linear equation x + By + C = 0
-// return: coefficient C of start line
-//double Beam::getStartC(){
-//    return this->startC;
-//}
-
-// get this beam's endB with linear equation x + By + C = 0
-// return: coefficient B of end line
-//double Beam::getEndB(){
-//    return this->endB;
-//}
-
-// get this beam's endC with linear equation x + By + C = 0
-// return: coefficient C of end line
-//double Beam::getEndC(){
-//    return this->endC;
-//}

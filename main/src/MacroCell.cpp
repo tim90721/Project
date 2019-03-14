@@ -12,7 +12,7 @@ MacroCell::MacroCell(int x, int y, int cellIndex, int nBeams, celltype::CellType
 
 // Draw Macro Cell
 // painter: QPainter use for painting
-void MacroCell::drawCell(QPainter &painter){
+void MacroCell::draw(QPainter &painter){
     painter.setBrush(QBrush(QColor(0, 0, 0, 255), Qt::SolidPattern));
     painter.drawEllipse(x - cellPixelSize / 2,
             y - cellPixelSize / 2,
@@ -23,7 +23,7 @@ void MacroCell::drawCell(QPainter &painter){
     Beam *beam;
     for(unsigned int i = 0;i < beams.size();i++){
         beam = beams.at(i);
-        beam->drawBeam(painter);
+        beam->draw(painter);
     }
 }
 

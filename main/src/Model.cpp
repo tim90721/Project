@@ -92,15 +92,15 @@ void Model::draw(QPainter &painter){
     UE *ue;
     for(unsigned int i = 0;i < cells.size();i++){
         cell = cells.at(i);
-        cell->drawCell(painter);
+        cell->draw(painter);
     }
     if(countPressedReleased >= 1 && countPressedReleased < 4){
-        tempCell->drawCell(painter);
+        tempCell->draw(painter);
     }
-    painter.setBrush(QBrush(QColor(200, 128, 255, 255), Qt::SolidPattern));
+    //painter.setBrush(QBrush(QColor(200, 128, 255, 255), Qt::SolidPattern));
     for(decltype(UEs.size()) i = 0;i < UEs.size();i++){
         ue = UEs[i];
-        ue->drawUE(painter);
+        ue->draw(painter);
     }
 }
 

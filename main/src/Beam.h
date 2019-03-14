@@ -9,7 +9,7 @@
 
 class Cell;
 
-class Beam{
+class Beam : public IDrawable{
     private:
         int beamIndex;
         double spanAngle;
@@ -19,7 +19,7 @@ class Beam{
         Cell *parent;
     public:
         Beam(Cell *parent, int cellIndex, int beamIndex, int lengthBeam, double spanAngle);
-        void drawBeam(QPainter &painter);
+        void draw(QPainter &painter);
         void setBeamIndex(int beamIndex);
         void setSpanAngle(double spanAngle);
         void setStartAngle(int beamIndex, double spanAngle);

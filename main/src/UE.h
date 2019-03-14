@@ -10,10 +10,11 @@
 #include "includefile.h"
 #include "CommonMath.h"
 #include "random_access.h"
+#include "IDrawable.h"
 
 class Cell;
 
-class UE{
+class UE : public IDrawable{
     public:
         UE(int x, int y, unsigned long id);
         UE(int x, int y, unsigned long id, bool isTest);
@@ -33,7 +34,7 @@ class UE{
         bool isPreambleTransmit();
         bool isRarReceived();
         bool isRASuccess();
-        void drawUE(QPainter &painter);
+        void draw(QPainter &painter);
         std::vector<int>& getRAOs();
     private:
         void checkRA();

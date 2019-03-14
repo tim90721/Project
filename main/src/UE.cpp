@@ -420,15 +420,15 @@ bool UE::isRASuccess(){
 
 // draw ue
 // painter: QPainter
-void UE::drawUE(QPainter &painter){
+void UE::draw(QPainter &painter){
     if(collided)
         painter.setBrush(QBrush(QColor(200, 0, 128, 255), Qt::SolidPattern));
+    else
+        painter.setBrush(QBrush(QColor(200, 128, 255, 255), Qt::SolidPattern));
     painter.drawEllipse(x - UEPixelSize / 2, 
             y - UEPixelSize / 2,
             UEPixelSize,
             UEPixelSize);
-    if(collided)
-        painter.setBrush(QBrush(QColor(200, 128, 255, 255), Qt::SolidPattern));
 }
 
 // get stored RAOs

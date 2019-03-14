@@ -12,7 +12,7 @@ FemtoCell::FemtoCell(int x, int y, int cellIndex, int nBeams, celltype::CellType
 
 // Draw Femto Cell
 // painter: QPainter use for painting
-void FemtoCell::drawCell(QPainter &painter){
+void FemtoCell::draw(QPainter &painter){
     painter.setBrush(QBrush(QColor(0, 0, 0, 255), Qt::SolidPattern));
     painter.drawEllipse(x - cellPixelSize / 2,
             y - cellPixelSize / 2,
@@ -23,7 +23,7 @@ void FemtoCell::drawCell(QPainter &painter){
     Beam *beam;
     for(unsigned int i = 0;i < beams.size();i++){
         beam = beams.at(i);
-        beam->drawBeam(painter);
+        beam->draw(painter);
     }
 }
 

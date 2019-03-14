@@ -10,6 +10,7 @@
 #include "PRACHConfigFR1Paired.h"
 #include "AvailiableRAO.h"
 #include "random_access.h"
+#include "IDrawable.h"
 
 namespace celltype{
     enum CellType{
@@ -21,10 +22,10 @@ namespace celltype{
 class Beam;
 class UE;
 
-class Cell{
+class Cell : public IDrawable{
     public:
         Cell(int x, int y,int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex);
-        virtual void drawCell(QPainter &painter) = 0;
+        virtual void draw(QPainter &painter) = 0;
         void setCellType(celltype::CellType cellType);
         void setX(int x);
         void setY(int y);
