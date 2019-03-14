@@ -57,11 +57,21 @@ bool isInArea(int x, int y, int startAngle, int endAngle, double startB, double 
     return false;
 }
 
+// test first point is in second point cover area 
+// the area is covered from start angle to 
+// (start angle + span angle) and 0 to distance
+// x1: first point of x
+// y1: first point of y
+// x2: second point of x
+// y2: second point of y
+// startAngle: the cover area of second point start angle
+// spanAngle: the cover area of second point cover angle
+// distance: the cover area of second point cover length
 bool isInArea(const int x1, const int y1, const int x2, const int y2, const double startAngle, const double spanAngle, const double distance){
     const double endAngle = spanAngle + startAngle;
     const double angle = atan2(y2 - y1, x1 - x2) * 180 / M_PI;
-    printf("start Angle: %f, endAngle: %f\n", startAngle, endAngle);
-    printf("dif angle: %f\n", angle);
+    //printf("start Angle: %f, endAngle: %f\n", startAngle, endAngle);
+    //printf("dif angle: %f\n", angle);
     if((startAngle <= angle && angle <= endAngle) 
             || (startAngle <= (angle + 360) && (angle + 360) <= endAngle)){
         const double difDistance = calculateDistance(x1, y1, x2, y2);
