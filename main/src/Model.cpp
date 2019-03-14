@@ -250,7 +250,7 @@ void Model::setArrivalRate(const unsigned int arrivalRate){
 // set prach configuration index
 // s: input from GUI's combobox item text
 void Model::setPrachConfigIndex(string s){
-    cout << s << endl;
+    //cout << s << endl;
     int spaceIndex = s.find(";");
     int colonIndex = s.find(":");
     string sPrachConfigIndex = s.substr(colonIndex + 1, spaceIndex - colonIndex - 1);
