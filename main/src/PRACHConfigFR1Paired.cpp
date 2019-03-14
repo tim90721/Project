@@ -41,7 +41,7 @@ void PRACHConfigFR1::configRA(){
             //sizeofRASubframe = 1;
             //nRASubframe = new int [1];
             //nRASubframe[0] = 4;
-            raSubframes.push_back(4);
+            raSubframes.push_back(1);
             prachConfigPeriod = 10;
             x = 1;
             y = 0;
