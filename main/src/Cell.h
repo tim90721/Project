@@ -32,7 +32,6 @@ class Cell{
         void setCellSupportDistance(int supportDistance);
         void setBeamStartAngle(int diffX, int diffY);
         void setCellIndex(int cellIndex);
-        void findCellCoverAreaEquation();
         void detectUE(UE *ue);
         void broadcastSI();
         void deregisterCell(UE *ue);
@@ -78,10 +77,6 @@ class Cell{
         double startAngle;
         double endAngle;
         double beamStartAngle;
-        double startB;
-        double startC;
-        double endB;
-        double endC;
         celltype::CellType cellType;
         vector<Beam*> beams;
         vector<UE*> ues;

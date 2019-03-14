@@ -30,7 +30,7 @@ void FemtoCell::drawCell(QPainter &painter){
 // initialize gNB's beams
 // nBeams: number of beams
 void FemtoCell::initializeBeams(){
-    double spanAngle = cellAngle / nBeams;
+    double spanAngle = (double)cellAngle / (double)nBeams;
     for(int i = 0;i < nBeams;i++){
         Beam *beam = new Beam(this, cellIndex, i, cellSupportDistance, spanAngle);
         beams.push_back(beam); 

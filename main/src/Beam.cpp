@@ -6,7 +6,7 @@
 // beamIndex: beam index
 // lengthBeam: the beam length(strength), corresponding to Cell supportDistance member
 // spanAngle: each beam's area(in form of angle) in a cell
-Beam::Beam(Cell *parent, int cellIndex, int beamIndex, int lengthBeam, int spanAngle){
+Beam::Beam(Cell *parent, int cellIndex, int beamIndex, int lengthBeam, double spanAngle){
     this->parent = parent;
     //setXY(x, y);
     setCellIndex(cellIndex);
@@ -31,7 +31,7 @@ void Beam::setLengthBeam(int lengthBeam){
 // set span angle
 // the area cover by this beam, in form of angle
 // spanAngle: the angle covered by this beam
-void Beam::setSpanAngle(int spanAngle){
+void Beam::setSpanAngle(double spanAngle){
     this->spanAngle = spanAngle;
 }
 
@@ -39,7 +39,7 @@ void Beam::setSpanAngle(int spanAngle){
 // beam will draw from (start angle) to ((start angle) + (span angle))
 // beamIndex: the index of this beam
 // spanAngle: the angle covered by this beam
-void Beam::setStartAngle(int beamIndex, int spanAngle){
+void Beam::setStartAngle(int beamIndex, double spanAngle){
     this->startAngle = (beamIndex) * spanAngle;
 }
 
@@ -59,35 +59,18 @@ void Beam::setCellIndex(int cellIndex){
     this->cellIndex = cellIndex;
 }
 
-// find beam cover area equation
-// B, C is the coefficient of linear function X + bY + C = 0
-// startB, startC is the coefficient of beam start angle equation
-// endB, endC is the coefficient of beam end angle equation
-void Beam::findBeamCoverAreaEquation(){
-    //startB = -1.0 * tan(startAngle);
-    //startC = -1.0 * ((double)this->x + startB * (double)this->y);
-    //endB = -1.0 * tan(startAngle + spanAngle);
-    //endC = -1.0 * ((double)this->x + endB * (double)this->y);
-    //printf("startAngle: %f\n", startAngle);
-    startB = -1.0 * tan((-1.0) * (startAngle - 90) * (M_PI / 180));
-    startC = 0;
-    endB = -1.0 * tan((-1.0) * (startAngle + spanAngle - 90) * (M_PI / 180));
-    endC = 0;
-    //printf("%3.2f %3.2f %3.2f %3.2f\n", floor(startB), floor(startC), floor(endB), floor(endC));
-    //printf("%3.2f %3.2f\n", floor(startAngle), floor(startAngle + spanAngle));
-    //printf("%3d\n", getEndAngle());
-}
-
 // detect UE is in this beam's area
 void Beam::detectUE(UE *ue, double power){
-    if(isInArea(ue->getX() - getX(),
-                getY() - ue->getY(),
-                this->startAngle,
-                getEndAngle(),
-                this->startB,
-                this->startC,
-                this->endB,
-                this->endC)){
+    printf("cell %d beam %d startAngle: %f, spanAngle: %f\n",
+            cellIndex,
+            beamIndex,
+            startAngle,
+            spanAngle);
+    if(isInArea(ue->getX(), ue->getY(),
+                getX(), getY(),
+                startAngle,
+                spanAngle,
+                lengthBeam / 2)){
         printf("UE id %lu is in cell index %d beam index %d\n",
                 ue->getID(),
                 parent->getCellIndex(),
@@ -117,7 +100,7 @@ int Beam::getBeamIndex(){
 // get this beam's span angle
 // the beam will cover the area with this span angle
 // return: this beam's span angle
-int Beam::getSpanAngle(){
+double Beam::getSpanAngle(){
     return this->spanAngle;
 }
 
@@ -161,24 +144,24 @@ void Beam::drawBeam(QPainter &painter){
 
 // get this beam's startB with linear equation x + By + C = 0
 // return: coefficient B of start line
-double Beam::getStartB(){
-    return this->startB;
-}
+//double Beam::getStartB(){
+//    return this->startB;
+//}
 
 // get this beam's startC with linear equation x + By + C = 0
 // return: coefficient C of start line
-double Beam::getStartC(){
-    return this->startC;
-}
+//double Beam::getStartC(){
+//    return this->startC;
+//}
 
 // get this beam's endB with linear equation x + By + C = 0
 // return: coefficient B of end line
-double Beam::getEndB(){
-    return this->endB;
-}
+//double Beam::getEndB(){
+//    return this->endB;
+//}
 
 // get this beam's endC with linear equation x + By + C = 0
 // return: coefficient C of end line
-double Beam::getEndC(){
-    return this->endC;
-}
+//double Beam::getEndC(){
+//    return this->endC;
+//}

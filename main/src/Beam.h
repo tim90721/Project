@@ -12,39 +12,28 @@ class Cell;
 class Beam{
     private:
         int beamIndex;
-        int spanAngle;
-        //int x;
-        //int y;
+        double spanAngle;
         int lengthBeam;
         int cellIndex;
         double startAngle;
-        double startB;
-        double startC;
-        double endB;
-        double endC;
         Cell *parent;
     public:
-        Beam(Cell *parent, int cellIndex, int beamIndex, int lengthBeam, int spanAngle);
+        Beam(Cell *parent, int cellIndex, int beamIndex, int lengthBeam, double spanAngle);
         void drawBeam(QPainter &painter);
         void setBeamIndex(int beamIndex);
-        void setSpanAngle(int spanAngle);
-        void setStartAngle(int beamIndex, int spanAngle);
+        void setSpanAngle(double spanAngle);
+        void setStartAngle(int beamIndex, double spanAngle);
         void setStartAngle(double startAngle);
         void setLengthBeam(int lengthBeam);
         void setCellIndex(int cellIndex);
-        void findBeamCoverAreaEquation();
         void detectUE(UE *ue, double power);
         int getX();
         int getY();
         int getBeamIndex();
-        int getSpanAngle();
+        double getSpanAngle();
         double getStartAngle();
         int getEndAngle();
         int getLengthBeam();
         int getCellIndex();
-        double getStartB();
-        double getStartC();
-        double getEndB();
-        double getEndC();
 };
 #endif

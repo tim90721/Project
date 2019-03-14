@@ -16,6 +16,8 @@ Model::Model(){
     simulationCounter = 0;
     nBeams = 4;
     FR = 0;
+    //UE *ue = new UE(250, 200, 0);
+    //UEs.push_back(ue);
 }
 
 // Set mouse XY position
@@ -55,9 +57,9 @@ void Model::setMousePressed(bool isPressed){
     if(mousePressed){
         if(countPressedReleased == 1){
             if(cellType == celltype::Macro)
-                tempCell = new MacroCell(mouseX, mouseY, cellIndex++, nBeams, cellType, 106); 
+                tempCell = new MacroCell(mouseX, mouseY, cellIndex++, nBeams, cellType, 16); 
             else
-                tempCell = new FemtoCell(mouseX, mouseY, cellIndex++, nBeams, cellType, 106);
+                tempCell = new FemtoCell(mouseX, mouseY, cellIndex++, nBeams, cellType, 16);
             tempCell->initializeBeams();
         }
         
@@ -70,7 +72,7 @@ void Model::setMousePressed(bool isPressed){
         // mouse release second time
         tempCell->updateBeamsAngle(this->mouseX - tempCell->getX(),
                 tempCell->getY() - this->mouseY);
-        tempCell->findCellCoverAreaEquation();
+        //tempCell->findCellCoverAreaEquation();
         countPressedReleased = 0;
         cells.push_back(tempCell);
         tempCell = NULL;
@@ -210,6 +212,9 @@ void Model::startSimulation(){
             printf("remaining UEs: %d\n", remainingUEs);
         }
     }
+    if(UEs.size() > 0){
+        traverseUEs();
+    }
     printf("simulation: %d complete\n", simulationCounter++);
 }
 
@@ -255,7 +260,6 @@ void Model::setFR(const unsigned int FR){
 // isTimesUp: when simulationTime is 0, set this value to true
 // for proceeding remaining UEs RA
 void Model::run(bool isTimesUp){
-    //for(int i = 0;i < 1;i++){
     printf("=================info=================\n");
     if(!isTimesUp)
         generateRandomUEs();
@@ -279,11 +283,9 @@ void Model::run(bool isTimesUp){
 // first random select a cell
 // second random select an angle
 // third random select a distance from the cell centor
-// FIXME////////////////////////FIXME
 // notice that random generated angle has a 5 degree tolerance
 // and random generated distance has a 10 tolerance
 // for decreasing the probability of cell cannot detect ue
-// FIXME////////////////////////FIXME
 // then calculate random x, y point based on distance and angle
 void Model::generateRandomUEs(){
     Cell *cell;

@@ -57,6 +57,20 @@ bool isInArea(int x, int y, int startAngle, int endAngle, double startB, double 
     return false;
 }
 
+bool isInArea(const int x1, const int y1, const int x2, const int y2, const double startAngle, const double spanAngle, const double distance){
+    const double endAngle = spanAngle + startAngle;
+    const double angle = atan2(y2 - y1, x1 - x2) * 180 / M_PI;
+    printf("start Angle: %f, endAngle: %f\n", startAngle, endAngle);
+    printf("dif angle: %f\n", angle);
+    if((startAngle <= angle && angle <= endAngle) 
+            || (startAngle <= (angle + 360) && (angle + 360) <= endAngle)){
+        const double difDistance = calculateDistance(x1, y1, x2, y2);
+        if(distance >= difDistance)
+            return true;
+    }
+    return false;
+}
+
 // calculate distance between two x, y point
 // x1: first point x
 // y1: first point y

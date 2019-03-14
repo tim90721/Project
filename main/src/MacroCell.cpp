@@ -25,18 +25,12 @@ void MacroCell::drawCell(QPainter &painter){
         beam = beams.at(i);
         beam->drawBeam(painter);
     }
-    //int y1 = XgetY(0, this->startB, this->startC);
-    //int y2 = XgetY(150, this->startB, this->startC);
-    //painter.drawLine(this->x, this->y - y1, this->x + 150, this->y - y2);
-    //y1 = XgetY(0, this->endB, this->endC);
-    //y2 = XgetY(150, this->endB, this->endC);
-    //painter.drawLine(this->x, this->y - y1, this->x + 150, this->y - y2);
 }
 
 // initialize gNB's beams
 // nBeams: number of beams
 void MacroCell::initializeBeams(){
-    double spanAngle = cellAngle / nBeams;
+    double spanAngle = (double)cellAngle / (double)nBeams;
     for(int i = 0;i < nBeams;i++){
         Beam *beam = new Beam(this, cellIndex, i, cellSupportDistance, spanAngle);
         beams.push_back(beam); 
@@ -55,4 +49,5 @@ void MacroCell::updateBeamsAngle(int diffX, int diffY){
         beam = beams.at(i);
         beam->setStartAngle(beamStartAngle + i * spanAngle);
     } 
+    startAngle = beams[0]->getStartAngle();
 }

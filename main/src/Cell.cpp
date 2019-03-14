@@ -49,25 +49,6 @@ void Cell::setCellIndex(int cellIndex){
     this->cellIndex = cellIndex;
 }
 
-// find cell cover area equation
-void Cell::findCellCoverAreaEquation(){
-    Beam *beam;
-    for(unsigned int i = 0;i < beams.size();i++){
-        beam = beams.at(i);
-        beam->findBeamCoverAreaEquation();
-    }
-    beam = beams.at(0);
-    this->startB = beam->getStartB();
-    this->startC = beam->getStartC();
-    this->startAngle = beam->getStartAngle();
-    //printf("start angle: %lf\n", startAngle);
-    beam = beams.at(beams.size() - 1);
-    this->endB = beam->getEndB();
-    this->endC = beam->getEndC();
-    this->endAngle = beam->getEndAngle();
-    //printf("end angle: %lf\n", endAngle);
-}
-
 // detect ue is this cell's area
 // if ue is in this cell, add this ue to this cell's ue vector
 // ue: the ue to be detected
@@ -76,19 +57,17 @@ void Cell::detectUE(UE *ue){
     // detect ue is in cell span angle area
     if(checkUEisExist(ue))
         return;
-    double distance = calculateDistance(ue->getX(),
-            ue->getY(),
-            this->x,
-            this->y);
-    if(distance <= (this->cellSupportDistance / 2)
-            && isInArea(ue->getX() - this->x, 
-                this->y - ue->getY(),
-                this->startAngle,
-                this->endAngle,
-                this->startB,
-                this->startC,
-                this->endB,
-                this->endC)){
+    double distance = calculateDistance(ue->getX(), ue->getY(),
+            getX(), getY());
+    printf("cell %d startAngle: %f, spanAngle: %f\n",
+            cellIndex,
+            startAngle,
+            cellAngle);
+    if(isInArea(ue->getX(), ue->getY(),
+                getX(), getY(),
+                startAngle,
+                cellAngle,
+                cellSupportDistance / 2)){
         Beam *beam;
         for(unsigned int i = 0;i < beams.size();i++){
             beam = beams.at(i);
