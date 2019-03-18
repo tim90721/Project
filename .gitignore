@@ -1,5 +1,4 @@
 *.swp
 project_test/src/*
 project_test/build_test/*
-main/result/*
 main/build/*
