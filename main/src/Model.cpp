@@ -17,6 +17,10 @@ Model::Model(){
     nBeams = 4;
     FR = 0;
     prachConfigIndex = 16;
+    outputFolderName = "result/";
+    outputFileExtension = ".csv";
+    outputFileUE = "UE";
+    outputFileCell = "Cell";
     //UE *ue = new UE(250, 200, 0);
     //UEs.push_back(ue);
 }
@@ -224,6 +228,7 @@ void Model::startSimulation(){
     }
     printf("simulation: %d complete\n", simulationCounter++);
     closeOutFiles();
+    plotResult();
 }
 
 // set the simulation time
@@ -381,17 +386,13 @@ void Model::recordCellsInfo(){
 
 // initialize output files
 void Model::initializeOutFiles(){
-    string outputFolderName = "result/";
-    string outputFileExtension = ".csv";
-    string outputFileUE = "UE";
-    string outputFileCell = "Cell";
     time_t t = time(nullptr);
     tm tm = *localtime(&t);
     stringstream ss;
     ss << put_time(&tm, "%Y-%m-%d-%H%M%S");
     string curTime = ss.str();
-    string filenameUE = outputFolderName + curTime + "_" + outputFileUE + outputFileExtension;
-    string filenameCell = outputFolderName + curTime + "_" + outputFileCell + outputFileExtension;
+    filenameUE = outputFolderName + curTime + "_" + outputFileUE + outputFileExtension;
+    filenameCell = outputFolderName + curTime + "_" + outputFileCell + outputFileExtension;
     outFileUE = ofstream(filenameUE);
     outFileUE << "\"UE ID\", \"Cell ID\", \"Total Beams\", \"Beam Index\", \"SSB per RAO\", \"msg1-FDM\", \"Active Frame\", \"Active Subframe\", \"RA Frame\", \"RA Subframe\", \"Departed Frame\", \"Departed Subframe\", \"Selected RAO Undex\", \"Selected Preamble\", \"Collided\"" << endl;
     outFileCell = ofstream(filenameCell);
@@ -402,4 +403,10 @@ void Model::initializeOutFiles(){
 void Model::closeOutFiles(){
     outFileUE.close();
     outFileCell.close();
+}
+
+// plot result done recently
+void Model::plotResult(){
+    string command = "python3 ./plotcode/plot_result.py " + filenameUE + " " + filenameCell;
+    system(command.c_str());
 }

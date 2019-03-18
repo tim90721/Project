@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <ctime>
 #include <sstream>
+#include <stdlib.h>
 
 #include "Cell.h"
 #include "MacroCell.h"
@@ -50,6 +51,7 @@ class Model : public IPaintSubject{
         void recordCellsInfo();
         void initializeOutFiles();
         void closeOutFiles();
+        void plotResult();
 
         unsigned long ueIndex;
         int remainingUEs;
@@ -69,6 +71,12 @@ class Model : public IPaintSubject{
         int simulationTime;
         int simulationCounter;
         int nBeams;
+        std::string outputFolderName;
+        std::string outputFileExtension;
+        std::string outputFileUE;
+        std::string outputFileCell;
+        std::string filenameUE;
+        std::string filenameCell;
         unsigned int FR;
         ofstream outFileUE;
         ofstream outFileCell;

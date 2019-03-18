@@ -6,9 +6,12 @@
 // y: gNB y position
 // cellType: gNB CellType, Macro or Femto //FIXME maybe reduntant
 Cell::Cell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex) : x(x), y(y), cellIndex(cellIndex), nBeams(nBeams), cellPixelSize(10), subframeIndex(0), frameIndex(0), raResponseWindow(1), cellType(cellType){
+    double ssbperRAO = 1;
+    int msg1FDM = 8;
+    int nPreambles = 64;
     prachConfig = new PRACHConfigFR1(prachConfigIndex);
     prachConfig->configRA();
-    availiableRAO = new AvailiableRAO(nBeams, 1, 8, 64, 160, prachConfig);
+    availiableRAO = new AvailiableRAO(nBeams, ssbperRAO, msg1FDM, nPreambles, 160, prachConfig);
     availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
     rars = vector<vector<RAR*>>(10);
 }
