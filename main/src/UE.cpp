@@ -37,6 +37,8 @@ UE::UE(int x, int y, unsigned long id, bool isTest){
     raSuccess = false;
     this->isTest = isTest;
     collided = false;
+    raFrame = -1;
+    raSubframe = -1;
 }
 
 // set ue's point x and y
@@ -128,17 +130,15 @@ void UE::doRA(){
             else
                 printf("testing\n");
         }
-        else{
+        else
             printf("current subframe is not for UE %lu RA\n", id);
-        }
     }
     else if (preambleTransmitted && rarReceived && !msg3Transmitted){
         // if preamble is transmitted and rar received
         transmitMsg3();
     }
-    else if(preambleTransmitted && rarReceived && msg3Transmitted && raSuccess){
+    else if(preambleTransmitted && rarReceived && msg3Transmitted && raSuccess)
         printf("RA already success, wait for remove from simulation\n");
-    }
     else{
         printf("%d, %d, %d\n", preambleTransmitted, msg3Transmitted, raSuccess);
         printf("something wrong!!!\n");
@@ -190,6 +190,8 @@ void UE::receiveCR(const vector<Msg3*>& CRs, const int cellIndex){
     if(tc_rnti == CRs[index]->tc_rnti
             && id == CRs[index]->ueIndex){
         printf("RA success!!!\n");
+        departedFrame = candidateCell->getFrameIndex();
+        departedSubframe = candidateCell->getSubframeIndex();
         raSuccess = true;
     }
     else{
@@ -199,7 +201,17 @@ void UE::receiveCR(const vector<Msg3*>& CRs, const int cellIndex){
         rarReceived = false;
         msg3Transmitted = false;
         collided = true;
+        raFrame = -1;
+        raSubframe = -1;
     }
+}
+
+// set active frame index and subframe index
+// frameIndex: active frame index
+// subframeIndex: active subframe index
+void UE::setActiveTime(const int frameIndex, const int subframeIndex){
+    activeFrame = frameIndex;
+    activeSubframe = subframeIndex;
 }
 
 // check current timing can do RA or not
@@ -337,6 +349,10 @@ void UE::storeRAOsforRA(const int subframeStartRAO, const int subframeEndRAO){
 void UE::transmitMsg1(){
     const int startPreamble = availiableRAO->getStartNumberofPreamble(beamIndex);
     const int nPreambles = availiableRAO->getNumberofPreambles();
+    raFrame = candidateCell->getFrameIndex();
+    raSubframe = candidateCell->getSubframeIndex();
+    raSSBPerRAO = candidateCell->getSSBPerRAO();
+    raMsg1FDM = candidateCell->getMsg1FDM();
     printf("start preambe number: %d, number of preamble: %d\n", 
             startPreamble, 
             nPreambles);
@@ -384,6 +400,66 @@ int UE::getBeamIndex(){
     return this->beamIndex;
 }
 
+// get ue active frame index
+// return: ue active frame index
+int UE::getActiveFrame(){
+    return activeFrame;
+}
+
+// get ue active subframe index
+// return: ue active subframe index
+int UE::getActiveSubframe(){
+    return activeSubframe;
+}
+
+// get ue departed frame index
+// return: ue departed frame index
+int UE::getDepartedFrame(){
+    return departedFrame;
+}
+
+// get frame that ue perform RA
+// return: ue perform RA frame
+int UE::getRAFrame(){
+    return raFrame;
+}
+
+// get subframe that ue perform RA
+// return: ue perform RA subframe
+int UE::getRASubframe(){
+    return raSubframe;
+}
+
+// get msg1-FDM when ue perform RA
+// return: msg1-FDM when ue perform RA
+int UE::getRAMsg1FDM(){
+    return raMsg1FDM;
+}
+
+// get ue selected preamble index
+// return: ue selected preamble index
+int UE::getSelectPreambleIndex(){
+    return selectPreambleIndex;
+}
+
+// get ue selected rao index
+// return: ue selected rao index
+int UE::getSelectRAOIndex(){
+    return raos[selectRAOIndex];
+}
+
+// get ssb-perRAO when ue perform RA
+// return: ssb-perRAO when ue perform RA
+double UE::getRASSBPerRAO(){
+    return raSSBPerRAO;
+}
+
+// get ue departed subframe index
+// return: ue departed subframe index
+int UE::getDepartedSubframe(){
+    return departedSubframe;
+}
+
 // get ue's best cell index
 // return: ue's best cell index
 int UE::getCellIndex(){
@@ -416,6 +492,11 @@ bool UE::isRarReceived(){
 // test whether ue RA already success 
 bool UE::isRASuccess(){
     return raSuccess;
+}
+
+// test whether ue has been collided with other ue
+bool UE::isCollided(){
+    return collided;
 }
 
 // draw ue

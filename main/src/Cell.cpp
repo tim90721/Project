@@ -345,8 +345,16 @@ int Cell::getMsg1FDM(){
     return availiableRAO->getMsg1FDM();
 }
 
+// get ra-ResponseWindow
+// return: ra-ResponseWindow
 int Cell::getRaResponseWindow(){
     return raResponseWindow;
+}
+
+// get prach-ConfigurationIndex
+// return: prach-ConfigurationIndex
+int Cell::getPrachConfigIndex(){
+    return prachConfig->getPrachConfigIndex();
 }
 
 // get cell start angle

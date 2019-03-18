@@ -57,6 +57,7 @@ class Cell : public IDrawable{
         int getFrameIndex();
         int getMsg1FDM();
         int getRaResponseWindow();
+        int getPrachConfigIndex();
         double getBeamStartAngle();
         double getSSBPerRAO();
         double getCellSpanAngle();

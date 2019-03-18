@@ -131,6 +131,7 @@ void Model::traverseUEs(){
         ue = UEs.at(i);
         //printf("ues size: %lu\n", UEs.size());
         if(ue->isRASuccess()){
+            recordUELatency(ue);
             UEs.erase(UEs.begin() + i);
             delete ue;
             i--;
@@ -188,6 +189,11 @@ void Model::transmitUL(){
 // finally, if there are UEs remain after simulationTime,
 // simulation will then proceed until all UEs success
 void Model::startSimulation(){
+    initializeOutFiles();
+    if(!outFileUE){
+        printf("ue output file create failed!\n");
+        exit(1);
+    }
     ueIndex = 0;
     remainingUEs = 0;
     bool isTimesUp = false;
@@ -217,6 +223,7 @@ void Model::startSimulation(){
         traverseUEs();
     }
     printf("simulation: %d complete\n", simulationCounter++);
+    closeOutFiles();
 }
 
 // set the simulation time
@@ -273,6 +280,7 @@ void Model::setFR(const unsigned int FR){
 // for proceeding remaining UEs RA
 void Model::run(bool isTimesUp){
     printf("=================info=================\n");
+    recordCellsInfo();
     if(!isTimesUp)
         generateRandomUEs();
     printf("frame: %d\nsubframe: %d\n", 
@@ -324,7 +332,74 @@ void Model::generateRandomUEs(){
         UE *ue = new UE(cell->getX() + rndX,
                 cell->getY() - rndY,
                 ueIndex++);
+        ue->setActiveTime(cell->getFrameIndex(), cell->getSubframeIndex());
         UEs.push_back(ue);
     }
 }
 
+// record ue active and departed frame and subframe index to a file
+void Model::recordUELatency(UE *ue){
+    int cellIndex = ue->getCellIndex();
+    auto it = cells.begin();
+    for(it;it != cells.end();it++)
+        if((*it)->getCellIndex() == cellIndex)
+            break;
+    outFileUE << ue->getID() << ", " 
+        << ue->getCellIndex() << ", " 
+        << (*it)->getnBeams() << ", "
+        << ue->getBeamIndex() << ", "
+        << ue->getRASSBPerRAO() << ", "
+        << ue->getRAMsg1FDM() << ", "
+        << ue->getActiveFrame() << ", " 
+        << ue->getActiveSubframe() << ", " 
+        << ue->getRAFrame() << ", "
+        << ue->getRASubframe() << ", "
+        << ue->getDepartedFrame() << ", " 
+        << ue->getDepartedSubframe() << ", "
+        << ue->getSelectRAOIndex() << ", "
+        << ue->getSelectPreambleIndex() << ", "
+        << ue->isCollided() << endl;
+}
+
+// record each cells information every 160ms
+void Model::recordCellsInfo(){
+    auto it = cells.begin();
+    const int frame = (*it)->getFrameIndex();
+    const int subframe = (*it)->getSubframeIndex();
+    if((frame * 10 + subframe) % 16 != 0)
+        return;
+    for(;it != cells.end();it++){
+        outFileCell << (*it)->getCellIndex() << ", "
+            << (*it)->getnBeams() << ", "
+            << (*it)->getFrameIndex() << ", "
+            << (*it)->getSubframeIndex() << ", "
+            << (*it)->getSSBPerRAO() << ", "
+            << (*it)->getMsg1FDM() << ", "
+            << (*it)->getPrachConfigIndex() << endl;
+    }
+}
+
+// initialize output files
+void Model::initializeOutFiles(){
+    string outputFolderName = "result/";
+    string outputFileExtension = ".csv";
+    string outputFileUE = "UE";
+    string outputFileCell = "Cell";
+    time_t t = time(nullptr);
+    tm tm = *localtime(&t);
+    stringstream ss;
+    ss << put_time(&tm, "%Y-%m-%d-%H%M%S");
+    string curTime = ss.str();
+    string filenameUE = outputFolderName + curTime + "_" + outputFileUE + outputFileExtension;
+    string filenameCell = outputFolderName + curTime + "_" + outputFileCell + outputFileExtension;
+    outFileUE = ofstream(filenameUE);
+    outFileUE << "\"UE ID\", \"Cell ID\", \"Total Beams\", \"Beam Index\", \"SSB per RAO\", \"msg1-FDM\", \"Active Frame\", \"Active Subframe\", \"RA Frame\", \"RA Subframe\", \"Departed Frame\", \"Departed Subframe\", \"Selected RAO Undex\", \"Selected Preamble\", \"Collided\"" << endl;
+    outFileCell = ofstream(filenameCell);
+    outFileCell << "\"Cell ID\", \"Total Beams\", \"Current Frame\", \"Current Subframe\", \"SSB per RAO\", \"msg1-FDM\", \"prach-ConfigurationIndex\"" << endl;
+}
+
+// close output files
+void Model::closeOutFiles(){
+    outFileUE.close();
+    outFileCell.close();
+}

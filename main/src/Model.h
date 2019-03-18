@@ -7,6 +7,11 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip>
+#include <ctime>
+#include <sstream>
 
 #include "Cell.h"
 #include "MacroCell.h"
@@ -41,6 +46,10 @@ class Model : public IPaintSubject{
     private:
         void run(bool isTimesUp);
         void generateRandomUEs();
+        void recordUELatency(UE *ue);
+        void recordCellsInfo();
+        void initializeOutFiles();
+        void closeOutFiles();
 
         unsigned long ueIndex;
         int remainingUEs;
@@ -61,6 +70,8 @@ class Model : public IPaintSubject{
         int simulationCounter;
         int nBeams;
         unsigned int FR;
+        ofstream outFileUE;
+        ofstream outFileCell;
 };
         
 #endif
