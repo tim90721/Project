@@ -74,6 +74,8 @@ class UE : public IDrawable{
         int activeSubframe;
         int raFrame;
         int raSubframe;
+        int msg3Frame;
+        int msg3Subframe;
         int departedFrame;
         int departedSubframe;
         double raSSBPerRAO;

@@ -39,6 +39,8 @@ UE::UE(int x, int y, unsigned long id, bool isTest){
     collided = false;
     raFrame = -1;
     raSubframe = -1;
+    msg3Frame = -1;
+    msg3Subframe = -1;
 }
 
 // set ue's point x and y
@@ -152,7 +154,7 @@ void UE::receiveRAR(const vector<RAR*>& rars, const int cellIndex){
     printf("rar cell index: %d, select cell index: %d\n",
             cellIndex, candidateCell->getCellIndex());
     if(cellIndex != candidateCell->getCellIndex() 
-            || (!preambleTransmitted || msg3Transmitted))
+            || (!preambleTransmitted || rarReceived || msg3Transmitted))
         return;
     printf("UE %lu receiving RAR\n", id);
     int index = searchRAR(rars, raos[selectRAOIndex], selectPreambleIndex);
@@ -166,6 +168,12 @@ void UE::receiveRAR(const vector<RAR*>& rars, const int cellIndex){
     uplinkResourceIndex = rars[index]->uplinkResourceIndex;
     tc_rnti = rars[index]->tc_rnti;
     rarReceived = true;
+    msg3Frame = candidateCell->getFrameIndex();
+    msg3Subframe = candidateCell->getSubframeIndex() + 1;
+    if(msg3Subframe >= 10){
+        msg3Frame++;
+        msg3Subframe = 0;
+    }
     printf("receive complete\n");
 }
 
@@ -203,6 +211,8 @@ void UE::receiveCR(const vector<Msg3*>& CRs, const int cellIndex){
         collided = true;
         raFrame = -1;
         raSubframe = -1;
+        msg3Frame = -1;
+        msg3Subframe = -1;
     }
 }
 
@@ -368,6 +378,14 @@ void UE::transmitMsg1(){
 
 // transmit Msg3
 void UE::transmitMsg3(){
+    const int frame = candidateCell->getFrameIndex();
+    const int subframe = candidateCell->getSubframeIndex();
+    if(frame != msg3Frame || subframe != msg3Subframe){
+        printf("current frame %d subframe %d can not transmit msg3\n",
+                frame,
+                subframe);
+        return;
+    }
     Msg3 *msg3 = new Msg3;
     msg3->uplinkResourceIndex = uplinkResourceIndex;
     msg3->tc_rnti = tc_rnti;
