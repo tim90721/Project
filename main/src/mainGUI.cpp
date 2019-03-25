@@ -70,42 +70,6 @@ void MainGUI::initialRadioButton(){
     layoutBeams->addWidget(rBtn64Beams);
     groupBeams = new QGroupBox(QString::fromStdString(sNumberOfBeams), this);
     groupBeams->setLayout(layoutBeams);
-
-    // Preamble format setting
-    //rBtnFormat0 = new QRadioButton(QString::fromStdString(sFormat0), this);
-    //rBtnFormat1 = new QRadioButton(QString::fromStdString(sFormat1), this);
-    //rBtnFormat2 = new QRadioButton(QString::fromStdString(sFormat2), this);
-    //rBtnFormat3 = new QRadioButton(QString::fromStdString(sFormat3), this);
-    //rBtnFormatA1 = new QRadioButton(QString::fromStdString(sFormatA1), this);
-    //rBtnFormatA2 = new QRadioButton(QString::fromStdString(sFormatA2), this);
-    //rBtnFormatA3 = new QRadioButton(QString::fromStdString(sFormatA3), this);
-    //rBtnFormatB1 = new QRadioButton(QString::fromStdString(sFormatB1), this);
-    //rBtnFormatB2 = new QRadioButton(QString::fromStdString(sFormatB2), this);
-    //rBtnFormatB3 = new QRadioButton(QString::fromStdString(sFormatB3), this);
-    //rBtnFormatB4 = new QRadioButton(QString::fromStdString(sFormatB4), this);
-    //rBtnFormatC0 = new QRadioButton(QString::fromStdString(sFormatC0), this);
-    //rBtnFormatC2 = new QRadioButton(QString::fromStdString(sFormatC2), this);
-    //rBtnFormat0->setChecked(true);
-    //layoutPreambleFormat = new QHBoxLayout;
-    //layoutPreambleFormatLeft = new QVBoxLayout;
-    //layoutPreambleFormatRight = new QVBoxLayout;
-    //layoutPreambleFormatLeft->addWidget(rBtnFormat0);
-    //layoutPreambleFormatLeft->addWidget(rBtnFormat1);
-    //layoutPreambleFormatLeft->addWidget(rBtnFormat2);
-    //layoutPreambleFormatLeft->addWidget(rBtnFormat3);
-    //layoutPreambleFormatLeft->addWidget(rBtnFormatA1);
-    //layoutPreambleFormatLeft->addWidget(rBtnFormatA2);
-    //layoutPreambleFormatLeft->addWidget(rBtnFormatA3);
-    //layoutPreambleFormatRight->addWidget(rBtnFormatB1);
-    //layoutPreambleFormatRight->addWidget(rBtnFormatB2);
-    //layoutPreambleFormatRight->addWidget(rBtnFormatB3);
-    //layoutPreambleFormatRight->addWidget(rBtnFormatB4);
-    //layoutPreambleFormatRight->addWidget(rBtnFormatC0);
-    //layoutPreambleFormatRight->addWidget(rBtnFormatC2);
-    //layoutPreambleFormat->addLayout(layoutPreambleFormatLeft);
-    //layoutPreambleFormat->addLayout(layoutPreambleFormatRight);
-    //groupPreambleFormat = new QGroupBox(QString::fromStdString(sPreambleFormat), this);
-    //groupPreambleFormat->setLayout(layoutPreambleFormat);
 }
 
 // configuration ArrivalRate Area
@@ -280,4 +244,39 @@ void MainGUI::handleFR2RadBtnClick(){
 // handle prach configuration index list widget select row change event
 void MainGUI::handleListPrachIndexChange(int selectedRow){
     model->setPrachConfigIndex(listPrachConfig->item(selectedRow)->text().toStdString());
+}
+
+// destructor
+MainGUI::~MainGUI(){
+    delete model;
+    delete layoutMain;
+    delete layoutArrivalRate;
+    delete layoutSimulationTime;
+    delete layoutSystem;
+    delete layoutSetting;
+    delete layoutgNBType;
+    delete layoutFR;
+    delete layoutBeams;
+    delete labelArrivalRate;
+    delete labelSimulationTime;
+    delete labelUnitArrivalRate;
+    delete labelUnitSimulationTime;
+    delete btnStart;
+    delete btnSaveConfig;
+    delete btnLoadConfig;
+    delete rBtnMacrogNB;
+    delete rBtnFemtogNB;
+    delete rBtnFR1;
+    delete rBtnFR2;
+    delete rBtn4Beams;
+    delete rBtn8Beams;
+    delete rBtn64Beams;
+    delete listPrachConfig;
+    delete groupgNBType;
+    delete groupFR;
+    delete groupBeams;
+    delete lEditArrivalRate;
+    delete lEditSimulationTime;
+    delete widgetSetting;
+    delete canvas;
 }

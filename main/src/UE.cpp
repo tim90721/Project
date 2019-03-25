@@ -536,3 +536,8 @@ void UE::draw(QPainter &painter){
 vector<int>& UE::getRAOs(){
     return raos;
 }
+
+// destructor
+UE::~UE(){
+    printf("ue deleted\n");
+}

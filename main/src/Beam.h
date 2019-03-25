@@ -35,5 +35,6 @@ class Beam : public IDrawable{
         int getEndAngle();
         int getLengthBeam();
         int getCellIndex();
+        ~Beam();
 };
 #endif

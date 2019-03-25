@@ -141,3 +141,8 @@ void Beam::draw(QPainter &painter){
             startAngle * 16,
             spanAngle * 16);
 }
+
+// destructor
+Beam::~Beam(){
+    printf("beam destructor\n");
+}

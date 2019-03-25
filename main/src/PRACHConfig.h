@@ -8,8 +8,6 @@ class PRACHConfig : public IPRACHConfig{
         int prachConfigIndex;
         int nPRACHSlot;
         int nTimeDomainRAOPerPrachSlot;
-        //int sizeofRASubframe;
-        //int *nRASubframe;
         int prachConfigPeriod;
         int x;
         int y;
@@ -29,5 +27,6 @@ class PRACHConfig : public IPRACHConfig{
         int getNumberofTimeDomainRAO();
         int getNumberofRASubframe();
         virtual void configRA() = 0;
+        virtual ~PRACHConfig();
 };
 #endif

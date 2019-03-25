@@ -12,6 +12,5 @@ class IAvailiableRAO{
         virtual int getTotalRAOPerSubframe() = 0;
         virtual double getSSBPerRAO() = 0;
         virtual bool isRASubframe(const int frameIndex, const int subframeIndex) = 0;
-        //virtual bool isAvailiableRAOSubfrom() = 0;
 };
 #endif

@@ -10,5 +10,6 @@ class FemtoCell : public Cell{
         void initializeBeams();
         void setBeamStartAngle(int diffX, int diffY);
         void updateBeamsAngle(int diffX, int diffY);
+        ~FemtoCell();
 };
 #endif

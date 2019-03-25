@@ -44,6 +44,7 @@ class Model : public IPaintSubject{
         void setFR(const unsigned int FR);
         void setArrivalRate(const unsigned int arrivalRate);
         void setPrachConfigIndex(std::string s);
+        ~Model();
     private:
         void run(bool isTimesUp);
         void generateRandomUEs();

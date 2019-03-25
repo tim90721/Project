@@ -6,9 +6,9 @@ PRACHConfig::PRACHConfig(int prachConfigIndex){
     this->prachConfigIndex = prachConfigIndex;
 }
 
-////destructor
-//PRACHConfig::~PRACHConfig(){
-//}
+//destructor
+PRACHConfig::~PRACHConfig(){
+}
 
 // set prach-ConfigurationIndex
 // and config RA parameters

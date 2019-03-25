@@ -21,8 +21,6 @@ Model::Model(){
     outputFileExtension = ".csv";
     outputFileUE = "UE";
     outputFileCell = "Cell";
-    //UE *ue = new UE(250, 200, 0);
-    //UEs.push_back(ue);
 }
 
 // Set mouse XY position
@@ -328,12 +326,6 @@ void Model::generateRandomUEs(){
         int rndDistance = getRnd(10, cell->getCellSupportDistance() / 2);
         int rndX = rndDistance * cos(rndAngle * M_PI / 180.0);
         int rndY = rndDistance * sin(rndAngle * M_PI / 180.0);
-        //printf("random angle: %d, random distance: %d\n",
-        //        rndAngle,
-        //        rndDistance);
-        //printf("random x: %d, random y: %d\n",
-        //        rndX,
-        //        rndY);
         UE *ue = new UE(cell->getX() + rndX,
                 cell->getY() - rndY,
                 ueIndex++);
@@ -409,4 +401,12 @@ void Model::closeOutFiles(){
 void Model::plotResult(){
     string command = "python3 ./plotcode/plot_result.py " + filenameUE + " " + filenameCell;
     system(command.c_str());
+}
+
+// destructor
+Model::~Model(){
+    printf("model destructor\n");
+    for(auto it = cells.begin();it != cells.end();it++){
+        delete (*it);
+    }
 }

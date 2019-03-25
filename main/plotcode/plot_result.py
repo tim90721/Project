@@ -26,8 +26,6 @@ with open(ueFile, newline='') as csvfile:
         latencies[int(row[0])] = latency
 
 latencies = collections.OrderedDict(sorted(latencies.items()))
-for test in latencies:
-    print(test, latencies[test])
 
 upperBound = max(latencies.values())
 while (upperBound % 5) != 0:
@@ -43,3 +41,9 @@ plt.xticks(newXticks)
 plt.yticks(newYticks)
 plt.grid(True)
 plt.show()
+del ueFile
+del cellFile
+del latencies
+del upperBound
+del newXticks
+del newYticks

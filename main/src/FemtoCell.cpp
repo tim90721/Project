@@ -50,3 +50,11 @@ void FemtoCell::updateBeamsAngle(int diffX, int diffY){
         beam->setStartAngle(beamStartAngle + i * spanAngle);
     } 
 }
+
+// destructor
+FemtoCell::~FemtoCell(){
+    printf("Femto cell destructor\n");
+    for(auto it = beams.begin();it != beams.end();it++){
+        delete (*it);
+    }
+}

@@ -44,5 +44,6 @@ class AvailiableRAO : public IAvailiableRAO{
         int getTotalRAOPerSubframe();
         double getSSBPerRAO();
         bool isRASubframe(const int frameIndex, const int subframeIndex);
+        ~AvailiableRAO();
 };
 #endif

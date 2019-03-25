@@ -404,3 +404,10 @@ IPRACHConfig* Cell::getPRACHConfig(){
 IAvailiableRAO* Cell::getAvailiableRAO(){
     return availiableRAO;
 }
+
+// destructor
+Cell::~Cell(){
+    printf("cell destructor\n");
+    delete prachConfig;
+    delete availiableRAO;
+}

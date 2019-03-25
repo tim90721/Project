@@ -235,3 +235,7 @@ bool AvailiableRAO::isRASubframe(const int frameIndex, const int subframeIndex){
     }
     return true;
 }
+
+// destructor
+AvailiableRAO::~AvailiableRAO(){
+}

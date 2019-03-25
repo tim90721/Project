@@ -4,8 +4,6 @@
 #include "PRACHConfig.h"
 
 class PRACHConfigFR1 : public PRACHConfig{
-    private:
-        int a;
     public:
         PRACHConfigFR1(int prachConfigIndex);
         ~PRACHConfigFR1();

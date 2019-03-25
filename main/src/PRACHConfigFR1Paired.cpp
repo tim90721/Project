@@ -13,9 +13,6 @@ void PRACHConfigFR1::configRA(){
             nTimeDomainRAOPerPrachSlot = 1;
             raSubframes.clear();
             raSubframes.push_back(1);
-            //sizeofRASubframe = 1;
-            //nRASubframe = new int[1];
-            //*nRASubframe = 1;
             prachConfigPeriod = 10;
             x = 1;
             y = 0;
@@ -24,10 +21,6 @@ void PRACHConfigFR1::configRA(){
             nPRACHSlot = 1;
             nTimeDomainRAOPerPrachSlot = 1;
             raSubframes.clear();
-            //sizeofRASubframe = 10;
-            //nRASubframe = new int[10];
-            //for(int i = 0;i < 10;i++)
-            //    nRASubframe[i] = i;
             for(int i = 0;i < 10;i++)
                 raSubframes.push_back(i);
             prachConfigPeriod = 10;
@@ -38,9 +31,6 @@ void PRACHConfigFR1::configRA(){
             nPRACHSlot = 2;
             nTimeDomainRAOPerPrachSlot = 6;
             raSubframes.clear();
-            //sizeofRASubframe = 1;
-            //nRASubframe = new int [1];
-            //nRASubframe[0] = 4;
             raSubframes.push_back(1);
             prachConfigPeriod = 10;
             x = 1;
@@ -50,10 +40,6 @@ void PRACHConfigFR1::configRA(){
             nPRACHSlot = 2;
             nTimeDomainRAOPerPrachSlot = 6;
             raSubframes.clear();
-            //sizeofRASubframe = 10;
-            //nRASubframe = new int[10];
-            //for(int i = 0;i < 10;i++)
-            //    nRASubframe[i] = i;
             for(int i = 0;i < 10;i++)
                 raSubframes.push_back(i);
             prachConfigPeriod = 10;
@@ -63,4 +49,8 @@ void PRACHConfigFR1::configRA(){
         default:
             printf("prach configuration %d not support\n", prachConfigIndex);
     }
+}
+
+// destructor
+PRACHConfigFR1::~PRACHConfigFR1(){
 }

@@ -48,6 +48,7 @@ class UE : public IDrawable{
         bool isCollided();
         void draw(QPainter &painter);
         std::vector<int>& getRAOs();
+        ~UE();
     private:
         void checkRA();
         void updateRAOforRA();

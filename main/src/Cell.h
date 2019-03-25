@@ -65,6 +65,7 @@ class Cell : public IDrawable{
         celltype::CellType getCellType();
         IPRACHConfig *getPRACHConfig();
         IAvailiableRAO *getAvailiableRAO();
+        virtual ~Cell();
     protected:
         int x;
         int y;
