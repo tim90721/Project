@@ -14,6 +14,7 @@ Cell::Cell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType,
     availiableRAO = new AvailiableRAO(nBeams, ssbperRAO, msg1FDM, nPreambles, 160, prachConfig);
     availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
     rars = vector<vector<RAR*>>(10);
+    mRA = new MonitorRAFunction(availiableRAO, prachConfig);
 }
 
 // Set gNB x position
@@ -408,6 +409,7 @@ IAvailiableRAO* Cell::getAvailiableRAO(){
 // destructor
 Cell::~Cell(){
     printf("cell destructor\n");
+    delete mRA;
     delete prachConfig;
     delete availiableRAO;
 }

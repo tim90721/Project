@@ -3,6 +3,7 @@
 
 #include <QPainter>
 #include "includefile.h"
+#include "IDrawable.h"
 #include "Beam.h"
 #include "UE.h"
 #include "CommonMath.h"
@@ -10,7 +11,7 @@
 #include "PRACHConfigFR1Paired.h"
 #include "AvailiableRAO.h"
 #include "random_access.h"
-#include "IDrawable.h"
+#include "MonitorRAFunction.h"
 
 namespace celltype{
     enum CellType{
@@ -87,8 +88,10 @@ class Cell : public IDrawable{
         vector<Msg3*> msg3s;
         PRACHConfig *prachConfig;
         AvailiableRAO *availiableRAO;
+
     private:
         bool checkUEisExist(UE *ue);
+        MonitorRAFunction *mRA;
 
 };
 
