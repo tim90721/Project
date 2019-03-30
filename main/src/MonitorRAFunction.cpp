@@ -105,9 +105,6 @@ int MonitorRAFunction::getNewMsg1FDM(const double newSSBPerRAO){
     int msg1FDM = availiableRAO->getMsg1FDM();
     int i = log(msg1FDM) / log(2);
     printf("msg1fdm index: %d\n", i);
-    //for(;i < 4;++i)
-    //    if(fRAO[i] == msg1FDM)
-    //        break;
     int newMsg1FDM = fRAO[i];
     if(newSSBPerRAO < ssbPerRAO && newTau > tau && newTau > 5 && msg1FDM < 8){
         while(newMsg1FDM < 8){
