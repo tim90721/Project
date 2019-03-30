@@ -177,45 +177,6 @@ void UE::receiveRAR(const vector<RAR*>& rars, const int cellIndex){
     printf("receive complete\n");
 }
 
-// receive CR
-// if received CR and contained ue ID the same as itself
-// RA is success
-// otherwise
-// RA failed, and perform RA from preamble transmission again
-// CRs: CR transmitted by cell
-// cellIndex: cell index
-void UE::receiveCR(const vector<Msg3*>& CRs, const int cellIndex){
-    if(cellIndex != candidateCell->getCellIndex() || !msg3Transmitted)
-        return;
-    int index = searchMsg3(CRs, tc_rnti);
-    printf("contention resolution index: %d\n", index);
-    printf("UE TC-RNTI: %d, searched TC-RNTI: %d\n",
-            tc_rnti,
-            CRs[index]->tc_rnti);
-    printf("UE id: %lu, searched UE id: %lu\n",
-            id,
-            CRs[index]->ueIndex);
-    if(tc_rnti == CRs[index]->tc_rnti
-            && id == CRs[index]->ueIndex){
-        printf("RA success!!!\n");
-        departedFrame = candidateCell->getFrameIndex();
-        departedSubframe = candidateCell->getSubframeIndex();
-        raSuccess = true;
-    }
-    else{
-        printf("RA failed\n");
-        raSuccess = false;
-        preambleTransmitted = false;
-        rarReceived = false;
-        msg3Transmitted = false;
-        collided = true;
-        raFrame = -1;
-        raSubframe = -1;
-        msg3Frame = -1;
-        msg3Subframe = -1;
-    }
-}
-
 // set active frame index and subframe index
 // frameIndex: active frame index
 // subframeIndex: active subframe index
@@ -490,6 +451,46 @@ int UE::getBeamStrength(){
     return this->beamStrength;
 }
 
+// receive CR
+// if received CR and contained ue ID the same as itself
+// RA is success
+// otherwise
+// RA failed, and perform RA from preamble transmission again
+// CRs: CR transmitted by cell
+// cellIndex: cell index
+bool UE::receiveCR(const vector<Msg3*>& CRs, const int cellIndex){
+    if(cellIndex != candidateCell->getCellIndex() || !msg3Transmitted)
+        return false;
+    int index = searchMsg3(CRs, tc_rnti);
+    printf("contention resolution index: %d\n", index);
+    printf("UE TC-RNTI: %d, searched TC-RNTI: %d\n",
+            tc_rnti,
+            CRs[index]->tc_rnti);
+    printf("UE id: %lu, searched UE id: %lu\n",
+            id,
+            CRs[index]->ueIndex);
+    if(tc_rnti == CRs[index]->tc_rnti
+            && id == CRs[index]->ueIndex){
+        printf("RA success!!!\n");
+        departedFrame = candidateCell->getFrameIndex();
+        departedSubframe = candidateCell->getSubframeIndex();
+        raSuccess = true;
+    }
+    else{
+        printf("RA failed\n");
+        raSuccess = false;
+        preambleTransmitted = false;
+        rarReceived = false;
+        msg3Transmitted = false;
+        collided = true;
+        raFrame = -1;
+        raSubframe = -1;
+        msg3Frame = -1;
+        msg3Subframe = -1;
+    }
+    return true;
+}
+
 // test whether ue has binded to a cell
 bool UE::isBindCell(){
     if(candidateCell)
@@ -505,6 +506,11 @@ bool UE::isPreambleTransmit(){
 // test whether ue has received a RAR
 bool UE::isRarReceived(){
     return rarReceived;
+}
+
+// test whether ue msg3 is already transmitted
+bool UE::isMsg3Transmitted(){
+    return msg3Transmitted;
 }
 
 // test whether ue RA already success 

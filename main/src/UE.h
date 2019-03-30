@@ -23,7 +23,6 @@ class UE : public IDrawable{
         int receiveSI(Cell *beam);
         void doRA();
         void receiveRAR(const std::vector<RAR*>& rars, const int cellIndex);
-        void receiveCR(const std::vector<Msg3*>& CRs, const int cellIndex);
         void setActiveTime(const int frameIndex, const int subframeIndex);
         unsigned long getID();
         int getX();
@@ -41,9 +40,11 @@ class UE : public IDrawable{
         int getSelectPreambleIndex();
         int getSelectRAOIndex();
         double getRASSBPerRAO();
+        bool receiveCR(const std::vector<Msg3*>& CRs, const int cellIndex);
         bool isBindCell();
         bool isPreambleTransmit();
         bool isRarReceived();
+        bool isMsg3Transmitted();
         bool isRASuccess();
         bool isCollided();
         void draw(QPainter &painter);

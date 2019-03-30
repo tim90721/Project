@@ -196,6 +196,9 @@ void Model::startSimulation(){
         printf("ue output file create failed!\n");
         exit(1);
     }
+    //////////////////////// testing ////////////////////////
+    //simulationTime = 16;
+    //////////////////////// testing ////////////////////////
     ueIndex = 0;
     remainingUEs = 0;
     bool isTimesUp = false;
@@ -372,7 +375,9 @@ void Model::recordCellsInfo(){
             << (*it)->getSubframeIndex() << ", "
             << (*it)->getSSBPerRAO() << ", "
             << (*it)->getMsg1FDM() << ", "
-            << (*it)->getPrachConfigIndex() << endl;
+            << (*it)->getPrachConfigIndex() << ", " 
+            << (*it)->getSuccessUEs() << ", "
+            << (*it)->getFailedUEs() << endl;
     }
 }
 
@@ -388,7 +393,7 @@ void Model::initializeOutFiles(){
     outFileUE = ofstream(filenameUE);
     outFileUE << "\"UE ID\", \"Cell ID\", \"Total Beams\", \"Beam Index\", \"SSB per RAO\", \"msg1-FDM\", \"Active Frame\", \"Active Subframe\", \"RA Frame\", \"RA Subframe\", \"Departed Frame\", \"Departed Subframe\", \"Selected RAO Undex\", \"Selected Preamble\", \"Collided\"" << endl;
     outFileCell = ofstream(filenameCell);
-    outFileCell << "\"Cell ID\", \"Total Beams\", \"Current Frame\", \"Current Subframe\", \"SSB per RAO\", \"msg1-FDM\", \"prach-ConfigurationIndex\"" << endl;
+    outFileCell << "\"Cell ID\", \"Total Beams\", \"Current Frame\", \"Current Subframe\", \"SSB per RAO\", \"msg1-FDM\", \"prach-ConfigurationIndex\", \"Success UEs\", \"Failed UEs\"" << endl;
 }
 
 // close output files

@@ -7,7 +7,7 @@
 // cellType: gNB CellType, Macro or Femto //FIXME maybe reduntant
 Cell::Cell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex) : x(x), y(y), cellIndex(cellIndex), nBeams(nBeams), cellPixelSize(10), subframeIndex(0), frameIndex(0), raResponseWindow(1), cellType(cellType){
     double ssbperRAO = 1;
-    int msg1FDM = 8;
+    int msg1FDM = 1;
     int nPreambles = 64;
     prachConfig = new PRACHConfigFR1(prachConfigIndex);
     prachConfig->configRA();
@@ -15,6 +15,8 @@ Cell::Cell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType,
     availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
     rars = vector<vector<RAR*>>(10);
     mRA = new MonitorRAFunction(availiableRAO, prachConfig);
+    successUEs = 0;
+    failedUEs = 0;
 }
 
 // Set gNB x position
@@ -142,6 +144,15 @@ void Cell::updateSubframe(){
         frameIndex++;
         subframeIndex %= 10;
     }
+    if((frameIndex * 10 + subframeIndex) % 16 == 0){
+        printf("next subframe can modify rao configuration\n");
+        printf("next frame: %d, next subframe: %d\n", 
+                frameIndex,
+                subframeIndex);
+        successUEs = mRA->getSuccessUEs();
+        failedUEs = mRA->getFailedUEs();
+        mRA->updateRAOs();
+    } 
     availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
 }
 
@@ -280,17 +291,26 @@ void Cell::transmitCR(){
         return;
     printf("transmitting contention resolution\n");
     UE *ue;
+    int countSuccess = 0;
+    int countFailed = 0;
     for(decltype(ues.size()) i = 0;i < ues.size();i++){
         ue = ues.at(i);
-        ue->receiveCR(msg3s, cellIndex);
-        if(ue->isRASuccess()){
-            printf("removing UE id: %lu from cell index: %d\n", 
-                    ue->getID(),
-                    cellIndex);
-            ues.erase(ues.begin() + i);
-            i--;
+        if(ue->receiveCR(msg3s, cellIndex)){
+            if(ue->isRASuccess()){
+                printf("removing UE id: %lu from cell index: %d\n", 
+                        ue->getID(),
+                        cellIndex);
+                ues.erase(ues.begin() + i);
+                i--;
+                countSuccess++;
+            }
+            else{
+                countFailed++;
+            }
         }
     }
+
+    mRA->recordUEsCondition(countSuccess, countFailed);
 
     // delete the stored msg3
     for(decltype(msg3s.size()) i = 0;i < msg3s.size();i++){
@@ -377,6 +397,18 @@ double Cell::getSSBPerRAO(){
 // return: cell cover angle
 double Cell::getCellSpanAngle(){
     return cellAngle;
+}
+
+// get success ues count record from monitor ra function
+// return: success ues count
+unsigned long Cell::getSuccessUEs(){
+    return successUEs;
+}
+
+// get failed ues count record from monitor ra function
+// return: failed ues count
+unsigned long Cell::getFailedUEs(){
+    return failedUEs;
 }
 
 // is this cell has stored RAR

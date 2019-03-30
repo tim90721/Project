@@ -62,6 +62,8 @@ class Cell : public IDrawable{
         double getBeamStartAngle();
         double getSSBPerRAO();
         double getCellSpanAngle();
+        unsigned long getSuccessUEs();
+        unsigned long getFailedUEs();
         bool hasRAR();
         celltype::CellType getCellType();
         IPRACHConfig *getPRACHConfig();
@@ -77,6 +79,8 @@ class Cell : public IDrawable{
         int subframeIndex;
         int frameIndex;
         int raResponseWindow;
+        unsigned long successUEs;
+        unsigned long failedUEs;
         double cellAngle;
         double startAngle;
         double endAngle;

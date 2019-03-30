@@ -62,7 +62,9 @@ void AvailiableRAO::setSSBPerRAO(double ssbPerRAO){
 // frameIndex: frame index
 // subframeIndex: subframe index
 void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const int subframeIndex){
+    printf("updating rao of subframe\n");
     if(isRASubframe(frameIndex, subframeIndex)){
+        printf("next subframe is ra subframe\n");
         int frame = frameIndex % associationFrame;
         frame = frame / (prachConfig->getPrachConfigPeriod() / 10);
         startRAO = frame * totalRAOPerFrame;
@@ -70,6 +72,7 @@ void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const i
         for(unsigned int i = 0;subframeIndex != RASubframe[i];i++)
             startRAO += totalRAOPerSubframe;
         if(associationFrame == 1){
+            printf("association frame is 1\n");
             // when total rao per frame can map all ssb more than 1 time
             int times = totalRAOPerFrame / totalNeedRAO;
             if((startRAO / totalNeedRAO) >= times){
@@ -100,19 +103,27 @@ void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const i
             }
         }
         else if(associationFrame > 1){
+            printf("association frame is not 1\n");
             // a frame can not map all SSB to a RAO
             int times = 1;
+            printf("start RAO: %d\n", startRAO);
+            printf("totalNeedRAO: %d\n", totalNeedRAO);
+            printf("end RAO: %d\n", endRAO);
+            printf("ssb per rao: %f\n" , ssbPerRAO);
             if(startRAO / totalNeedRAO >= times){
-                startRAO= -1;
+                startRAO = -1;
                 endRAO = -1;
                 return;
             }
+            printf("start rao calculated\n");
             endRAO = startRAO + totalRAOPerSubframe - 1;
             if(endRAO / totalNeedRAO >= times)
                 endRAO = times * totalNeedRAO - 1;
+            printf("end rao calculated\n");
         }
         //endRAO = startRAO + totalRAOPerSubframe - 1;
     }
+    printf("complete\n");
 }
 
 // update association frame
