@@ -61,11 +61,11 @@ void Beam::setCellIndex(int cellIndex){
 
 // detect UE is in this beam's area
 void Beam::detectUE(UE *ue, double power){
-    printf("cell %d beam %d startAngle: %f, spanAngle: %f\n",
-            cellIndex,
-            beamIndex,
-            startAngle,
-            spanAngle);
+    //printf("cell %d beam %d startAngle: %f, spanAngle: %f\n",
+    //        cellIndex,
+    //        beamIndex,
+    //        startAngle,
+    //        spanAngle);
     if(isInArea(ue->getX(), ue->getY(),
                 getX(), getY(),
                 startAngle,

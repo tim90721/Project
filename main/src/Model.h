@@ -53,6 +53,7 @@ class Model : public IPaintSubject{
         void initializeOutFiles();
         void closeOutFiles();
         void plotResult();
+        void restoreCells2Initial();
 
         unsigned long ueIndex;
         int remainingUEs;

@@ -228,6 +228,8 @@ void Model::startSimulation(){
         traverseUEs();
     }
     printf("simulation: %d complete\n", simulationCounter++);
+    recordCellsInfo();
+    restoreCells2Initial();
     closeOutFiles();
     plotResult();
 }
@@ -366,7 +368,7 @@ void Model::recordCellsInfo(){
     auto it = cells.begin();
     const int frame = (*it)->getFrameIndex();
     const int subframe = (*it)->getSubframeIndex();
-    if((frame * 10 + subframe) % 16 != 0)
+    if((frame * 10 + subframe) % 16 != 0 && UEs.size() != 0)
         return;
     for(;it != cells.end();it++){
         outFileCell << (*it)->getCellIndex() << ", "
@@ -406,6 +408,13 @@ void Model::closeOutFiles(){
 void Model::plotResult(){
     string command = "python3 ./plotcode/plot_result.py " + filenameUE + " " + filenameCell;
     system(command.c_str());
+}
+
+// restore the cell's ssb per rao and msg1-fdm to initial status
+void Model::restoreCells2Initial(){
+    for(auto it = cells.begin();it != cells.end();it++){
+        (*it)->restoreMonitorRA2Initial();
+    }
 }
 
 // destructor

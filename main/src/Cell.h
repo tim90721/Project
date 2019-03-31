@@ -47,6 +47,7 @@ class Cell : public IDrawable{
         void transmitRAR();
         void receiveMsg3(Msg3& msg3);
         void transmitCR();
+        void restoreMonitorRA2Initial();
         virtual void initializeBeams() = 0;
         virtual void updateBeamsAngle(int diffX, int diffY) = 0;
         int getX();

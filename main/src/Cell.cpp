@@ -319,6 +319,11 @@ void Cell::transmitCR(){
     msg3s.clear();
 }
 
+// restore monitor ra function to initial condition
+void Cell::restoreMonitorRA2Initial(){
+    mRA->restore2Initial();
+}
+
 // get cell support distance
 int Cell::getCellSupportDistance(){
     return this->cellSupportDistance;
@@ -402,12 +407,16 @@ double Cell::getCellSpanAngle(){
 // get success ues count record from monitor ra function
 // return: success ues count
 unsigned long Cell::getSuccessUEs(){
+    if(ues.size() == 0 && (frameIndex * 10 + subframeIndex) % 16 != 0)
+        return mRA->getSuccessUEs();
     return successUEs;
 }
 
 // get failed ues count record from monitor ra function
 // return: failed ues count
 unsigned long Cell::getFailedUEs(){
+    if(ues.size() == 0 && (frameIndex * 10 + subframeIndex) % 16 != 0)
+        return mRA->getFailedUEs();
     return failedUEs;
 }
 

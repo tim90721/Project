@@ -34,7 +34,7 @@ void MonitorRAFunction::updateRAOs(){
     double totalDelta = delta * raCount;
     double estimateUEs = (double)successUEs * ssbPerRAO * exp(1);
     double newSSBPerRAO = calculateNewSSBPerRAO();
-    int newMsg1FDM = getNewMsg1FDM(newSSBPerRAO);
+    int newMsg1FDM = getNewMsg1FDMver2(&newSSBPerRAO);
     printf("old tau: %d\n", tau);
     printf("success ues: %lu\n", successUEs);
     printf("failed ues: %lu\n", failedUEs);
@@ -53,6 +53,13 @@ void MonitorRAFunction::updateRAOs(){
     successUEs = 0;
     failedUEs = 0;
     raCount = 0;
+}
+
+// restore ssb per rao and msg1-fdm to 1
+void MonitorRAFunction::restore2Initial(){
+    availiableRAO->setSSBPerRAO(initSSBPerRAO);
+    availiableRAO->setMsg1FDM(initMsg1FDM);
+    availiableRAO->updateAssociationFrame();
 }
 
 // get tau by current configuration
@@ -146,6 +153,53 @@ int MonitorRAFunction::getNewMsg1FDM(const double newSSBPerRAO){
     return newMsg1FDM;
 }
 
+int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
+    int newTau = getTau(prachConfig->getX(),
+            nSSB / *newSSBPerRAO,
+            availiableRAO->getTotalRAOPerSubframe(),
+            prachConfig->getNumberofRASubframe());
+    int msg1FDM = availiableRAO->getMsg1FDM();
+    int i = log(msg1FDM) / log(2);
+    printf("msg1fdm index: %d\n", i);
+    double newMsg1FDM = pow(2, i);
+    if(*newSSBPerRAO < ssbPerRAO && newTau > tau && newTau > 5 && msg1FDM < 8){
+        newMsg1FDM = (((double)(successUEs * ssbPerRAO * exp(1)))
+            / ((double)availiableRAO->getNumberofPreambles() * nSSB))
+            * (((double)availiableRAO->getTotalNeedRAO())
+            / ((double)prachConfig->getNumberofTimeDomainRAO() * raCount));
+        printf("new msg1FDM in double: %f\n", newMsg1FDM);
+        newMsg1FDM = pow(2, ceil(log(newMsg1FDM) / log(2)));
+        *newSSBPerRAO = ssbPerRAO;
+        if(newMsg1FDM > 8){
+            *newSSBPerRAO = (((double)availiableRAO->getNumberofPreambles() * nSSB)
+                / ((double)successUEs * exp(1)))
+                * (((double)prachConfig->getNumberofTimeDomainRAO() * newMsg1FDM)
+                / (double)availiableRAO->getTotalNeedRAO())
+                * raCount;
+            printf("new ssb per rao: %f\n", *newSSBPerRAO);
+            newMsg1FDM = 8;
+        }
+    }
+    else if(*newSSBPerRAO > ssbPerRAO){
+        while(newMsg1FDM > 1){
+            newMsg1FDM = pow(2, --i);
+            int newTotalRAOPerSubframe = prachConfig->getNumberofTimeDomainRAO() * newMsg1FDM;
+            newTau = getTau(prachConfig->getX(),
+                    nSSB / *newSSBPerRAO,
+                    newTotalRAOPerSubframe,
+                    prachConfig->getNumberofRASubframe());
+            if(newTau > tau){
+                newMsg1FDM = pow(2, ++i);
+                break;
+            }
+        }
+        if(i == 0)
+            printf("msg1FDM reach minimum capacity\n");
+    }
+    printf("new tau: %d\n", newTau);
+    return newMsg1FDM;
+}
+
 // get delta by given configuration
 // nPreambles: number of CBRA preambles
 // ssbPerRAO: ssb per rao
@@ -165,10 +219,14 @@ double MonitorRAFunction::getDelta(const int nPreambles, const double ssbPerRAO)
 // return: new ssb per rao
 double MonitorRAFunction::calculateNewSSBPerRAO(){
     double newSSBPerRAO = (availiableRAO->getNumberofPreambles() * nSSB) / (successUEs * exp(1))
-        * ((double)(prachConfig->getNumberofTimeDomainRAO() * availiableRAO->getMsg1FDM()) / (double)availiableRAO->getTotalNeedRAO());
+        * ((double)(prachConfig->getNumberofTimeDomainRAO() * availiableRAO->getMsg1FDM()) / (double)availiableRAO->getTotalNeedRAO()) * raCount;
     printf("new ssb per rao in double: %f\n", newSSBPerRAO);
     if(newSSBPerRAO > nSSB){
         return nSSB;
+    }
+    if(sRAO[0] > newSSBPerRAO){
+        printf("maximum ssb per rao reached\n");
+        return sRAO[0];
     }
     int i = 0;
     while(i < 7 && !(sRAO[i] <= newSSBPerRAO && newSSBPerRAO <= sRAO[i + 1]))
