@@ -3,3 +3,5 @@ project_test/src/*
 project_test/build_test/*
 main/result/*
 main/build/*
+main/log/debug_log.log
+main/log/trace_log.log
