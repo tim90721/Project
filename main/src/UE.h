@@ -62,7 +62,10 @@ class UE : public IDrawable{
         int y;
         int beamIndex;
         int cellIndex;
+        /////////// should modify to unsigned ///////////
         int beamStrength;
+        int powerRamp;
+        /////////// should modify to unsigned ///////////
         int UEPixelSize;
         int startRAO;
         int endRAO;

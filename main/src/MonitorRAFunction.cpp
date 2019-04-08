@@ -129,6 +129,7 @@ int MonitorRAFunction::getNewMsg1FDM(const double newSSBPerRAO){
         if(newMsg1FDM == fRAO[3]){
             printf("msg1FDM reach maximum capacity\n");
         }
+        // method 1 improved
         else{
             newMsg1FDM = fRAO[++i];
         }
@@ -221,7 +222,7 @@ double MonitorRAFunction::calculateNewSSBPerRAO(){
     double newSSBPerRAO = (availiableRAO->getNumberofPreambles() * nSSB) / (successUEs * exp(1))
         * ((double)(prachConfig->getNumberofTimeDomainRAO() * availiableRAO->getMsg1FDM()) / (double)availiableRAO->getTotalNeedRAO()) * raCount;
     printf("new ssb per rao in double: %f\n", newSSBPerRAO);
-    if(newSSBPerRAO > nSSB){
+    if(newSSBPerRAO > nSSB && nSSB != 64){
         return nSSB;
     }
     if(sRAO[0] > newSSBPerRAO){
@@ -231,6 +232,7 @@ double MonitorRAFunction::calculateNewSSBPerRAO(){
     int i = 0;
     while(i < 7 && !(sRAO[i] <= newSSBPerRAO && newSSBPerRAO <= sRAO[i + 1]))
         i++;
+    printf("new ssb per rao: %f\n", sRAO[i]);
     return sRAO[i];
 }
 

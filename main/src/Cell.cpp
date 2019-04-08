@@ -278,6 +278,15 @@ void Cell::receiveMsg3(Msg3& msg3){
             && msg3s[insertIndex]->tc_rnti == msg3.tc_rnti){
         printf("tc_rnti: %d, already exist in RAR\n",
                 msg3.tc_rnti);
+        if(msg3s[insertIndex]->power < msg3.power){
+            printf("new msg3 power is bigger than older one\n");
+            printf("old msg3 ue index: %lu\n", msg3s[insertIndex]->ueIndex);
+            printf("old msg3 power: %d\n", msg3s[insertIndex]->power);
+            printf("new msg3 ue index: %lu \n", msg3.ueIndex);
+            printf("new msg3 power: %d\n", msg3.power);
+            msg3s[insertIndex]->ueIndex = msg3.ueIndex;
+            msg3s[insertIndex]->power = msg3.power;
+        }
     }
     else{
         msg3s.insert(msg3s.begin() + insertIndex, &msg3);

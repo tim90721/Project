@@ -18,11 +18,12 @@ UE::UE(int x, int y, unsigned long id) : UE(x, y, id, false){
 UE::UE(int x, int y, unsigned long id, bool isTest){
     setXY(x, y);
     this->id = id;
-    this->beamIndex = -1;
-    this->cellIndex = -1;
-    this->beamStrength = -1;
-    this->UEPixelSize = 6;
-    this->candidateCell = NULL;
+    beamIndex = -1;
+    cellIndex = -1;
+    beamStrength = -1;
+    powerRamp = 0;
+    UEPixelSize = 6;
+    candidateCell = NULL;
     startRAO = 0;
     endRAO = 0;
     raStartRAO = -1;
@@ -351,6 +352,7 @@ void UE::transmitMsg3(){
     msg3->uplinkResourceIndex = uplinkResourceIndex;
     msg3->tc_rnti = tc_rnti;
     msg3->ueIndex = id;
+    msg3->power = beamStrength + powerRamp;
     candidateCell->receiveMsg3(*msg3);
     msg3Transmitted = true;
 }
@@ -487,6 +489,7 @@ bool UE::receiveCR(const vector<Msg3*>& CRs, const int cellIndex){
         raSubframe = -1;
         msg3Frame = -1;
         msg3Subframe = -1;
+        powerRamp += 5;
     }
     return true;
 }

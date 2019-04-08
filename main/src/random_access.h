@@ -14,6 +14,7 @@ struct Msg3{
     int uplinkResourceIndex;
     int tc_rnti;
     unsigned long ueIndex;
+    int power;
 };
 
 int binarySearchPreamble(const std::vector<RAR*>& subframeRars, const int raoLeft, const int raoRight, const int raoFoundIndex, const int preambleIndex);
