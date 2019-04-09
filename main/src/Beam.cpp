@@ -71,7 +71,7 @@ void Beam::detectUE(UE *ue, double power){
                 startAngle,
                 spanAngle,
                 lengthBeam / 2)){
-        printf("UE id %lu is in cell index %d beam index %d\n",
+        SPDLOG_TRACE("UE id {0} is in cell index {1} beam index {2}",
                 ue->getID(),
                 parent->getCellIndex(),
                 getBeamIndex());
@@ -144,5 +144,5 @@ void Beam::draw(QPainter &painter){
 
 // destructor
 Beam::~Beam(){
-    printf("beam destructor\n");
+    SPDLOG_TRACE("beam destructor");
 }

@@ -1,6 +1,7 @@
 #ifndef BEAM
 #define BEAM
 #include "includefile.h"
+#include "include_log.h"
 #include <QPainter>
 #include "Cell.h"
 #include "UE.h"

@@ -65,7 +65,7 @@ void Cell::detectUE(UE *ue){
         return;
     double distance = calculateDistance(ue->getX(), ue->getY(),
             getX(), getY());
-    printf("cell %d startAngle: %f, spanAngle: %f\n",
+    SPDLOG_TRACE("cell {0} startAngle: {1}, spanAngle: {2}",
             cellIndex,
             startAngle,
             cellAngle);
@@ -81,7 +81,7 @@ void Cell::detectUE(UE *ue){
                     ((double)(this->cellSupportDistance / 2)) - distance);
         }
         ues.push_back(ue);
-        printf("UE %lu is in cell %d range\n", ue->getID(), cellIndex);
+        SPDLOG_TRACE("UE {0} is in cell {1} range", ue->getID(), cellIndex);
     }
 }
 
@@ -92,7 +92,7 @@ bool Cell::checkUEisExist(UE *ue){
     for(unsigned int i = 0;i < ues.size();i++){
         temp = ues[i];
         if(temp->getID() == ue->getID()){
-            printf("UE %lu already be added to Cell %d\n", 
+            SPDLOG_TRACE("UE {0} already be added to Cell {1}", 
                     temp->getID(),
                     cellIndex);
             return true;
@@ -103,7 +103,7 @@ bool Cell::checkUEisExist(UE *ue){
 
 // broadcasting cell's SI
 void Cell::broadcastSI(){
-    printf("Broadcast cell index %d system information\n", this->cellIndex);
+    SPDLOG_INFO("Broadcast cell index {0} system information", cellIndex);
     UE *ue;
     for(unsigned int i = 0;i < ues.size();i++){
         ue = ues.at(i);
@@ -125,7 +125,7 @@ void Cell::broadcastSI(){
 void Cell::deregisterCell(UE *ue){
     for(auto it = ues.begin();it != ues.end();it++){
         if((*it)->getID() == ue->getID()){
-            printf("UE: %d removing from cell: %d\n",
+            SPDLOG_TRACE("UE: {0} removing from cell: {1}",
                     (*it)->getID(),
                     cellIndex);
             ues.erase(it);
@@ -145,8 +145,8 @@ void Cell::updateSubframe(){
         subframeIndex %= 10;
     }
     if((frameIndex * 10 + subframeIndex) % 16 == 0){
-        printf("next subframe can modify rao configuration\n");
-        printf("next frame: %d, next subframe: %d\n", 
+        SPDLOG_INFO("next subframe can modify rao configuration");
+        SPDLOG_TRACE("next frame: {0}, next subframe: {1}", 
                 frameIndex,
                 subframeIndex);
         successUEs = mRA->getSuccessUEs();
@@ -205,7 +205,7 @@ void Cell::setRaResponseWindow(const int raResponseWindow){
 // raoIndex: ue send ra preamble's rao index
 // preambleIndex: ue send preamble index 
 void Cell::receivePreamble(const int raoIndex, const int preambleIndex){
-    printf("receiving preamble\n");
+    SPDLOG_TRACE("cell {0} receiving preamble", cellIndex);
     int respondSubframe = (subframeIndex + raResponseWindow) % 10;
     vector<RAR*>& subframeRars = rars[respondSubframe];
     RAR *rar = new RAR;
@@ -213,13 +213,13 @@ void Cell::receivePreamble(const int raoIndex, const int preambleIndex){
     rar->preambleIndex = preambleIndex;
     rar->uplinkResourceIndex = subframeRars.size() + 1;
     rar->tc_rnti = subframeRars.size() + 1;
-    //printf("size: %d\n", subframeRars.size());
+    SPDLOG_TRACE("size: {0}", subframeRars.size());
 
-    //printf("rao index: %d, preamble index: %d\n", 
-    //        rar->raoIndex, 
-    //        rar->preambleIndex);
+    SPDLOG_TRACE("rao index: {0}, preamble index: {1}", 
+            rar->raoIndex, 
+            rar->preambleIndex);
     int insertIndex = searchRAR(subframeRars, *rar);
-    //printf("insert index: %d\n", insertIndex);
+    SPDLOG_TRACE("insert index: {0}", insertIndex);
     
     // if searched index is the end of stored rar
     // push rar directly in end of subframeRars
@@ -229,7 +229,7 @@ void Cell::receivePreamble(const int raoIndex, const int preambleIndex){
             && subframeRars[insertIndex]->raoIndex == rar->raoIndex 
             && subframeRars[insertIndex]->preambleIndex == rar->preambleIndex){
         // the corresponding rar is already exist in stored Rars
-        printf("rao: %d, preamble: %d already exist in RAR\n",
+        SPDLOG_INFO("rao: {0}, preamble: {1} already exist in RAR",
                 rar->raoIndex,
                 rar->preambleIndex);
         delete rar;
@@ -238,23 +238,23 @@ void Cell::receivePreamble(const int raoIndex, const int preambleIndex){
         // otherwise, store the new RAR in searched index 
         subframeRars.insert(subframeRars.begin() + insertIndex, rar);
     }
-    printf("receive complete\n");
+    SPDLOG_TRACE("cell {0} receive complete", cellIndex);
 }
 
 // transmit RAR if cell has RAR stored
 void Cell::transmitRAR(){
     if(!hasRAR())
         return;
-    printf("Cell: %d transmitting RARs\n", cellIndex);
+    SPDLOG_TRACE("Cell: {0} transmitting RARs", cellIndex);
     vector<RAR*>& subframeRar = rars[subframeIndex];
     for(auto i = subframeRar.begin();i != subframeRar.end();i++){
-        printf("%d\t%d\n", (*i)->raoIndex, (*i)->preambleIndex);
+        SPDLOG_TRACE("rao: {0}\tpreamble: {1}", (*i)->raoIndex, (*i)->preambleIndex);
     }
     UE *ue;
-    printf("rar size: %lu\n" ,subframeRar.size());
+    SPDLOG_TRACE("rar size: {0}" ,subframeRar.size());
     for(decltype(ues.size()) i = 0;i < ues.size();i++){
         ue = ues.at(i);
-        printf("Cell: %d transmitting RAR to UE :%d\n",
+        SPDLOG_TRACE("Cell: {0} transmitting RAR to UE :{1}",
                 cellIndex,
                 ue->getID());
         ue->receiveRAR(subframeRar, cellIndex);
@@ -265,7 +265,7 @@ void Cell::transmitRAR(){
         delete subframeRar[i];
     }
     subframeRar.clear();
-    printf("RARs transmit complete\n");
+    SPDLOG_TRACE("RARs transmit complete");
 }
 
 // receive Msg3 transmitted by UE
@@ -276,14 +276,14 @@ void Cell::receiveMsg3(Msg3& msg3){
         msg3s.push_back(&msg3);
     else if(msg3s.size() > 0 
             && msg3s[insertIndex]->tc_rnti == msg3.tc_rnti){
-        printf("tc_rnti: %d, already exist in RAR\n",
+        SPDLOG_INFO("tc_rnti: {0}, already exist in RAR",
                 msg3.tc_rnti);
         if(msg3s[insertIndex]->power < msg3.power){
-            printf("new msg3 power is bigger than older one\n");
-            printf("old msg3 ue index: %lu\n", msg3s[insertIndex]->ueIndex);
-            printf("old msg3 power: %d\n", msg3s[insertIndex]->power);
-            printf("new msg3 ue index: %lu \n", msg3.ueIndex);
-            printf("new msg3 power: %d\n", msg3.power);
+            SPDLOG_INFO("new msg3 power is bigger than older one");
+            SPDLOG_INFO("old msg3 ue index: {0}", msg3s[insertIndex]->ueIndex);
+            SPDLOG_INFO("old msg3 power: {0}", msg3s[insertIndex]->power);
+            SPDLOG_INFO("new msg3 ue index: {0}", msg3.ueIndex);
+            SPDLOG_INFO("new msg3 power: {0}", msg3.power);
             msg3s[insertIndex]->ueIndex = msg3.ueIndex;
             msg3s[insertIndex]->power = msg3.power;
         }
@@ -298,7 +298,7 @@ void Cell::receiveMsg3(Msg3& msg3){
 void Cell::transmitCR(){
     if(!msg3s.size())
         return;
-    printf("transmitting contention resolution\n");
+    SPDLOG_TRACE("transmitting contention resolution");
     UE *ue;
     int countSuccess = 0;
     int countFailed = 0;
@@ -306,7 +306,7 @@ void Cell::transmitCR(){
         ue = ues.at(i);
         if(ue->receiveCR(msg3s, cellIndex)){
             if(ue->isRASuccess()){
-                printf("removing UE id: %lu from cell index: %d\n", 
+                SPDLOG_TRACE("removing UE id: {0} from cell index: {1}", 
                         ue->getID(),
                         cellIndex);
                 ues.erase(ues.begin() + i);
@@ -458,7 +458,7 @@ IAvailiableRAO* Cell::getAvailiableRAO(){
 
 // destructor
 Cell::~Cell(){
-    printf("cell destructor\n");
+    SPDLOG_TRACE("cell destructor");
     delete mRA;
     delete prachConfig;
     delete availiableRAO;

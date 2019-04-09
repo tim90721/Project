@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "IAvailiableRAO.h"
 #include "IPRACHConfig.h"
+#include "include_log.h"
 
 class AvailiableRAO : public IAvailiableRAO{
     private:

@@ -61,14 +61,14 @@ void UE::setXY(int x, int y){
 void UE::setBeam(int cellIndex, int beamIndex, int beamStrength){
     if(beamStrength > this->beamStrength){
         // new beam is better
-        //printf("new beam is better than original one\n");
+        SPDLOG_TRACE("new beam is better than original one");
         this->cellIndex = cellIndex;
         this->beamIndex = beamIndex;
         this->beamStrength = beamStrength;
         return;
     }
     // old beam is better
-    //printf("old beam is better\n");
+    SPDLOG_TRACE("old beam is better\n");
 }
 
 // receive SI
@@ -82,7 +82,7 @@ int UE::receiveSI(Cell *cell){
     if(cell->getCellIndex() == this->cellIndex){
         // TODO: set ssb-perrach-OccasionAndCBRA-preambles
         // TODO: set CRE(future work)
-        printf("UE %lu receive cell index %d, beam index %d system information\n", 
+        SPDLOG_TRACE("UE {0} receive cell index {1}, beam index {2} system information", 
                 id,
                 cell->getCellIndex(),
                 beamIndex);
@@ -100,8 +100,8 @@ int UE::receiveSI(Cell *cell){
         endRAO = startRAO + nRAO;
         return 0;
     }
-    printf("UE: %lu Other cell is better, doesn't need to receive cell index %d SI\n", id, cell->getCellIndex());
-    printf("UE: %lu deregister from cell :%d\n", 
+    SPDLOG_TRACE("UE: {0} Other cell is better, doesn't need to receive cell index {1} SI", id, cell->getCellIndex());
+    SPDLOG_TRACE("UE: {0} deregister from cell: {1}", 
             id,
             cell->getCellIndex());
     cell->deregisterCell(this);
@@ -111,40 +111,42 @@ int UE::receiveSI(Cell *cell){
 // do the RA procedure
 // if is testing, UE won't send preamble
 void UE::doRA(){
-    printf("UE %lu doing RA\n", id);
+    SPDLOG_TRACE("UE {0} doing RA", id);
     if(isTest || !preambleTransmitted){
         checkRA();
         if(raStartRAO != -1 && raEndRAO != -1){
-            printf("current subframe is for UE %lu RA\n", id);
-            printf("UE %lu: ra start RAO: %d\tra end RAO: %d\n", 
+            SPDLOG_TRACE("current subframe is for UE {0} RA", id);
+            SPDLOG_TRACE("UE {0}: ra start RAO: {1}\tra end RAO: {2}", 
                     id,
                     raStartRAO,
                     raEndRAO);
             // store raos index with subframeRAOStart to subframeRAOEnd
             storeRAOsforRA(availiableRAO->getStartRAOofSubframe(),
                     availiableRAO->getEndRAOofSubframe());
-            printf("number of rao: %d\n", raos.size());
-            printf("rao index: ");
+            SPDLOG_TRACE("number of rao: %d\n", raos.size());
+            SPDLOG_TRACE("rao index: ");
             for(unsigned int i = 0;i < raos.size();i++)
-                printf("%4d", raos[i]);
-            printf("\n");
+                SPDLOG_TRACE("{:4d}", raos[i]);
             if(!isTest)
                 transmitMsg1();
             else
-                printf("testing\n");
+                SPDLOG_TRACE("is testing");
         }
         else
-            printf("current subframe is not for UE %lu RA\n", id);
+            SPDLOG_TRACE("current subframe is not for UE {0} RA", id);
     }
     else if (preambleTransmitted && rarReceived && !msg3Transmitted){
         // if preamble is transmitted and rar received
         transmitMsg3();
     }
     else if(preambleTransmitted && rarReceived && msg3Transmitted && raSuccess)
-        printf("RA already success, wait for remove from simulation\n");
+        SPDLOG_TRACE("UE {0} RA already success, wait for remove from simulation", id);
     else{
-        printf("%d, %d, %d\n", preambleTransmitted, msg3Transmitted, raSuccess);
-        printf("something wrong!!!\n");
+        SPDLOG_ERROR("preamble transmitted: {0}, msg3 transmitted: {1}, ra success: {2}", 
+                preambleTransmitted, 
+                msg3Transmitted, 
+                raSuccess);
+        SPDLOG_ERROR("something wrong!!!");
     }
 }
 
@@ -152,18 +154,18 @@ void UE::doRA(){
 // rars: cell transmits rar
 // cellIndex: cell index
 void UE::receiveRAR(const vector<RAR*>& rars, const int cellIndex){
-    printf("rar cell index: %d, select cell index: %d\n",
+    SPDLOG_TRACE("rar cell index: {0}, select cell index: {1}",
             cellIndex, candidateCell->getCellIndex());
     if(cellIndex != candidateCell->getCellIndex() 
             || (!preambleTransmitted || rarReceived || msg3Transmitted))
         return;
-    printf("UE %lu receiving RAR\n", id);
+    SPDLOG_TRACE("UE {0} receiving RAR", id);
     int index = searchRAR(rars, raos[selectRAOIndex], selectPreambleIndex);
-    printf("rar index: %d\n", index);
-    printf("select rao index: %d, searched rao index: %d\n",
+    SPDLOG_TRACE("rar index: {0}", index);
+    SPDLOG_TRACE("select rao index: {0}, searched rao index: {1}",
             raos[selectRAOIndex],
             rars[index]->raoIndex);
-    printf("select preamble index: %d, searched preamble index: %d\n",
+    SPDLOG_TRACE("select preamble index: {0}, searched preamble index: {1}",
             selectPreambleIndex,
             rars[index]->preambleIndex);
     uplinkResourceIndex = rars[index]->uplinkResourceIndex;
@@ -175,7 +177,7 @@ void UE::receiveRAR(const vector<RAR*>& rars, const int cellIndex){
         msg3Frame++;
         msg3Subframe = 0;
     }
-    printf("receive complete\n");
+    SPDLOG_TRACE("receive complete");
 }
 
 // set active frame index and subframe index
@@ -190,20 +192,20 @@ void UE::setActiveTime(const int frameIndex, const int subframeIndex){
 // if RA can be performed, update raStartRAO and raEndRAO
 // otherwise, raStartRAO and raEndRAO is -1
 void UE::checkRA(){
-    printf("checking ra availiable\n");
+    SPDLOG_TRACE("checking ra availiable");
     int frameIndex = candidateCell->getFrameIndex();
     int subframeIndex = candidateCell->getSubframeIndex();
-    printf("frame: %d, subframe: %d\n", frameIndex, subframeIndex);
+    SPDLOG_TRACE("frame: {0}, subframe: {1}", frameIndex, subframeIndex);
     raos.clear();
     if(availiableRAO->isRASubframe(frameIndex, subframeIndex)){
-        printf("UE %lu: frame index: %d, subframe Index: %d is for RA\n",
+        SPDLOG_TRACE("UE {0}: frame index: {1}, subframe Index: {2} is for RA\n",
                 id,
                 frameIndex,
                 subframeIndex);
         updateRAOforRA();
     }
     else{
-        printf("UE %lu: frame index: %d, subframe index: %d not for RA\n", 
+        SPDLOG_TRACE("UE {0}: frame index: {1}, subframe index: {2} not for RA\n", 
                 id,
                 frameIndex,
                 subframeIndex);
@@ -222,11 +224,14 @@ void UE::updateRAOforRA(){
     const int subframeStartRAO = availiableRAO->getStartRAOofSubframe();
     const int subframeEndRAO = availiableRAO->getEndRAOofSubframe();
     const int totalNeedRAO = availiableRAO->getTotalNeedRAO();
-    printf("UE %lu: start RAO: %d, end RAO: %d\n",
+    SPDLOG_INFO("UE {0}: ssb per rao: {1}, msg1FDM: {2}, nBeams: {3}, start RAO: {4}, end RAO: {5}",
             id,
+            availiableRAO->getSSBPerRAO(),
+            availiableRAO->getMsg1FDM(),
+            candidateCell->getnBeams(),
             startRAO,
             endRAO);
-    printf("subframe start RAO: %d, subframe end RAO: %d\n", 
+    SPDLOG_INFO("subframe start RAO: {0}, subframe end RAO: {1}", 
             availiableRAO->getStartRAOofSubframe(),
             availiableRAO->getEndRAOofSubframe());
     updateRAOforRA(startRAO, 
@@ -287,7 +292,7 @@ void UE::storeRAOsforRA(const int subframeStartRAO, const int subframeEndRAO){
     const int totalNeedRAO = availiableRAO->getTotalNeedRAO();
     const int totalRAOPerSubframe = availiableRAO->getTotalRAOPerSubframe();
 
-    printf("raStartRAO: %d, raEndRAO: %d\n", raStartRAO, raEndRAO);
+    SPDLOG_TRACE("raStartRAO: {0}, raEndRAO: {1}", raStartRAO, raEndRAO);
     for(int i = 0;i < raEndRAO - raStartRAO + 1;i++){
         raos.push_back(raStartRAO + i);
     }
@@ -325,12 +330,13 @@ void UE::transmitMsg1(){
     raSubframe = candidateCell->getSubframeIndex();
     raSSBPerRAO = candidateCell->getSSBPerRAO();
     raMsg1FDM = candidateCell->getMsg1FDM();
-    printf("start preambe number: %d, number of preamble: %d\n", 
+    SPDLOG_TRACE("start preambe number: {0}, number of preamble: {1}", 
             startPreamble, 
             nPreambles);
     selectRAOIndex = getRnd(0, raos.size() - 1);
     selectPreambleIndex = getRnd(startPreamble, startPreamble + nPreambles - 1);
-    printf("select rao: %d, select preamble: %d\n", 
+    SPDLOG_INFO("UE {0} select rao: {1}, select preamble: {2}", 
+            id,
             raos[selectRAOIndex], 
             selectPreambleIndex);
     candidateCell->receivePreamble(raos[selectRAOIndex], 
@@ -343,7 +349,7 @@ void UE::transmitMsg3(){
     const int frame = candidateCell->getFrameIndex();
     const int subframe = candidateCell->getSubframeIndex();
     if(frame != msg3Frame || subframe != msg3Subframe){
-        printf("current frame %d subframe %d can not transmit msg3\n",
+        SPDLOG_TRACE("current frame {0} subframe {1} can not transmit msg3",
                 frame,
                 subframe);
         return;
@@ -464,22 +470,22 @@ bool UE::receiveCR(const vector<Msg3*>& CRs, const int cellIndex){
     if(cellIndex != candidateCell->getCellIndex() || !msg3Transmitted)
         return false;
     int index = searchMsg3(CRs, tc_rnti);
-    printf("contention resolution index: %d\n", index);
-    printf("UE TC-RNTI: %d, searched TC-RNTI: %d\n",
+    SPDLOG_TRACE("contention resolution index: {0}", index);
+    SPDLOG_TRACE("UE TC-RNTI: {0], searched TC-RNTI: {1}",
             tc_rnti,
             CRs[index]->tc_rnti);
-    printf("UE id: %lu, searched UE id: %lu\n",
+    SPDLOG_TRACE("UE id: {0}, searched UE id: {1}",
             id,
             CRs[index]->ueIndex);
     if(tc_rnti == CRs[index]->tc_rnti
             && id == CRs[index]->ueIndex){
-        printf("RA success!!!\n");
+        SPDLOG_INFO("UE {0} RA success!!!", id);
         departedFrame = candidateCell->getFrameIndex();
         departedSubframe = candidateCell->getSubframeIndex();
         raSuccess = true;
     }
     else{
-        printf("RA failed\n");
+        SPDLOG_INFO("UE {0} RA failed", id);
         raSuccess = false;
         preambleTransmitted = false;
         rarReceived = false;
@@ -548,5 +554,5 @@ vector<int>& UE::getRAOs(){
 
 // destructor
 UE::~UE(){
-    printf("ue deleted\n");
+    SPDLOG_TRACE("ue deleted");
 }

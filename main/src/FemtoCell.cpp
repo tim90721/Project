@@ -53,7 +53,7 @@ void FemtoCell::updateBeamsAngle(int diffX, int diffY){
 
 // destructor
 FemtoCell::~FemtoCell(){
-    printf("Femto cell destructor\n");
+    SPDLOG_TRACE("Femto cell destructor");
     for(auto it = beams.begin();it != beams.end();it++){
         delete (*it);
     }

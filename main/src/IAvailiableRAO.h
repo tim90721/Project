@@ -10,6 +10,7 @@ class IAvailiableRAO{
         virtual int getEndRAOofSubframe() = 0;
         virtual int getTotalNeedRAO() = 0;
         virtual int getTotalRAOPerSubframe() = 0;
+        virtual int getMsg1FDM() = 0;
         virtual double getSSBPerRAO() = 0;
         virtual bool isRASubframe(const int frameIndex, const int subframeIndex) = 0;
 };

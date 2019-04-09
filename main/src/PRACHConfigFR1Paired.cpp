@@ -47,7 +47,7 @@ void PRACHConfigFR1::configRA(){
             y = 0;
             break;
         default:
-            printf("prach configuration %d not support\n", prachConfigIndex);
+            SPDLOG_CRITICAL("prach configuration %d not support\n", prachConfigIndex);
     }
 }
 

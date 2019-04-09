@@ -55,7 +55,7 @@ void MacroCell::updateBeamsAngle(int diffX, int diffY){
 
 // destructor
 MacroCell::~MacroCell(){
-    printf("Macro cell destructor\n");
+    SPDLOG_TRACE("Macro cell destructor");
     for(auto it = beams.begin();it != beams.end();it++){
         delete (*it);
     }

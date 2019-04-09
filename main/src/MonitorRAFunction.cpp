@@ -6,14 +6,14 @@
 MonitorRAFunction::MonitorRAFunction(AvailiableRAO *availiableRAO, IPRACHConfig *prachConfig) :
     successUEs(0), failedUEs(0), raCount(0), 
     availiableRAO(availiableRAO), prachConfig(prachConfig){
-    setbuf(stdout, NULL);
+    //setbuf(stdout, NULL);
     tau = getTau();
-    printf("tau: %d\n", tau);
+    SPDLOG_DEBUG("tau: {0}", tau);
     nSSB = availiableRAO->getNumberofSSB();
     ssbPerRAO = availiableRAO->getSSBPerRAO();
     delta = getDelta(availiableRAO->getNumberofPreambles(),
             availiableRAO->getSSBPerRAO());
-    printf("delta: %f\n", delta);
+    SPDLOG_DEBUG("delta: {0}", delta);
 }
 
 // record ra ues condition
@@ -28,28 +28,28 @@ void MonitorRAFunction::recordUEsCondition(const int success, const int failed){
 // update rao configurations
 // TODO: complete comment
 void MonitorRAFunction::updateRAOs(){
-    printf("updating rao configurations\n");
+    SPDLOG_DEBUG("updating rao configurations\n");
     //if(raCount == 0 || successUEs == 0 /*will remove successUEs condition when predict function is complete*/)
     //    return;
     double totalDelta = delta * raCount;
     double estimateUEs = (double)successUEs * ssbPerRAO * exp(1);
     double newSSBPerRAO = calculateNewSSBPerRAO();
     int newMsg1FDM = getNewMsg1FDMver2(&newSSBPerRAO);
-    printf("old tau: %d\n", tau);
-    printf("success ues: %lu\n", successUEs);
-    printf("failed ues: %lu\n", failedUEs);
-    printf("estimate ues: %f\n", estimateUEs);
-    printf("total delta: %f\n", totalDelta);
-    printf("old ssb per rao: %f\n", ssbPerRAO);
-    printf("old msg1FDM: %d\n", availiableRAO->getMsg1FDM());
+    SPDLOG_TRACE("old tau: {0}", tau);
+    SPDLOG_TRACE("success ues: {0}", successUEs);
+    SPDLOG_TRACE("failed ues: {0}", failedUEs);
+    SPDLOG_TRACE("estimate ues: {0}", estimateUEs);
+    SPDLOG_TRACE("total delta: {0}", totalDelta);
+    SPDLOG_TRACE("old ssb per rao: {0}", ssbPerRAO);
+    SPDLOG_TRACE("old msg1FDM: {0}", availiableRAO->getMsg1FDM());
     availiableRAO->setSSBPerRAO(newSSBPerRAO);
     availiableRAO->setMsg1FDM(newMsg1FDM);
     availiableRAO->updateAssociationFrame();
     ssbPerRAO = newSSBPerRAO;
     tau = getTau();
     delta = getDelta(availiableRAO->getNumberofPreambles(), newSSBPerRAO);
-    printf("new ssb per rao: %f\n", newSSBPerRAO);
-    printf("new msg1FDM: %d\n", newMsg1FDM);
+    SPDLOG_TRACE("new ssb per rao: {0}", newSSBPerRAO);
+    SPDLOG_TRACE("new msg1FDM: {0}", newMsg1FDM);
     successUEs = 0;
     failedUEs = 0;
     raCount = 0;
@@ -80,7 +80,7 @@ int MonitorRAFunction::getTau(){
 int MonitorRAFunction::getTau(const int RAConfigPeriod, const int totalNeedRAO, const int totalRAOPerSubframe, const int nRASubframe){
     double ssbTotalNeedSubframe = (ceil((double)totalNeedRAO / (double)totalRAOPerSubframe))
         * ((double) (10 * RAConfigPeriod) / (double) nRASubframe);
-    printf("total need subframe for mapping all ssb in period: %f\n",
+    SPDLOG_TRACE("total need subframe for mapping all ssb in period: {0}",
             ssbTotalNeedSubframe);
     if(ssbTotalNeedSubframe > 10){
         return (ceil(log(ssbTotalNeedSubframe / 10.0) / log(2)) * 10);
@@ -111,7 +111,7 @@ int MonitorRAFunction::getNewMsg1FDM(const double newSSBPerRAO){
             prachConfig->getNumberofRASubframe());
     int msg1FDM = availiableRAO->getMsg1FDM();
     int i = log(msg1FDM) / log(2);
-    printf("msg1fdm index: %d\n", i);
+    SPDLOG_TRACE("msg1fdm index: {0}", i);
     int newMsg1FDM = fRAO[i];
     if(newSSBPerRAO < ssbPerRAO && newTau > tau && newTau > 5 && msg1FDM < 8){
         while(newMsg1FDM < 8){
@@ -127,7 +127,7 @@ int MonitorRAFunction::getNewMsg1FDM(const double newSSBPerRAO){
             }
         }
         if(newMsg1FDM == fRAO[3]){
-            printf("msg1FDM reach maximum capacity\n");
+            SPDLOG_INFO("msg1FDM reach maximum capacity\n");
         }
         // method 1 improved
         else{
@@ -148,9 +148,9 @@ int MonitorRAFunction::getNewMsg1FDM(const double newSSBPerRAO){
             }
         }
         if(newMsg1FDM == fRAO[0])
-            printf("msg1FDM reach minimum capacity\n");
+            SPDLOG_INFO("msg1FDM reach minimum capacity\n");
     }
-    printf("new tau: %d\n", newTau);
+    SPDLOG_TRACE("new tau: {0}", newTau);
     return newMsg1FDM;
 }
 
@@ -161,14 +161,14 @@ int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
             prachConfig->getNumberofRASubframe());
     int msg1FDM = availiableRAO->getMsg1FDM();
     int i = log(msg1FDM) / log(2);
-    printf("msg1fdm index: %d\n", i);
+    SPDLOG_TRACE("msg1fdm index: {0}", i);
     double newMsg1FDM = pow(2, i);
     if(*newSSBPerRAO < ssbPerRAO && newTau > tau && newTau > 5 && msg1FDM < 8){
         newMsg1FDM = (((double)(successUEs * ssbPerRAO * exp(1)))
             / ((double)availiableRAO->getNumberofPreambles() * nSSB))
             * (((double)availiableRAO->getTotalNeedRAO())
             / ((double)prachConfig->getNumberofTimeDomainRAO() * raCount));
-        printf("new msg1FDM in double: %f\n", newMsg1FDM);
+        SPDLOG_TRACE("new msg1FDM in double: {0}", newMsg1FDM);
         newMsg1FDM = pow(2, ceil(log(newMsg1FDM) / log(2)));
         *newSSBPerRAO = ssbPerRAO;
         if(newMsg1FDM > 8){
@@ -177,7 +177,8 @@ int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
                 * (((double)prachConfig->getNumberofTimeDomainRAO() * newMsg1FDM)
                 / (double)availiableRAO->getTotalNeedRAO())
                 * raCount;
-            printf("new ssb per rao: %f\n", *newSSBPerRAO);
+            SPDLOG_TRACE("new ssb per rao: {0}", *newSSBPerRAO);
+            SPDLOG_INFO("msg1-FDM reach maximum capacity\n");
             newMsg1FDM = 8;
         }
     }
@@ -195,9 +196,9 @@ int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
             }
         }
         if(i == 0)
-            printf("msg1FDM reach minimum capacity\n");
+            SPDLOG_INFO("msg1FDM reach minimum capacity\n");
     }
-    printf("new tau: %d\n", newTau);
+    SPDLOG_TRACE("new tau: {0}", newTau);
     return newMsg1FDM;
 }
 
@@ -210,9 +211,9 @@ double MonitorRAFunction::getDelta(const int nPreambles, const double ssbPerRAO)
     //printf("ssb per rao: %f\n", ssbPerRAO);
     double newDelta = ((double)(nPreambles * nSSB)) / (exp(1) * ssbPerRAO) 
         * ((double)(prachConfig->getNumberofTimeDomainRAO() * availiableRAO->getMsg1FDM()) / (double)availiableRAO->getTotalNeedRAO());
-    printf("time domain raos: %d\n", prachConfig->getNumberofTimeDomainRAO());
-    printf("msg1-FDM: %d\n", availiableRAO->getMsg1FDM());
-    printf("total need raos: %d\n", availiableRAO->getTotalNeedRAO());
+    SPDLOG_TRACE("time domain raos: {0}", prachConfig->getNumberofTimeDomainRAO());
+    SPDLOG_TRACE("msg1-FDM: {0}", availiableRAO->getMsg1FDM());
+    SPDLOG_TRACE("total need raos: {0}", availiableRAO->getTotalNeedRAO());
     return newDelta;
 }
 
@@ -221,18 +222,18 @@ double MonitorRAFunction::getDelta(const int nPreambles, const double ssbPerRAO)
 double MonitorRAFunction::calculateNewSSBPerRAO(){
     double newSSBPerRAO = (availiableRAO->getNumberofPreambles() * nSSB) / (successUEs * exp(1))
         * ((double)(prachConfig->getNumberofTimeDomainRAO() * availiableRAO->getMsg1FDM()) / (double)availiableRAO->getTotalNeedRAO()) * raCount;
-    printf("new ssb per rao in double: %f\n", newSSBPerRAO);
+    SPDLOG_TRACE("new ssb per rao in double: {0}", newSSBPerRAO);
     if(newSSBPerRAO > nSSB && nSSB != 64){
         return nSSB;
     }
     if(sRAO[0] > newSSBPerRAO){
-        printf("maximum ssb per rao reached\n");
+        SPDLOG_INFO("maximum ssb per rao reached\n");
         return sRAO[0];
     }
     int i = 0;
     while(i < 7 && !(sRAO[i] <= newSSBPerRAO && newSSBPerRAO <= sRAO[i + 1]))
         i++;
-    printf("new ssb per rao: %f\n", sRAO[i]);
+    SPDLOG_TRACE("new ssb per rao: {0}", sRAO[i]);
     return sRAO[i];
 }
 

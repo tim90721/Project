@@ -1,4 +1,5 @@
 #include "mainGUI.h"
+#include "include_log.h"
 
 // Constructor
 // Initialize Model and UI
@@ -193,7 +194,7 @@ void MainGUI::connectSignals(){
 
 // handle start button click event
 void MainGUI::handleButtonStartClick(){
-    printf("start button click\n");
+    SPDLOG_TRACE("start button click");
     model->setSimulationTime(lEditSimulationTime->text().toInt());
     model->setArrivalRate(lEditArrivalRate->text().toInt());
     model->startSimulation();
@@ -201,43 +202,43 @@ void MainGUI::handleButtonStartClick(){
 
 // handle radio button 4 beams click event
 void MainGUI::handle4BeamsRadBtnClick(){
-    printf("4 beams\n");
+    SPDLOG_TRACE("4 beams\n");
     model->setnBeams(beams4);
 }
 
 // handle radio button 8 beams click event
 void MainGUI::handle8BeamsRadBtnClick(){
-    printf("8 beams\n");
+    SPDLOG_TRACE("8 beams\n");
     model->setnBeams(beams8);
 }
 
 // handle radio button 64 beams click event
 void MainGUI::handle64BeamsRadBtnClick(){
-    printf("64 beams\n");
+    SPDLOG_TRACE("64 beams\n");
     model->setnBeams(beams64);
 }
 
 // handle radio button marco click event
 void MainGUI::handleMacroRadBtnClick(){
-    printf("Macro gNB selected\n");
+    SPDLOG_TRACE("Macro gNB selected\n");
     model->setCellType(celltype::Macro);
 }
 
 // handle radio button femto click event
 void MainGUI::handleFemtoRadBtnClick(){
-    printf("Femto gNB selected\n");
+    SPDLOG_TRACE("Femto gNB selected\n");
     model->setCellType(celltype::Femto);
 }
 
 // handle FR1 radio button click event
 void MainGUI::handleFR1RadBtnClick(){
-    printf("FR1 selected\n");
+    SPDLOG_TRACE("FR1 selected\n");
     model->setFR(iFR1);
 }
 
 // handle FR2 radio button click event
 void MainGUI::handleFR2RadBtnClick(){
-    printf("FR2 selected\n");
+    SPDLOG_TRACE("FR2 selected\n");
     model->setFR(iFR2);
 }
 

@@ -3,6 +3,7 @@
 
 #include <QPainter>
 #include "includefile.h"
+#include "include_log.h"
 #include "IDrawable.h"
 #include "Beam.h"
 #include "UE.h"

@@ -62,17 +62,23 @@ void AvailiableRAO::setSSBPerRAO(double ssbPerRAO){
 // frameIndex: frame index
 // subframeIndex: subframe index
 void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const int subframeIndex){
-    printf("updating rao of subframe\n");
+    SPDLOG_TRACE("updating rao of subframe");
     if(isRASubframe(frameIndex, subframeIndex)){
-        printf("next subframe is ra subframe\n");
+        SPDLOG_TRACE("next subframe is ra subframe");
         int frame = frameIndex % associationFrame;
         frame = frame / (prachConfig->getPrachConfigPeriod() / 10);
         startRAO = frame * totalRAOPerFrame;
         vector<int> RASubframe = prachConfig->getRASubframe();
         for(unsigned int i = 0;subframeIndex != RASubframe[i];i++)
             startRAO += totalRAOPerSubframe;
+        SPDLOG_INFO("nSSB: {0}, msg1FDM: {1}, ssb per rao: {2}, time domain rao per subframe: {3}, ra subframe in a frame: {4}",
+                nSSB,
+                msg1FDM,
+                ssbPerRAO,
+                prachConfig->getNumberofTimeDomainRAO(),
+                prachConfig->getNumberofRASubframe());
         if(associationFrame == 1){
-            printf("association frame is 1\n");
+            SPDLOG_INFO("association frame is 1");
             // when total rao per frame can map all ssb more than 1 time
             int times = totalRAOPerFrame / totalNeedRAO;
             if((startRAO / totalNeedRAO) >= times){
@@ -103,27 +109,27 @@ void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const i
             }
         }
         else if(associationFrame > 1){
-            printf("association frame is not 1\n");
+            SPDLOG_INFO("association frame is not 1");
             // a frame can not map all SSB to a RAO
             int times = 1;
-            printf("start RAO: %d\n", startRAO);
-            printf("totalNeedRAO: %d\n", totalNeedRAO);
-            printf("end RAO: %d\n", endRAO);
-            printf("ssb per rao: %f\n" , ssbPerRAO);
+            SPDLOG_TRACE("start RAO: {0}", startRAO);
+            SPDLOG_TRACE("totalNeedRAO: {0}", totalNeedRAO);
+            SPDLOG_TRACE("end RAO: {0}", endRAO);
+            SPDLOG_TRACE("ssb per rao: {0}" , ssbPerRAO);
             if(startRAO / totalNeedRAO >= times){
                 startRAO = -1;
                 endRAO = -1;
                 return;
             }
-            printf("start rao calculated\n");
+            SPDLOG_TRACE("start rao calculated");
             endRAO = startRAO + totalRAOPerSubframe - 1;
             if(endRAO / totalNeedRAO >= times)
                 endRAO = times * totalNeedRAO - 1;
-            printf("end rao calculated\n");
+            SPDLOG_TRACE("end rao calculated");
         }
         //endRAO = startRAO + totalRAOPerSubframe - 1;
     }
-    printf("complete\n");
+    SPDLOG_TRACE("update complete");
 }
 
 // update association frame
@@ -131,7 +137,7 @@ void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const i
 void AvailiableRAO::updateAssociationFrame(){
     // calculate association period for this PRACH configuration
     associationPeriod = (totalNeedRAO / totalRAOPerFrame);
-    printf("totalNeedRAO: %d\ntotalRAOPerFrame: %d\ntotalRAOPerSubframe: %d\n", 
+    SPDLOG_INFO("totalNeedRAO: {0}, totalRAOPerFrame: {1}, totalRAOPerSubframe: {2}", 
             totalNeedRAO,
             totalRAOPerFrame,
             totalRAOPerSubframe);
@@ -153,7 +159,7 @@ void AvailiableRAO::updateAssociationFrame(){
         }
         associationFrame = association;
     }
-    printf("associationFrame: %d\n", associationFrame);
+    SPDLOG_INFO("associationFrame: {0}", associationFrame);
 }
 
 // get number of SSB of a cell

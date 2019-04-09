@@ -3,6 +3,7 @@
 
 #include <QPainter>
 #include <random>
+#include "include_log.h"
 #include "Beam.h"
 #include "Cell.h"
 #include "IPRACHConfig.h"

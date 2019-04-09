@@ -2,6 +2,7 @@
 #define PRACH_CONFIGURATION
 
 #include "IPRACHConfig.h"
+#include "include_log.h"
 
 class PRACHConfig : public IPRACHConfig{
     protected:

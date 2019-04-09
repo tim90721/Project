@@ -3,6 +3,7 @@
 
 #include "AvailiableRAO.h"
 #include "IPRACHConfig.h"
+#include "include_log.h"
 
 #include <cmath>
 

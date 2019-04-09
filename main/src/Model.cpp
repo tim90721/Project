@@ -193,7 +193,7 @@ void Model::transmitUL(){
 void Model::startSimulation(){
     initializeOutFiles();
     if(!outFileUE){
-        printf("ue output file create failed!\n");
+        SPDLOG_CRITICAL("ue output file create failed!\n");
         exit(1);
     }
     //////////////////////// testing ////////////////////////
@@ -203,7 +203,7 @@ void Model::startSimulation(){
     remainingUEs = 0;
     bool isTimesUp = false;
     if(simulationTime == 0 || cells.size() == 0){
-        printf("no cell in simulation or simualtion time is 0\n");
+        SPDLOG_CRITICAL("no cell in simulation or simualtion time is 0");
         return;
     }
     for(unsigned int i = 0;i < cells.size();i++){
@@ -221,13 +221,13 @@ void Model::startSimulation(){
         }
         while(remainingUEs){
             run(isTimesUp);
-            printf("remaining UEs: %d\n", remainingUEs);
+            SPDLOG_TRACE("remaining UEs: {0}", remainingUEs);
         }
     }
     if(UEs.size() > 0){
         traverseUEs();
     }
-    printf("simulation: %d complete\n", simulationCounter++);
+    SPDLOG_INFO("simulation: {0} complete", simulationCounter++);
     recordCellsInfo();
     restoreCells2Initial();
     closeOutFiles();
@@ -240,7 +240,7 @@ void Model::startSimulation(){
 void Model::setSimulationTime(int simulationTime){
     // model store simulation time in msec
     this->simulationTime = simulationTime * 10;
-    //printf("%d\n", this->simulationTime);
+    SPDLOG_TRACE("{0}", this->simulationTime);
 }
 
 // set number of beams
@@ -258,7 +258,7 @@ void Model::setCellType(const celltype::CellType type){
 // set UE arrival rate
 // arrivalRate: ue arrival rate
 void Model::setArrivalRate(const unsigned int arrivalRate){
-    printf("arrival rate: %u\n", arrivalRate);
+    SPDLOG_TRACE("arrival rate: {0}", arrivalRate);
     ueArrivalRate = arrivalRate;
 }
 
@@ -287,23 +287,23 @@ void Model::setFR(const unsigned int FR){
 // isTimesUp: when simulationTime is 0, set this value to true
 // for proceeding remaining UEs RA
 void Model::run(bool isTimesUp){
-    printf("=================info=================\n");
+    SPDLOG_INFO("=================info=================");
     recordCellsInfo();
     if(!isTimesUp)
         generateRandomUEs();
-    printf("frame: %d\nsubframe: %d\n", 
+    SPDLOG_INFO("frame: {0}, subframe: {1}", 
             cells.at(0)->getFrameIndex(),
             cells.at(0)->getSubframeIndex());
     traverseUEs();
     notifyAll();
     transmitDL();
-    printf("downlink transmit complete\n");
+    SPDLOG_INFO("downlink transmit complete");
     transmitUL();
-    printf("uplink transmit complete\n");
+    SPDLOG_INFO("uplink transmit complete");
     for(unsigned int j = 0;j < cells.size();j++){
         cells.at(j)->updateSubframe();
     } 
-    printf("=================info=================\n");
+    SPDLOG_INFO("=================info=================");
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
@@ -317,7 +317,7 @@ void Model::run(bool isTimesUp){
 // then calculate random x, y point based on distance and angle
 void Model::generateRandomUEs(){
     Cell *cell;
-    printf("generating ues\n");
+    SPDLOG_TRACE("generating ues\n");
     for(int i = 0;i < ueArrivalRate;i++){
         int rndCellIndex = getRnd(0, cells.size() - 1);
 
@@ -419,7 +419,7 @@ void Model::restoreCells2Initial(){
 
 // destructor
 Model::~Model(){
-    printf("model destructor\n");
+    SPDLOG_TRACE("model destructor");
     for(auto it = cells.begin();it != cells.end();it++){
         delete (*it);
     }

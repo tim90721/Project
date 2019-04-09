@@ -19,6 +19,7 @@
 #include "FemtoCell.h"
 #include "UE.h"
 #include "CommonMath.h"
+#include "include_log.h"
 
 class Model : public IPaintSubject{
     public:
