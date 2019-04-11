@@ -66,6 +66,7 @@ class Cell : public IDrawable{
         double getCellSpanAngle();
         unsigned long getSuccessUEs();
         unsigned long getFailedUEs();
+        double getEstimateUEs();
         bool hasRAR();
         celltype::CellType getCellType();
         IPRACHConfig *getPRACHConfig();
@@ -83,6 +84,7 @@ class Cell : public IDrawable{
         int raResponseWindow;
         unsigned long successUEs;
         unsigned long failedUEs;
+        double estimateUEs;
         double cellAngle;
         double startAngle;
         double endAngle;

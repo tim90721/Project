@@ -83,6 +83,7 @@ class Model : public IPaintSubject{
         unsigned int FR;
         ofstream outFileUE;
         ofstream outFileCell;
+        std::string curTime;
 };
         
 #endif

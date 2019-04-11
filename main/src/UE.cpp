@@ -224,14 +224,14 @@ void UE::updateRAOforRA(){
     const int subframeStartRAO = availiableRAO->getStartRAOofSubframe();
     const int subframeEndRAO = availiableRAO->getEndRAOofSubframe();
     const int totalNeedRAO = availiableRAO->getTotalNeedRAO();
-    SPDLOG_INFO("UE {0}: ssb per rao: {1}, msg1FDM: {2}, nBeams: {3}, start RAO: {4}, end RAO: {5}",
+    SPDLOG_TRACE("UE {0}: ssb per rao: {1}, msg1FDM: {2}, nBeams: {3}, start RAO: {4}, end RAO: {5}",
             id,
             availiableRAO->getSSBPerRAO(),
             availiableRAO->getMsg1FDM(),
             candidateCell->getnBeams(),
             startRAO,
             endRAO);
-    SPDLOG_INFO("subframe start RAO: {0}, subframe end RAO: {1}", 
+    SPDLOG_TRACE("subframe start RAO: {0}, subframe end RAO: {1}", 
             availiableRAO->getStartRAOofSubframe(),
             availiableRAO->getEndRAOofSubframe());
     updateRAOforRA(startRAO, 
@@ -335,7 +335,7 @@ void UE::transmitMsg1(){
             nPreambles);
     selectRAOIndex = getRnd(0, raos.size() - 1);
     selectPreambleIndex = getRnd(startPreamble, startPreamble + nPreambles - 1);
-    SPDLOG_INFO("UE {0} select rao: {1}, select preamble: {2}", 
+    SPDLOG_TRACE("UE {0} select rao: {1}, select preamble: {2}", 
             id,
             raos[selectRAOIndex], 
             selectPreambleIndex);
@@ -479,13 +479,13 @@ bool UE::receiveCR(const vector<Msg3*>& CRs, const int cellIndex){
             CRs[index]->ueIndex);
     if(tc_rnti == CRs[index]->tc_rnti
             && id == CRs[index]->ueIndex){
-        SPDLOG_INFO("UE {0} RA success!!!", id);
+        SPDLOG_TRACE("UE {0} RA success!!!", id);
         departedFrame = candidateCell->getFrameIndex();
         departedSubframe = candidateCell->getSubframeIndex();
         raSuccess = true;
     }
     else{
-        SPDLOG_INFO("UE {0} RA failed", id);
+        SPDLOG_TRACE("UE {0} RA failed", id);
         raSuccess = false;
         preambleTransmitted = false;
         rarReceived = false;

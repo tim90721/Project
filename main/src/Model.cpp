@@ -17,7 +17,7 @@ Model::Model(){
     nBeams = 4;
     FR = 0;
     prachConfigIndex = 16;
-    outputFolderName = "result/";
+    outputFolderName = "./result/";
     outputFileExtension = ".csv";
     outputFileUE = "UE";
     outputFileCell = "Cell";
@@ -192,7 +192,7 @@ void Model::transmitUL(){
 // simulation will then proceed until all UEs success
 void Model::startSimulation(){
     initializeOutFiles();
-    if(!outFileUE){
+    if(!outFileUE || !outFileCell){
         SPDLOG_CRITICAL("ue output file create failed!\n");
         exit(1);
     }
@@ -203,7 +203,7 @@ void Model::startSimulation(){
     remainingUEs = 0;
     bool isTimesUp = false;
     if(simulationTime == 0 || cells.size() == 0){
-        SPDLOG_CRITICAL("no cell in simulation or simualtion time is 0");
+        SPDLOG_WARN("no cell in simulation or simualtion time is 0");
         return;
     }
     for(unsigned int i = 0;i < cells.size();i++){
@@ -230,8 +230,8 @@ void Model::startSimulation(){
     SPDLOG_INFO("simulation: {0} complete", simulationCounter++);
     recordCellsInfo();
     restoreCells2Initial();
-    closeOutFiles();
     plotResult();
+    closeOutFiles();
 }
 
 // set the simulation time
@@ -270,7 +270,8 @@ void Model::setPrachConfigIndex(string s){
     int colonIndex = s.find(":");
     string sPrachConfigIndex = s.substr(colonIndex + 1, spaceIndex - colonIndex - 1);
     prachConfigIndex = stoi(sPrachConfigIndex);
-    cout << prachConfigIndex << endl;
+    SPDLOG_TRACE("prach configuration index: {0}", prachConfigIndex);
+    //cout << prachConfigIndex << endl;
 }
 
 // set FR
@@ -297,9 +298,9 @@ void Model::run(bool isTimesUp){
     traverseUEs();
     notifyAll();
     transmitDL();
-    SPDLOG_INFO("downlink transmit complete");
+    SPDLOG_TRACE("downlink transmit complete");
     transmitUL();
-    SPDLOG_INFO("uplink transmit complete");
+    SPDLOG_TRACE("uplink transmit complete");
     for(unsigned int j = 0;j < cells.size();j++){
         cells.at(j)->updateSubframe();
     } 
@@ -379,6 +380,7 @@ void Model::recordCellsInfo(){
             << (*it)->getMsg1FDM() << ", "
             << (*it)->getPrachConfigIndex() << ", " 
             << (*it)->getSuccessUEs() << ", "
+            << (*it)->getEstimateUEs() << ", "
             << (*it)->getFailedUEs() << endl;
     }
 }
@@ -388,25 +390,35 @@ void Model::initializeOutFiles(){
     time_t t = time(nullptr);
     tm tm = *localtime(&t);
     stringstream ss;
-    ss << put_time(&tm, "%Y-%m-%d-%H%M%S");
-    string curTime = ss.str();
-    filenameUE = outputFolderName + curTime + "_" + outputFileUE + outputFileExtension;
-    filenameCell = outputFolderName + curTime + "_" + outputFileCell + outputFileExtension;
+    ss << put_time(&tm, "%Y%m%d_%H%M%S");
+    curTime = ss.str();
+
+    outputFolderName = outputFolderName + curTime 
+        + "_prach-" + to_string(cells[0]->getPrachConfigIndex()) 
+        + "_simu-" + to_string(simulationTime / 10) 
+        + "_arrival-" + to_string(ueArrivalRate) + "/";
+
+    string command = "mkdir " + outputFolderName; 
+    system(command.c_str());
+
+    filenameUE = outputFolderName + outputFileUE + outputFileExtension;
+    filenameCell = outputFolderName + outputFileCell + outputFileExtension;
     outFileUE = ofstream(filenameUE);
     outFileUE << "\"UE ID\", \"Cell ID\", \"Total Beams\", \"Beam Index\", \"SSB per RAO\", \"msg1-FDM\", \"Active Frame\", \"Active Subframe\", \"RA Frame\", \"RA Subframe\", \"Departed Frame\", \"Departed Subframe\", \"Selected RAO Undex\", \"Selected Preamble\", \"Collided\"" << endl;
     outFileCell = ofstream(filenameCell);
-    outFileCell << "\"Cell ID\", \"Total Beams\", \"Current Frame\", \"Current Subframe\", \"SSB per RAO\", \"msg1-FDM\", \"prach-ConfigurationIndex\", \"Success UEs\", \"Failed UEs\"" << endl;
+    outFileCell << "\"Cell ID\", \"Total Beams\", \"Current Frame\", \"Current Subframe\", \"SSB per RAO\", \"msg1-FDM\", \"prach-ConfigurationIndex\", \"Success UEs\", \"Estimate UEs\", \"Failed UEs\"" << endl;
 }
 
 // close output files
 void Model::closeOutFiles(){
     outFileUE.close();
     outFileCell.close();
+    outputFolderName = "./result/";
 }
 
 // plot result done recently
 void Model::plotResult(){
-    string command = "python3 ./plotcode/plot_result.py " + filenameUE + " " + filenameCell;
+    string command = "python3 ./plotcode/plot_result.py " + outputFolderName + " " + filenameUE + " " + filenameCell + " " + to_string(cells[0]->getPrachConfigIndex()) + " " + to_string(simulationTime) + " " + to_string(ueArrivalRate);
     system(command.c_str());
 }
 

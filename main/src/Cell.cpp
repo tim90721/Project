@@ -9,6 +9,7 @@ Cell::Cell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType,
     double ssbperRAO = 1;
     int msg1FDM = 1;
     int nPreambles = 64;
+    estimateUEs = 0;
     prachConfig = new PRACHConfigFR1(prachConfigIndex);
     prachConfig->configRA();
     availiableRAO = new AvailiableRAO(nBeams, ssbperRAO, msg1FDM, nPreambles, 160, prachConfig);
@@ -103,7 +104,7 @@ bool Cell::checkUEisExist(UE *ue){
 
 // broadcasting cell's SI
 void Cell::broadcastSI(){
-    SPDLOG_INFO("Broadcast cell index {0} system information", cellIndex);
+    SPDLOG_TRACE("Broadcast cell index {0} system information", cellIndex);
     UE *ue;
     for(unsigned int i = 0;i < ues.size();i++){
         ue = ues.at(i);
@@ -152,6 +153,7 @@ void Cell::updateSubframe(){
         successUEs = mRA->getSuccessUEs();
         failedUEs = mRA->getFailedUEs();
         mRA->updateRAOs();
+        estimateUEs = mRA->getEstimateUEs();
     } 
     availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
 }
@@ -331,6 +333,9 @@ void Cell::transmitCR(){
 // restore monitor ra function to initial condition
 void Cell::restoreMonitorRA2Initial(){
     mRA->restore2Initial();
+    successUEs = 0;
+    failedUEs = 0;
+    estimateUEs = 0;
 }
 
 // get cell support distance
@@ -427,6 +432,12 @@ unsigned long Cell::getFailedUEs(){
     if(ues.size() == 0 && (frameIndex * 10 + subframeIndex) % 16 != 0)
         return mRA->getFailedUEs();
     return failedUEs;
+}
+
+// get estimate ues from monitor ra function
+// return: estimate ues count
+double Cell::getEstimateUEs(){
+    return estimateUEs;
 }
 
 // is this cell has stored RAR

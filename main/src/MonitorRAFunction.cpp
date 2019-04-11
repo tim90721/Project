@@ -4,7 +4,7 @@
 // availiableRAO: need ssb per rao etc. parameter
 // prachConfig: need RA configuration period etc. parameter
 MonitorRAFunction::MonitorRAFunction(AvailiableRAO *availiableRAO, IPRACHConfig *prachConfig) :
-    successUEs(0), failedUEs(0), raCount(0), 
+    successUEs(0), failedUEs(0), raCount(0), estimateUEs(0),
     availiableRAO(availiableRAO), prachConfig(prachConfig){
     //setbuf(stdout, NULL);
     tau = getTau();
@@ -22,23 +22,26 @@ MonitorRAFunction::MonitorRAFunction(AvailiableRAO *availiableRAO, IPRACHConfig 
 void MonitorRAFunction::recordUEsCondition(const int success, const int failed){
     successUEs += success;
     failedUEs += failed;
+    historySlot.push_back(success);
     raCount++;
 }
 
 // update rao configurations
 // TODO: complete comment
 void MonitorRAFunction::updateRAOs(){
-    SPDLOG_DEBUG("updating rao configurations\n");
+    SPDLOG_TRACE("updating rao configurations\n");
     //if(raCount == 0 || successUEs == 0 /*will remove successUEs condition when predict function is complete*/)
     //    return;
+    history.push_back(successUEs);
+    estimateUEs = estimateNextUEsBySlot();
     double totalDelta = delta * raCount;
-    double estimateUEs = (double)successUEs * ssbPerRAO * exp(1);
+    //double estimateUEs = (double)successUEs * ssbPerRAO * exp(1);
     double newSSBPerRAO = calculateNewSSBPerRAO();
     int newMsg1FDM = getNewMsg1FDMver2(&newSSBPerRAO);
     SPDLOG_TRACE("old tau: {0}", tau);
     SPDLOG_TRACE("success ues: {0}", successUEs);
     SPDLOG_TRACE("failed ues: {0}", failedUEs);
-    SPDLOG_TRACE("estimate ues: {0}", estimateUEs);
+    //SPDLOG_TRACE("estimate ues: {0}", estimateUEs);
     SPDLOG_TRACE("total delta: {0}", totalDelta);
     SPDLOG_TRACE("old ssb per rao: {0}", ssbPerRAO);
     SPDLOG_TRACE("old msg1FDM: {0}", availiableRAO->getMsg1FDM());
@@ -60,6 +63,12 @@ void MonitorRAFunction::restore2Initial(){
     availiableRAO->setSSBPerRAO(initSSBPerRAO);
     availiableRAO->setMsg1FDM(initMsg1FDM);
     availiableRAO->updateAssociationFrame();
+    successUEs = 0;
+    failedUEs = 0;
+    estimateUEs = 0;
+    raCount = 0;
+    historySlot.erase(historySlot.begin(), historySlot.end());
+    history.erase(history.begin(), history.end());
 }
 
 // get tau by current configuration
@@ -237,6 +246,76 @@ double MonitorRAFunction::calculateNewSSBPerRAO(){
     return sRAO[i];
 }
 
+// estimate next period's arrival ues by AR
+unsigned long MonitorRAFunction::estimateNextUEsBySIBPeriod(){
+    if(history.size() <= 1){
+        SPDLOG_WARN("history is not enough, return first slot success UEs");
+        return successUEs;
+    }
+    //if(historySlot.size() > raCount * 3){
+    //    SPDLOG_WARN("history maximum size reached");
+    //    SPDLOG_WARN("historySlot size: {0}", historySlot.size());
+    //    historySlot.erase(historySlot.begin(), historySlot.begin() + raCount);
+    //    SPDLOG_WARN("historySlot size: {0}", historySlot.size());
+    //}
+    double average = 0;
+    for(auto it = history.begin();it != history.end();it++)
+        average += (*it);
+    average /= history.size();
+    SPDLOG_INFO("success ues: {0}", successUEs);
+    SPDLOG_INFO("average: {0}", average);
+    long double numerator = 0;
+    long double denominator = 0;
+    for(decltype(history.size()) i = history.size() - 1;i > 0;--i){
+        SPDLOG_WARN("i: {0}", i);
+        numerator += (history[i] - average) * (history[i - 1] - average);
+        denominator += pow((history[i] - average), 2);
+    }
+    double beta = numerator / denominator;
+    SPDLOG_WARN("beta: {0}", beta);
+    auto yt = history.back() - average;
+    double estimate = yt * beta + average;
+    SPDLOG_WARN("estimate ues: {0}", estimateUEs);
+    return estimate;
+}
+
+// estimate next period's arrival ues by AR
+unsigned long MonitorRAFunction::estimateNextUEsBySlot(){
+    if(historySlot.size() <= 1){
+        SPDLOG_WARN("historySlot is not enough, return first slot success UEs");
+        return successUEs;
+    }
+    if(historySlot.size() > raCount * 4){
+        SPDLOG_WARN("history maximum size reached");
+        SPDLOG_WARN("historySlot size: {0}", historySlot.size());
+        historySlot.erase(historySlot.begin(), historySlot.begin() + raCount);
+        SPDLOG_WARN("historySlot size: {0}", historySlot.size());
+    }
+    double average = 0;
+    for(auto it = historySlot.begin();it != historySlot.end();it++)
+        average += (*it);
+    average /= historySlot.size();
+    SPDLOG_INFO("success ues: {0}", successUEs);
+    SPDLOG_INFO("average: {0}", average);
+    long double numerator = 0;
+    long double denominator = 0;
+    for(decltype(historySlot.size()) i = historySlot.size() - 1;i > 0;--i){
+        //SPDLOG_WARN("i: {0}", i);
+        numerator += (historySlot[i] - average) * (historySlot[i - 1] - average);
+        denominator += pow((historySlot[i] - average), 2);
+    }
+    double beta = numerator / denominator;
+    SPDLOG_WARN("beta: {0}", beta);
+    auto yt = historySlot.back() - average;
+    double estimate = 0;
+    for(int i = 0;i < raCount;++i){
+        estimate += yt * beta + average;
+        beta *= beta;
+    }
+    SPDLOG_WARN("estimate ues: {0}", estimateUEs);
+    return estimate;
+}
+
 // get success UEs
 // return: success ues count
 unsigned long MonitorRAFunction::getSuccessUEs(){
@@ -247,4 +326,10 @@ unsigned long MonitorRAFunction::getSuccessUEs(){
 // return: failed ues count
 unsigned long MonitorRAFunction::getFailedUEs(){
     return failedUEs;
+}
+
+// get estimate UEs
+// return: estimate ues
+double MonitorRAFunction::getEstimateUEs(){
+    return estimateUEs;
 }
