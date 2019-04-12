@@ -45,14 +45,14 @@ void MonitorRAFunction::updateRAOs(){
     SPDLOG_TRACE("total delta: {0}", totalDelta);
     SPDLOG_TRACE("old ssb per rao: {0}", ssbPerRAO);
     SPDLOG_TRACE("old msg1FDM: {0}", availiableRAO->getMsg1FDM());
+    SPDLOG_WARN("new ssb per rao: {0}", newSSBPerRAO);
+    SPDLOG_TRACE("new msg1FDM: {0}", newMsg1FDM);
     availiableRAO->setSSBPerRAO(newSSBPerRAO);
     availiableRAO->setMsg1FDM(newMsg1FDM);
     availiableRAO->updateAssociationFrame();
     ssbPerRAO = newSSBPerRAO;
     tau = getTau();
     delta = getDelta(availiableRAO->getNumberofPreambles(), newSSBPerRAO);
-    SPDLOG_TRACE("new ssb per rao: {0}", newSSBPerRAO);
-    SPDLOG_TRACE("new msg1FDM: {0}", newMsg1FDM);
     successUEs = 0;
     failedUEs = 0;
     raCount = 0;
@@ -63,6 +63,11 @@ void MonitorRAFunction::restore2Initial(){
     availiableRAO->setSSBPerRAO(initSSBPerRAO);
     availiableRAO->setMsg1FDM(initMsg1FDM);
     availiableRAO->updateAssociationFrame();
+    ssbPerRAO = initSSBPerRAO;
+    tau = getTau();
+    SPDLOG_WARN("tau: {0}", tau);
+    delta = getDelta(availiableRAO->getNumberofPreambles(),
+            availiableRAO->getSSBPerRAO());
     successUEs = 0;
     failedUEs = 0;
     estimateUEs = 0;
@@ -186,8 +191,26 @@ int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
                 * (((double)prachConfig->getNumberofTimeDomainRAO() * newMsg1FDM)
                 / (double)availiableRAO->getTotalNeedRAO())
                 * raCount;
+
+            //////////// should be more elegent ////////////
+            if(*newSSBPerRAO > nSSB && nSSB != 64){
+                SPDLOG_WARN("new ssb per rao is larger than nSSB");
+                SPDLOG_WARN("new ssb per rao: {0}", *newSSBPerRAO);
+                *newSSBPerRAO = nSSB;
+            }
+            if(sRAO[0] > *newSSBPerRAO){
+                SPDLOG_INFO("maximum ssb per rao reached");
+                *newSSBPerRAO = sRAO[0];
+            }
+            int i = 0;
+            while(i < 7 && !(sRAO[i] <= *newSSBPerRAO && *newSSBPerRAO <= sRAO[i + 1]))
+                i++;
+            SPDLOG_WARN("new ssb per rao: {0}", sRAO[i]);
+            *newSSBPerRAO = sRAO[i];
+            //////////// should be more elegent ////////////
+
             SPDLOG_TRACE("new ssb per rao: {0}", *newSSBPerRAO);
-            SPDLOG_INFO("msg1-FDM reach maximum capacity\n");
+            SPDLOG_INFO("msg1-FDM reach maximum capacity");
             newMsg1FDM = 8;
         }
     }
@@ -233,6 +256,8 @@ double MonitorRAFunction::calculateNewSSBPerRAO(){
         * ((double)(prachConfig->getNumberofTimeDomainRAO() * availiableRAO->getMsg1FDM()) / (double)availiableRAO->getTotalNeedRAO()) * raCount;
     SPDLOG_TRACE("new ssb per rao in double: {0}", newSSBPerRAO);
     if(newSSBPerRAO > nSSB && nSSB != 64){
+        SPDLOG_WARN("new ssb per rao is larger than nSSB");
+        SPDLOG_WARN("new ssb per rao: {0}", newSSBPerRAO);
         return nSSB;
     }
     if(sRAO[0] > newSSBPerRAO){
@@ -242,7 +267,7 @@ double MonitorRAFunction::calculateNewSSBPerRAO(){
     int i = 0;
     while(i < 7 && !(sRAO[i] <= newSSBPerRAO && newSSBPerRAO <= sRAO[i + 1]))
         i++;
-    SPDLOG_TRACE("new ssb per rao: {0}", sRAO[i]);
+    SPDLOG_WARN("new ssb per rao: {0}", sRAO[i]);
     return sRAO[i];
 }
 

@@ -54,6 +54,13 @@ void AvailiableRAO::setSSBPeriod(int ssbPeriod){
 void AvailiableRAO::setSSBPerRAO(double ssbPerRAO){
     this->ssbPerRAO = ssbPerRAO;
     this->totalNeedRAO = this->nSSB / ssbPerRAO;
+    if(totalNeedRAO == 0){
+        SPDLOG_CRITICAL("ssb per rao: {0}", ssbPerRAO);
+        SPDLOG_CRITICAL("nSSB: {0}", nSSB);
+        SPDLOG_CRITICAL("total need rao: {0}", totalNeedRAO);
+        SPDLOG_CRITICAL("total need rao should not be 0");
+        exit(1);
+    }
 }
 
 // update subframe start and end RAO of current subframe
@@ -112,10 +119,10 @@ void AvailiableRAO::updateStartandEndRAOofSubframe(const int frameIndex, const i
             SPDLOG_INFO("association frame is not 1");
             // a frame can not map all SSB to a RAO
             int times = 1;
-            SPDLOG_TRACE("start RAO: {0}", startRAO);
-            SPDLOG_TRACE("totalNeedRAO: {0}", totalNeedRAO);
-            SPDLOG_TRACE("end RAO: {0}", endRAO);
-            SPDLOG_TRACE("ssb per rao: {0}" , ssbPerRAO);
+            SPDLOG_WARN("start RAO: {0}", startRAO);
+            SPDLOG_WARN("totalNeedRAO: {0}", totalNeedRAO);
+            SPDLOG_WARN("end RAO: {0}", endRAO);
+            SPDLOG_INFO("ssb per rao: {0}" , ssbPerRAO);
             if(startRAO / totalNeedRAO >= times){
                 startRAO = -1;
                 endRAO = -1;
