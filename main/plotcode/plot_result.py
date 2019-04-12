@@ -50,7 +50,7 @@ def plotDataUE(latencies, upperBound, filenameFig1 = None, subTitle = ""):
     plt.yticks(newYticks)
     plt.grid(True)
     manager = plt.get_current_fig_manager()
-    manager.window.wm_geometry("600x500+50+50")
+    manager.window.wm_geometry("700x500+50+50")
     #manager.window.SetPosition("+500+0")
     if filenameFig1:
         plt.savefig(filenameFig1)
@@ -76,7 +76,7 @@ def plotDataCell(successUEs, estimateUEs, filenameFig2 = None, subTitle = ""):
 
     plt.grid(True)
     manager = plt.get_current_fig_manager()
-    manager.window.wm_geometry("600x500+650+50")
+    manager.window.wm_geometry("700x500+750+50")
     if filenameFig2:
         plt.savefig(filenameFig2)
     #plt.xticks([newXticks, newXticks])
