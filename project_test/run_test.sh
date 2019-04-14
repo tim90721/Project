@@ -22,7 +22,8 @@ test -e ./src/main.cpp && rm ./src/main.cpp
 #rm ./src/main.cpp
 qmake -project -o ${buildDir}/${qt_project_filename}
 sed -i '$a QT += widgets' ${buildDir}/${qt_project_filename}
-sed -i 's/INCLUDEPATH.*$/INCLUDEPATH += \/home\/daitor\/Qt\/5.12.0\/gcc_64\/include \./g' ${buildDir}/${qt_project_filename}
+sed -i '$a DEFINES += "TESTING=1"' ${buildDir}/${qt_project_filename}
+sed -i 's/INCLUDEPATH.*$/INCLUDEPATH += \/home\/daitor\/Qt\/5.12.0\/gcc_64\/include \.\.\/src \.\.\/\.\.\/main\/include /g' ${buildDir}/${qt_project_filename}
 qmake ${buildDir}/${qt_project_filename} -o ${buildDir}
 make -C ${buildDir} && ./${buildDir}/${project_name}
 

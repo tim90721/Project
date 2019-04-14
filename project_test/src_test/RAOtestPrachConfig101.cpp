@@ -21,7 +21,7 @@ void testPrachIndex101_19(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -59,7 +59,7 @@ void testPrachIndex101_18(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -97,7 +97,7 @@ void testPrachIndex101_17(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -135,7 +135,7 @@ void testPrachIndex101_16(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -173,7 +173,7 @@ void testPrachIndex101_15(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -211,7 +211,7 @@ void testPrachIndex101_14(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -251,7 +251,7 @@ void testPrachIndex101_13(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -289,7 +289,7 @@ void testPrachIndex101_12(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -328,7 +328,7 @@ void testPrachIndex101_11(){
         int j = i * associationFrame * 10;
         
         for(int l = 0;l < 2;l++){
-            while(j % (associationFrame * 10) < 4 + l * 10){
+            while(j % (associationFrame * 10) < 1 + l * 10){
                 subframeExpect = new vector<int>;
                 expected.push_back(*subframeExpect);
                 j++;
@@ -367,7 +367,7 @@ void testPrachIndex101_10(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -407,7 +407,7 @@ void testPrachIndex101_9(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -447,7 +447,7 @@ void testPrachIndex101_8(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -487,7 +487,7 @@ void testPrachIndex101_7(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -527,7 +527,7 @@ void testPrachIndex101_6(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -567,7 +567,7 @@ void testPrachIndex101_5(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -611,7 +611,7 @@ void testPrachIndex101_4(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -655,7 +655,7 @@ void testPrachIndex101_3(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -699,7 +699,7 @@ void testPrachIndex101_2(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;
@@ -740,7 +740,7 @@ void testPrachIndex101_1(){
     for(int i = 0;i < round;i++){
         int j = i * associationFrame * 10;
         
-        while(j % (associationFrame * 10) < 4){
+        while(j % (associationFrame * 10) < 1){
             subframeExpect = new vector<int>;
             expected.push_back(*subframeExpect);
             j++;

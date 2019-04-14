@@ -5,8 +5,10 @@
 #include <assert.h>
 #include <vector>
 
+//#define TESTING 1
+
 #include "../src/includefile.h"
-#include "../src/Model.h"
+//#include "../src/Model.h"
 #include "../src/Cell.h"
 #include "../src/MacroCell.h"
 #include "../src/UE.h"
@@ -15,9 +17,10 @@ extern Cell *cell = NULL;
 extern UE *ue = NULL;
 
 void initialize(){
-    cell = new MacroCell(100, 100, 0, 4, Macro, 27);
+    cell = new MacroCell(100, 100, 0, 4, celltype::Macro, 27);
+    cell->initializeBeams();
     cell->updateBeamsAngle(0, 0);
-    cell->findCellCoverAreaEquation();
+    //cell->findCellCoverAreaEquation();
     printf("%f\n", cell->getBeamStartAngle());
     ue = new UE(110, 90, 0, true);
     cell->detectUE(ue);
@@ -35,6 +38,17 @@ void initialize(int prachConfigIndex, int msg1FDM, double ssbPerRAO){
 void destory(){
     free(cell);
     free(ue);
+}
+
+void destoryExpects(vector<vector<int>> expects){
+    for(decltype(expects.size()) i = expects.size();i >= 0;--i){
+        delete &expects[i];
+    }
+}
+
+void failedTest(){
+    destory();
+    abort();
 }
 
 int getRound(int simulationTime, int associationFrame){
@@ -63,7 +77,7 @@ void validation(vector<vector<int>>& expected, int simulationTime, int prachConf
             printf("ue raos size: %lu, expect raos size: %lu\n",
                     raos.size(),
                     expect.size());
-            abort();
+            failedTest();
         }
         //assert(raos.size() == expect.size());
         for(unsigned int j = 0;j < raos.size();j++){
@@ -79,7 +93,7 @@ void validation(vector<vector<int>>& expected, int simulationTime, int prachConf
                 printf("ue rao: %d, expect rao: %d\n",
                         raos[j],
                         expect[j]);
-                abort();
+                failedTest();
             }
         }
         cell->updateSubframe();

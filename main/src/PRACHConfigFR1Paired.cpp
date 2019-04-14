@@ -17,6 +17,27 @@ void PRACHConfigFR1::configRA(){
             x = 1;
             y = 0;
             break;
+        case 19:
+            nPRACHSlot = 1;
+            nTimeDomainRAOPerPrachSlot = 1;
+            raSubframes.clear();
+            raSubframes.push_back(1);
+            raSubframes.push_back(6);
+            prachConfigPeriod = 10;
+            x = 1;
+            y = 0;
+            break;
+        case 22:
+            nPRACHSlot = 1;
+            nTimeDomainRAOPerPrachSlot = 1;
+            raSubframes.clear();
+            raSubframes.push_back(1);
+            raSubframes.push_back(4);
+            raSubframes.push_back(7);
+            prachConfigPeriod = 10;
+            x = 1;
+            y = 0;
+            break;
         case 27:
             nPRACHSlot = 1;
             nTimeDomainRAOPerPrachSlot = 1;
@@ -48,6 +69,7 @@ void PRACHConfigFR1::configRA(){
             break;
         default:
             SPDLOG_CRITICAL("prach configuration %d not support\n", prachConfigIndex);
+            exit(1);
     }
 }
 
