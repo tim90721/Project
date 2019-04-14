@@ -31,6 +31,7 @@ public:
     ~MainGUI();
 private:
     void initialRadioButton();
+    void initialPrachConfig();
     void initialArrivalRateArea();
     void initialSimulationTimeArea();
     void initialSystemArea(); // for start save area
@@ -44,6 +45,8 @@ private:
     QPushButton *btnStart;
     QPushButton *btnSaveConfig;
     QPushButton *btnLoadConfig;
+    QPushButton *btnClear;
+    QPushButton *btnDrawCell;
     QRadioButton *rBtnMacrogNB;
     QRadioButton *rBtnFemtogNB;
     QRadioButton *rBtnFR1;
@@ -65,6 +68,7 @@ private:
     QHBoxLayout *layoutArrivalRate;
     QHBoxLayout *layoutSimulationTime;
     QHBoxLayout *layoutSystem; // for button start, save...
+    QHBoxLayout *layoutDrawing;
     QWidget *widgetSetting;
     SimulationCanvas *canvas; //fixed this
     QSizePolicy sp;
@@ -85,6 +89,8 @@ private:
     std::string sBeam8 = "8";
     std::string sBeam64 = "64";
     std::string sPrachConfig16 = "Index:16; Format0; FR1; x:1,y:0; RA subframe: 1; time domain RAO:1";
+    std::string sPrachConfig19 = "Index:19; Format0; FR1; x:1,y:0; RA subframe: 1, 6; time domain RAO:1";
+    std::string sPrachConfig22 = "Index:22; Format0; FR1; x:1,y:0; RA subframe: 1, 4, 7; time domain RAO:1";
     std::string sPrachConfig27 = "Index:27; Format0; FR1; x:1,y:0; RA subframe:0..9; time domain RAO: 1";
     std::string sPrachConfig101 = "Index:101; FormatA1; FR1; x:1,y:0; RA subframe: 1; time domain RAO: 12";
     std::string sPrachConfig106 = "Index:106; FormatA1; FR1; x:1,y:0; RA subframe:0..9; time domaint RAO: 12";
@@ -94,6 +100,8 @@ private:
     std::string sBtnStart = "Start";
     std::string sBtnSaveConfig = "Save Config";
     std::string sBtnLoadConfig = "Load Config";
+    std::string sBtnClear = "Erase Cell";
+    std::string sBtnDrawCell = "Draw Cell";
     int widthWindow = 515;
     int heightWindow = 700;
     unsigned int FR1 = 0;
@@ -113,6 +121,8 @@ private slots:
     void handleFR1RadBtnClick();
     void handleFR2RadBtnClick();
     void handleListPrachIndexChange(int selectedRow);
+    void handleButtonDrawCellClick();
+    void handleButtonClearClick();
 };
 #endif
 

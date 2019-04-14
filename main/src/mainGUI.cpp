@@ -22,18 +22,24 @@ MainGUI::MainGUI(QWidget *parent):
     canvas->setSizePolicy(sp);
 
     initialRadioButton();
+    initialPrachConfig();
     initialArrivalRateArea();
     initialSimulationTimeArea();
     initialSystemArea();
     initialMainLayout();
 
-    listPrachConfig = new QListWidget(this);
-    layoutSetting->addWidget(listPrachConfig, 1, 1, 3, 1);
-    listPrachConfig->insertItem(0, QString::fromStdString(sPrachConfig16));
-    listPrachConfig->insertItem(1, QString::fromStdString(sPrachConfig27));
-    listPrachConfig->insertItem(2, QString::fromStdString(sPrachConfig101));
-    listPrachConfig->insertItem(3, QString::fromStdString(sPrachConfig106));
-    listPrachConfig->setCurrentRow(0);
+    btnClear = new QPushButton(this);
+    btnClear->setText(QString::fromStdString(sBtnClear));
+
+    btnDrawCell = new QPushButton(this);
+    btnDrawCell->setText(QString::fromStdString(sBtnDrawCell));
+    btnDrawCell->setEnabled(false);
+
+    layoutDrawing = new QHBoxLayout;
+    layoutDrawing->addWidget(btnDrawCell);
+    layoutDrawing->addWidget(btnClear);
+
+    layoutSetting->addLayout(layoutDrawing, 5, 0);
 
     connectSignals();
 }
@@ -71,6 +77,18 @@ void MainGUI::initialRadioButton(){
     layoutBeams->addWidget(rBtn64Beams);
     groupBeams = new QGroupBox(QString::fromStdString(sNumberOfBeams), this);
     groupBeams->setLayout(layoutBeams);
+}
+
+void MainGUI::initialPrachConfig(){
+    listPrachConfig = new QListWidget(this);
+    int count = 0;
+    listPrachConfig->insertItem(count++, QString::fromStdString(sPrachConfig16));
+    listPrachConfig->insertItem(count++, QString::fromStdString(sPrachConfig19));
+    listPrachConfig->insertItem(count++, QString::fromStdString(sPrachConfig22));
+    listPrachConfig->insertItem(count++, QString::fromStdString(sPrachConfig27));
+    listPrachConfig->insertItem(count++, QString::fromStdString(sPrachConfig101));
+    listPrachConfig->insertItem(count++, QString::fromStdString(sPrachConfig106));
+    listPrachConfig->setCurrentRow(0);
 }
 
 // configuration ArrivalRate Area
@@ -170,6 +188,7 @@ void MainGUI::initialMainLayout(){
     layoutSetting->addWidget(groupBeams, 3, 0);
     //layoutSetting->addWidget(groupPreambleFormat, 1, 1, 3, 1);
     layoutSetting->addLayout(layoutSimulationTime, 4, 0);
+    layoutSetting->addWidget(listPrachConfig, 1, 1, 3, 1);
     layoutSetting->addLayout(layoutArrivalRate, 4, 1);
     layoutSetting->addLayout(layoutSystem, 5, 1);
 
@@ -190,6 +209,9 @@ void MainGUI::connectSignals(){
     connect(rBtnFR1, SIGNAL(clicked()), this, SLOT(handleFR1RadBtnClick()));
     connect(rBtnFR2, SIGNAL(clicked()), this, SLOT(handleFR2RadBtnClick()));
     connect(listPrachConfig, SIGNAL(currentRowChanged(int)), this, SLOT(handleListPrachIndexChange(int)));
+
+    connect(btnDrawCell, SIGNAL(clicked()), this, SLOT(handleButtonDrawCellClick()));
+    connect(btnClear, SIGNAL(clicked()), this, SLOT(handleButtonClearClick()));
 }
 
 // handle start button click event
@@ -247,12 +269,27 @@ void MainGUI::handleListPrachIndexChange(int selectedRow){
     model->setPrachConfigIndex(listPrachConfig->item(selectedRow)->text().toStdString());
 }
 
+// handle button draw cell click
+void MainGUI::handleButtonDrawCellClick(){
+    model->setDrawMode(DrawMode::DrawCell);
+    btnClear->setEnabled(true);
+    btnDrawCell->setEnabled(false);
+}
+
+// handle button clear click
+void MainGUI::handleButtonClearClick(){
+    model->setDrawMode(DrawMode::EraseCell);
+    btnDrawCell->setEnabled(true);
+    btnClear->setEnabled(false);
+}
+
 // destructor
 MainGUI::~MainGUI(){
     delete model;
     delete layoutMain;
     delete layoutArrivalRate;
     delete layoutSimulationTime;
+    delete layoutDrawing;
     delete layoutSystem;
     delete layoutSetting;
     delete layoutgNBType;
@@ -265,6 +302,8 @@ MainGUI::~MainGUI(){
     delete btnStart;
     delete btnSaveConfig;
     delete btnLoadConfig;
+    delete btnClear;
+    delete btnDrawCell;
     delete rBtnMacrogNB;
     delete rBtnFemtogNB;
     delete rBtnFR1;

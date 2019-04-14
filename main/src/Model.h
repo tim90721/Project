@@ -21,6 +21,15 @@
 #include "CommonMath.h"
 #include "include_log.h"
 
+#include "EraseRect.h"
+
+namespace DrawMode{
+    enum Mode{
+        DrawCell,
+        EraseCell
+    };
+};
+
 class Model : public IPaintSubject{
     public:
         Model();
@@ -45,6 +54,7 @@ class Model : public IPaintSubject{
         void setFR(const unsigned int FR);
         void setArrivalRate(const unsigned int arrivalRate);
         void setPrachConfigIndex(std::string s);
+        void setDrawMode(DrawMode::Mode mode);
         ~Model();
     private:
         void run(bool isTimesUp);
@@ -55,6 +65,9 @@ class Model : public IPaintSubject{
         void closeOutFiles();
         void plotResult();
         void restoreCells2Initial();
+        void drawing(QPainter &painter);
+        void erasing(QPainter &painter);
+        void detectCellInEraseArea();
 
         unsigned long ueIndex;
         int remainingUEs;
@@ -68,6 +81,7 @@ class Model : public IPaintSubject{
         vector<IPaintObservor*> observors;
         Cell *tempCell;
         UE *ue;
+        EraseRect eraseRect;
         celltype::CellType cellType;
         bool mousePressed;
         int countPressedReleased;
@@ -84,6 +98,6 @@ class Model : public IPaintSubject{
         ofstream outFileUE;
         ofstream outFileCell;
         std::string curTime;
+        DrawMode::Mode mode;
 };
-        
 #endif

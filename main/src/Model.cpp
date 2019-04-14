@@ -21,26 +21,33 @@ Model::Model(){
     outputFileExtension = ".csv";
     outputFileUE = "UE";
     outputFileCell = "Cell";
+    mode = DrawMode::DrawCell;
 }
 
 // Set mouse XY position
 void Model::setMouseXY(int x, int y){
     mouseX = x;
     mouseY = y;
-    if(isMousePressed() && countPressedReleased == 1){
-        // do when mouse first pressed
-        tempCell->setX(mouseX);
-        tempCell->setY(mouseY);
+    if(mode == DrawMode::DrawCell){
+        if(isMousePressed() && countPressedReleased == 1){
+            // do when mouse first pressed
+            tempCell->setX(mouseX);
+            tempCell->setY(mouseY);
+        }
+        else if(countPressedReleased > 1){
+            // do things when mouse click second time
+            tempCell->updateBeamsAngle(x - tempCell->getX(),
+                    tempCell->getY() - y);
+            //tempCell->updateBeamsAngle(x - tempCell->getX(),
+            //        y - tempCell->getY());
+        }
+        if(countPressedReleased >= 1)
+            notifyAll();
     }
-    else if(countPressedReleased > 1){
-        // do things when mouse click second time
-        tempCell->updateBeamsAngle(x - tempCell->getX(),
-                tempCell->getY() - y);
-        //tempCell->updateBeamsAngle(x - tempCell->getX(),
-        //        y - tempCell->getY());
-    }
-    if(countPressedReleased >= 1)
+    else{
+        eraseRect.setXY(mouseX, mouseY);
         notifyAll();
+    }
 }
 
 // Get mouse X position
@@ -58,7 +65,7 @@ void Model::setMousePressed(bool isPressed){
     mousePressed = isPressed;
     countPressedReleased++;
     if(mousePressed){
-        if(countPressedReleased == 1){
+        if(countPressedReleased == 1 && mode == DrawMode::DrawCell){
             if(cellType == celltype::Macro)
                 tempCell = new MacroCell(mouseX, mouseY, cellIndex++, nBeams, cellType, prachConfigIndex); 
             else
@@ -70,8 +77,13 @@ void Model::setMousePressed(bool isPressed){
             // TODO
             // do mouse pressed second time
         }
+        if(mode == DrawMode::EraseCell){
+            detectCellInEraseArea();
+        }
     }
-    else if(!mousePressed && countPressedReleased == 4){
+    else if(!mousePressed 
+            && countPressedReleased == 4 
+            && mode == DrawMode::DrawCell){
         // mouse release second time
         tempCell->updateBeamsAngle(this->mouseX - tempCell->getX(),
                 tempCell->getY() - this->mouseY);
@@ -81,6 +93,8 @@ void Model::setMousePressed(bool isPressed){
         tempCell = NULL;
         notifyAll();
     }
+    if(mode == DrawMode::EraseCell)
+        countPressedReleased = 0;
 }
 
 // Get mouse is pressed or not
@@ -90,19 +104,9 @@ bool Model::isMousePressed(){
 
 // Draw Cells and UEs
 void Model::draw(QPainter &painter){
-    Cell *cell;
-    UE *ue;
-    for(unsigned int i = 0;i < cells.size();i++){
-        cell = cells.at(i);
-        cell->draw(painter);
-    }
-    if(countPressedReleased >= 1 && countPressedReleased < 4){
-        tempCell->draw(painter);
-    }
-    //painter.setBrush(QBrush(QColor(200, 128, 255, 255), Qt::SolidPattern));
-    for(decltype(UEs.size()) i = 0;i < UEs.size();i++){
-        ue = UEs[i];
-        ue->draw(painter);
+    drawing(painter);
+    if(mode == DrawMode::EraseCell){
+        erasing(painter);
     }
 }
 
@@ -275,6 +279,13 @@ void Model::setPrachConfigIndex(string s){
     //cout << prachConfigIndex << endl;
 }
 
+// set drawing mode
+// mode: draw cell mode or erase cell mode
+void Model::setDrawMode(DrawMode::Mode mode){
+    this->mode = mode;
+    SPDLOG_TRACE("mode: {0}", this->mode);
+}
+
 // set FR
 // FR: FR
 void Model::setFR(const unsigned int FR){
@@ -343,10 +354,10 @@ void Model::generateRandomUEs(){
 
 // record ue active and departed frame and subframe index to a file
 void Model::recordUELatency(UE *ue){
-    int cellIndex = ue->getCellIndex();
+    int cellIndexUE = ue->getCellIndex();
     auto it = cells.begin();
     for(it;it != cells.end();it++)
-        if((*it)->getCellIndex() == cellIndex)
+        if((*it)->getCellIndex() == cellIndexUE)
             break;
     outFileUE << ue->getID() << ", " 
         << ue->getCellIndex() << ", " 
@@ -427,6 +438,50 @@ void Model::plotResult(){
 void Model::restoreCells2Initial(){
     for(auto it = cells.begin();it != cells.end();it++){
         (*it)->restoreMonitorRA2Initial();
+    }
+}
+
+// draw cell/ue
+// painter: QPainter
+void Model::drawing(QPainter &painter){
+    Cell *cell;
+    UE *ue;
+    for(unsigned int i = 0;i < cells.size();i++){
+        cell = cells.at(i);
+        cell->draw(painter);
+    }
+    if(countPressedReleased >= 1 
+            && countPressedReleased < 4 
+            && mode == DrawMode::DrawCell){
+        tempCell->draw(painter);
+    }
+    //painter.setBrush(QBrush(QColor(200, 128, 255, 255), Qt::SolidPattern));
+    for(decltype(UEs.size()) i = 0;i < UEs.size();i++){
+        ue = UEs[i];
+        ue->draw(painter);
+    }
+}
+
+// erase cell
+// painter: QPainter
+void Model::erasing(QPainter &painter){
+    eraseRect.draw(painter);
+}
+
+// detect cell is in erase area
+// if cell is in erase area, delete
+void Model::detectCellInEraseArea(){
+    for(decltype(cells.size()) i = 0;i < cells.size();++i){
+        SPDLOG_INFO("i: {0}", i);
+        SPDLOG_INFO("cell size: {0}", cells.size());
+        if(eraseRect.isInside(cells[i]->getX(),
+                cells[i]->getY())){
+            SPDLOG_INFO("cell {0} is in erase area", cells[i]->getCellIndex());
+            Cell *cell = cells[i];
+            cells.erase(cells.begin() + i);
+            delete cell;
+            --i;
+        }
     }
 }
 
