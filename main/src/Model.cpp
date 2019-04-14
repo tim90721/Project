@@ -191,10 +191,12 @@ void Model::transmitUL(){
 // finally, if there are UEs remain after simulationTime,
 // simulation will then proceed until all UEs success
 void Model::startSimulation(){
-    initializeOutFiles();
-    if(!outFileUE || !outFileCell){
-        SPDLOG_CRITICAL("ue output file create failed!\n");
-        exit(1);
+    if(!TESTING){
+        initializeOutFiles();
+        if(!outFileUE || !outFileCell){
+            SPDLOG_CRITICAL("ue output file create failed!\n");
+            exit(1);
+        }
     }
     //////////////////////// testing ////////////////////////
     //simulationTime = 16;
@@ -213,7 +215,7 @@ void Model::startSimulation(){
         run(isTimesUp);
     }
     isTimesUp = true;
-    if(UEs.size() > 0){
+    if(UEs.size() > 0 && !TESTING){
         for(auto it = UEs.begin();it != UEs.end();it++){
             if((*it)->isBindCell()){
                 remainingUEs++;
@@ -224,14 +226,13 @@ void Model::startSimulation(){
             SPDLOG_TRACE("remaining UEs: {0}", remainingUEs);
         }
     }
-    if(UEs.size() > 0){
-        traverseUEs();
-    }
     SPDLOG_INFO("simulation: {0} complete", simulationCounter++);
-    recordCellsInfo();
-    restoreCells2Initial();
-    plotResult();
-    closeOutFiles();
+    if(!TESTING){
+        recordCellsInfo();
+        restoreCells2Initial();
+        plotResult();
+        closeOutFiles();
+    }
 }
 
 // set the simulation time

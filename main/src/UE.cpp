@@ -68,7 +68,7 @@ void UE::setBeam(int cellIndex, int beamIndex, int beamStrength){
         return;
     }
     // old beam is better
-    SPDLOG_TRACE("old beam is better\n");
+    SPDLOG_TRACE("old beam is better");
 }
 
 // receive SI
@@ -123,7 +123,7 @@ void UE::doRA(){
             // store raos index with subframeRAOStart to subframeRAOEnd
             storeRAOsforRA(availiableRAO->getStartRAOofSubframe(),
                     availiableRAO->getEndRAOofSubframe());
-            SPDLOG_TRACE("number of rao: %d\n", raos.size());
+            SPDLOG_TRACE("number of rao: %d", raos.size());
             SPDLOG_TRACE("rao index: ");
             for(unsigned int i = 0;i < raos.size();i++)
                 SPDLOG_TRACE("{:4d}", raos[i]);
@@ -198,14 +198,14 @@ void UE::checkRA(){
     SPDLOG_TRACE("frame: {0}, subframe: {1}", frameIndex, subframeIndex);
     raos.clear();
     if(availiableRAO->isRASubframe(frameIndex, subframeIndex)){
-        SPDLOG_TRACE("UE {0}: frame index: {1}, subframe Index: {2} is for RA\n",
+        SPDLOG_TRACE("UE {0}: frame index: {1}, subframe Index: {2} is for RA",
                 id,
                 frameIndex,
                 subframeIndex);
         updateRAOforRA();
     }
     else{
-        SPDLOG_TRACE("UE {0}: frame index: {1}, subframe index: {2} not for RA\n", 
+        SPDLOG_TRACE("UE {0}: frame index: {1}, subframe index: {2} not for RA", 
                 id,
                 frameIndex,
                 subframeIndex);

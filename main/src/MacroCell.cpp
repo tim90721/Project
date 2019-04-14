@@ -43,6 +43,7 @@ void MacroCell::initializeBeams(){
 // diffY: the difference of y1 and y2
 void MacroCell::updateBeamsAngle(int diffX, int diffY){
     Cell::setBeamStartAngle(diffX, diffY);
+    SPDLOG_TRACE("difx: {0}, dify: {1}", diffX, diffY);
     Beam *beam;
     double spanAngle = cellAngle / getnBeams(); 
     for(unsigned int i = 0;i < beams.size();i++){
@@ -50,6 +51,7 @@ void MacroCell::updateBeamsAngle(int diffX, int diffY){
         beam->setStartAngle(beamStartAngle + i * spanAngle);
     } 
     startAngle = beams[0]->getStartAngle();
+    SPDLOG_TRACE("update beam angle complete");
 }
 
 

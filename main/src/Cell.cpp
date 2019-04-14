@@ -18,6 +18,7 @@ Cell::Cell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType,
     mRA = new MonitorRAFunction(availiableRAO, prachConfig);
     successUEs = 0;
     failedUEs = 0;
+    SPDLOG_WARN("testing: {0}", TESTING);
 }
 
 // Set gNB x position
@@ -145,7 +146,7 @@ void Cell::updateSubframe(){
         frameIndex++;
         subframeIndex %= 10;
     }
-    if((frameIndex * 10 + subframeIndex) % 16 == 0){
+    if((frameIndex * 10 + subframeIndex) % 16 == 0 && !TESTING){
         SPDLOG_INFO("next subframe can modify rao configuration");
         SPDLOG_TRACE("next frame: {0}, next subframe: {1}", 
                 frameIndex,
