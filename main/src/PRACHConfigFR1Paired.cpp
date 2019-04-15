@@ -38,6 +38,17 @@ void PRACHConfigFR1::configRA(){
             x = 1;
             y = 0;
             break;
+        case 25:
+            nPRACHSlot = 1;
+            nTimeDomainRAOPerPrachSlot = 1;
+            raSubframes.clear();
+            for(int i = 0;i < 5;++i){
+                raSubframes.push_back(2 * i);
+            }
+            prachConfigPeriod = 10;
+            x = 1;
+            y = 0;
+            break;
         case 27:
             nPRACHSlot = 1;
             nTimeDomainRAOPerPrachSlot = 1;

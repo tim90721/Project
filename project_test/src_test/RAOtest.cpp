@@ -5,6 +5,7 @@
 #include "RAOtestPrachConfig16.cpp"
 #include "RAOtestPrachConfig19.cpp"
 #include "RAOtestPrachConfig22.cpp"
+#include "RAOtestPrachConfig25.cpp"
 #include "RAOtestPrachConfig27.cpp"
 #include "RAOtestPrachConfig101.cpp"
 #include "RAOtestPrachConfig106.cpp"
@@ -16,6 +17,7 @@ int main(){
     testPrachIndex106();
     testPrachIndex19();
     testPrachIndex22();
+    testPrachIndex25();
     printf("test correct\n");
     return 0;
 }
