@@ -146,7 +146,7 @@ void Cell::updateSubframe(){
         frameIndex++;
         subframeIndex %= 10;
     }
-    if((frameIndex * 10 + subframeIndex) % 16 == 0 && !TESTING){
+    if((frameIndex * 10 + subframeIndex) % 160 == 0 && !TESTING){
         SPDLOG_INFO("next subframe can modify rao configuration");
         SPDLOG_TRACE("next frame: {0}, next subframe: {1}", 
                 frameIndex,
@@ -232,7 +232,7 @@ void Cell::receivePreamble(const int raoIndex, const int preambleIndex){
             && subframeRars[insertIndex]->raoIndex == rar->raoIndex 
             && subframeRars[insertIndex]->preambleIndex == rar->preambleIndex){
         // the corresponding rar is already exist in stored Rars
-        SPDLOG_INFO("rao: {0}, preamble: {1} already exist in RAR",
+        SPDLOG_TRACE("rao: {0}, preamble: {1} already exist in RAR",
                 rar->raoIndex,
                 rar->preambleIndex);
         delete rar;
@@ -279,14 +279,14 @@ void Cell::receiveMsg3(Msg3& msg3){
         msg3s.push_back(&msg3);
     else if(msg3s.size() > 0 
             && msg3s[insertIndex]->tc_rnti == msg3.tc_rnti){
-        SPDLOG_INFO("tc_rnti: {0}, already exist in RAR",
+        SPDLOG_TRACE("tc_rnti: {0}, already exist in RAR",
                 msg3.tc_rnti);
         if(msg3s[insertIndex]->power < msg3.power){
-            SPDLOG_INFO("new msg3 power is bigger than older one");
-            SPDLOG_INFO("old msg3 ue index: {0}", msg3s[insertIndex]->ueIndex);
-            SPDLOG_INFO("old msg3 power: {0}", msg3s[insertIndex]->power);
-            SPDLOG_INFO("new msg3 ue index: {0}", msg3.ueIndex);
-            SPDLOG_INFO("new msg3 power: {0}", msg3.power);
+            SPDLOG_TRACE("new msg3 power is bigger than older one");
+            SPDLOG_TRACE("old msg3 ue index: {0}", msg3s[insertIndex]->ueIndex);
+            SPDLOG_TRACE("old msg3 power: {0}", msg3s[insertIndex]->power);
+            SPDLOG_TRACE("new msg3 ue index: {0}", msg3.ueIndex);
+            SPDLOG_TRACE("new msg3 power: {0}", msg3.power);
             msg3s[insertIndex]->ueIndex = msg3.ueIndex;
             msg3s[insertIndex]->power = msg3.power;
         }

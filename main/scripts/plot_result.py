@@ -58,69 +58,70 @@ def plotDataUE(latencies, upperBound, filenameFig1 = None, subTitle = ""):
     del newYticks
 
 def plotDataCell(successUEs, estimateUEs, filenameFig2 = None, subTitle = ""):
-    newXticks = []
-    for i in range(len(successUEs)):
-        newXticks.append(i * 16)
-    print(newXticks)
+    #newXticks = np.linspace(0, len(successUEs), 11);
+    #for i in range(len(newXticks)):
+    #    newXticks[i] = newXticks[i] * 16
+    #print(newXticks)
     fig = plt.figure(2)
     ax = plt.subplot(1, 1, 1)
-    line1, = ax.plot([x * 16 for x in range(len(successUEs))], successUEs, 'b-*', label='Success UEs')
-    line2, = ax.plot([x * 16 for x in range(len(estimateUEs))], estimateUEs, 'g-o', label='estimate UEs')
+    line1, = ax.plot([x * 16 for x in range(len(successUEs))], successUEs, 'g-*', label='Success UEs')
+    line2, = ax.plot([x * 16 for x in range(len(estimateUEs))], estimateUEs, 'b-o', label='estimate UEs')
     ax.legend(loc="lower right")
-    ax.xaxis.set_major_locator(ticker.FixedLocator(newXticks))
+    #ax.xaxis.set_major_locator(ticker.FixedLocator(newXticks))
     fig.subplots_adjust(top=0.85)
     plt.suptitle("Estimate UEs vs Actual Success UEs", fontsize=14, fontweight="bold")
     ax.set_title(subTitle, y=0.93)
     plt.xlabel("Subframe Index")
     plt.ylabel("Number of UEs")
-
+    plt.axis([0, len(successUEs) * 16, 0, max([max(successUEs), max(estimateUEs)]) + 10])
     plt.grid(True)
     manager = plt.get_current_fig_manager()
     manager.window.wm_geometry("700x500+750+50")
     if filenameFig2:
         plt.savefig(filenameFig2)
     #plt.xticks([newXticks, newXticks])
-    del newXticks
+    #del newXticks
 
-print('number of input: {0}'.format(len(sys.argv)))
-
-print('list of argument')
-
-for i in range(len(sys.argv) - 1):
-    print(sys.argv[i + 1])
-
-outputFolderName = sys.argv[1]
-ueFile = sys.argv[2]
-cellFile = sys.argv[3]
-prachConfig = sys.argv[4]
-simulationTime = sys.argv[5]
-arrivalRate = sys.argv[6]
-
-subTitle = "\nPrach Configuration Index: {0}\n".format(prachConfig) \
-        + "Simulation Time: {0} ".format(str(int(simulationTime) / 10)) \
-        + "UE Arrival Rate: {0}\n".format(arrivalRate)
-
-filenameFig1 = outputFolderName + "UE_latency"
-filenameFig2 = outputFolderName + "Estimate_UEs"
-print(filenameFig1)
-print(filenameFig2)
-
-############################ collect data ############################
-latencies = collectDataUE(ueFile)
-upperBound = max(latencies.values())
-while (upperBound % 5) != 0:
-    upperBound += 1
+if __name__ == '__main__':
+    print('number of input: {0}'.format(len(sys.argv)))
     
-successUEs, estimateUEs = collectDataCell(cellFile)
-############################ collect data ############################
-
-############################ plot data ############################
-plotDataUE(latencies, upperBound, filenameFig1, subTitle)
-plotDataCell(successUEs, estimateUEs, filenameFig2, subTitle)
-plt.show()
-############################ plot data ############################
-
-del ueFile
-del cellFile
-del latencies
-del upperBound
+    print('list of argument')
+    
+    for i in range(len(sys.argv) - 1):
+        print(sys.argv[i + 1])
+    
+    outputFolderName = sys.argv[1]
+    ueFile = sys.argv[2]
+    cellFile = sys.argv[3]
+    prachConfig = sys.argv[4]
+    simulationTime = sys.argv[5]
+    arrivalRate = sys.argv[6]
+    
+    subTitle = "\nPrach Configuration Index: {0}\n".format(prachConfig) \
+            + "Simulation Time: {0} ".format(str(int(simulationTime) / 10)) \
+            + "UE Arrival Rate: {0}\n".format(arrivalRate)
+    
+    filenameFig1 = outputFolderName + "UE_latency"
+    filenameFig2 = outputFolderName + "Estimate_UEs"
+    print(filenameFig1)
+    print(filenameFig2)
+    
+    ############################ collect data ############################
+    latencies = collectDataUE(ueFile)
+    upperBound = max(latencies.values())
+    while (upperBound % 5) != 0:
+        upperBound += 1
+        
+    successUEs, estimateUEs = collectDataCell(cellFile)
+    ############################ collect data ############################
+    
+    ############################ plot data ############################
+    plotDataUE(latencies, upperBound, filenameFig1, subTitle)
+    plotDataCell(successUEs, estimateUEs, filenameFig2, subTitle)
+    plt.show()
+    ############################ plot data ############################
+    
+    del ueFile
+    del cellFile
+    del latencies
+    del upperBound

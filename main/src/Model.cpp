@@ -244,7 +244,7 @@ void Model::startSimulation(){
 // it will be stored in ms
 void Model::setSimulationTime(int simulationTime){
     // model store simulation time in msec
-    this->simulationTime = simulationTime * 10;
+    this->simulationTime = simulationTime * 1000;
     SPDLOG_TRACE("{0}", this->simulationTime);
 }
 
@@ -381,7 +381,7 @@ void Model::recordCellsInfo(){
     auto it = cells.begin();
     const int frame = (*it)->getFrameIndex();
     const int subframe = (*it)->getSubframeIndex();
-    if((frame * 10 + subframe) % 16 != 0 && UEs.size() != 0)
+    if((frame * 10 + subframe) % 160 != 0 && UEs.size() != 0)
         return;
     for(;it != cells.end();it++){
         outFileCell << (*it)->getCellIndex() << ", "
@@ -430,7 +430,7 @@ void Model::closeOutFiles(){
 
 // plot result done recently
 void Model::plotResult(){
-    string command = "python3 ./plotcode/plot_result.py " + outputFolderName + " " + filenameUE + " " + filenameCell + " " + to_string(cells[0]->getPrachConfigIndex()) + " " + to_string(simulationTime) + " " + to_string(ueArrivalRate);
+    string command = "python3 ./scripts/plot_result.py " + outputFolderName + " " + filenameUE + " " + filenameCell + " " + to_string(cells[0]->getPrachConfigIndex()) + " " + to_string(simulationTime) + " " + to_string(ueArrivalRate);
     system(command.c_str());
 }
 

@@ -311,6 +311,7 @@ unsigned long MonitorRAFunction::estimateNextUEsBySlot(){
         return successUEs;
     }
     if(historySlot.size() > raCount * 4){
+        SPDLOG_WARN("ra count: {0}", raCount);
         SPDLOG_WARN("history maximum size reached");
         SPDLOG_WARN("historySlot size: {0}", historySlot.size());
         historySlot.erase(historySlot.begin(), historySlot.begin() + raCount);
@@ -331,13 +332,24 @@ unsigned long MonitorRAFunction::estimateNextUEsBySlot(){
     }
     double beta = numerator / denominator;
     SPDLOG_WARN("beta: {0}", beta);
-    auto yt = historySlot.back() - average;
-    double estimate = 0;
-    for(int i = 0;i < raCount;++i){
-        estimate += yt * beta + average;
-        beta *= beta;
+    if(beta > 1){
+        SPDLOG_WARN("beta > 1, fix beta to 1");
+        beta = 1;
     }
-    SPDLOG_WARN("estimate ues: {0}", estimateUEs);
+    else if(beta < -1){
+        SPDLOG_WARN("beta < -1, fix beta to -1");
+        beta = -1;
+    }
+    auto yt = historySlot.back() - average;
+    SPDLOG_WARN("yt: {0}", yt);
+    long double estimate = 0;
+    SPDLOG_WARN("ra count: {0}", raCount);
+    for(int i = 0;i < raCount;++i){
+        estimate = estimate + yt * beta + average;
+        beta *= beta;
+        SPDLOG_WARN("estimate ues: {0}", estimate);
+    }
+    SPDLOG_WARN("estimate ues: {0}", estimate);
     return estimate;
 }
 
