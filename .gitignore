@@ -5,3 +5,5 @@ main/result/*
 main/build/*
 main/log/debug_log.log
 main/log/trace_log.log
+main/candidateResult
+
