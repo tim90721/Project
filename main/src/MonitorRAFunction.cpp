@@ -97,7 +97,7 @@ int MonitorRAFunction::getTau(const int RAConfigPeriod, const int totalNeedRAO, 
     SPDLOG_TRACE("total need subframe for mapping all ssb in period: {0}",
             ssbTotalNeedSubframe);
     if(ssbTotalNeedSubframe > 10){
-        return (ceil(log(ssbTotalNeedSubframe / 10.0) / log(2)) * 10);
+        return (pow(2, ceil(log(ssbTotalNeedSubframe / 10.0) / log(2))) * 10);
     }
     else if(ssbTotalNeedSubframe <= 5){
         return ceil(ssbTotalNeedSubframe);
@@ -173,6 +173,7 @@ int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
             nSSB / *newSSBPerRAO,
             availiableRAO->getTotalRAOPerSubframe(),
             prachConfig->getNumberofRASubframe());
+    SPDLOG_TRACE("new tau: {0}", newTau);
     int msg1FDM = availiableRAO->getMsg1FDM();
     int i = log(msg1FDM) / log(2);
     SPDLOG_TRACE("msg1fdm index: {0}", i);
@@ -184,6 +185,7 @@ int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
             / ((double)prachConfig->getNumberofTimeDomainRAO() * raCount));
         SPDLOG_TRACE("new msg1FDM in double: {0}", newMsg1FDM);
         newMsg1FDM = pow(2, ceil(log(newMsg1FDM) / log(2)));
+        SPDLOG_TRACE("new msg1FDM: {0}", newMsg1FDM);
         *newSSBPerRAO = ssbPerRAO;
         if(newMsg1FDM > 8){
             *newSSBPerRAO = (((double)availiableRAO->getNumberofPreambles() * nSSB)

@@ -91,6 +91,7 @@ private:
     std::string sPrachConfig16 = "Index:16; Format0; FR1; x:1,y:0; RA subframe: 1; time domain RAO:1";
     std::string sPrachConfig19 = "Index:19; Format0; FR1; x:1,y:0; RA subframe: 1, 6; time domain RAO:1";
     std::string sPrachConfig22 = "Index:22; Format0; FR1; x:1,y:0; RA subframe: 1, 4, 7; time domain RAO:1";
+    std::string sPrachConfig25 = "Index:25; Format0; FR1; x:1,y:0; RA subframe: 0, 2, 4, 6, 8; time domain RAO:1";
     std::string sPrachConfig27 = "Index:27; Format0; FR1; x:1,y:0; RA subframe:0..9; time domain RAO: 1";
     std::string sPrachConfig101 = "Index:101; FormatA1; FR1; x:1,y:0; RA subframe: 1; time domain RAO: 12";
     std::string sPrachConfig106 = "Index:106; FormatA1; FR1; x:1,y:0; RA subframe:0..9; time domaint RAO: 12";

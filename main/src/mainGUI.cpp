@@ -85,6 +85,7 @@ void MainGUI::initialPrachConfig(){
     listPrachConfig->insertItem(count++, QString::fromStdString(sPrachConfig16));
     listPrachConfig->insertItem(count++, QString::fromStdString(sPrachConfig19));
     listPrachConfig->insertItem(count++, QString::fromStdString(sPrachConfig22));
+    listPrachConfig->insertItem(count++, QString::fromStdString(sPrachConfig25));
     listPrachConfig->insertItem(count++, QString::fromStdString(sPrachConfig27));
     listPrachConfig->insertItem(count++, QString::fromStdString(sPrachConfig101));
     listPrachConfig->insertItem(count++, QString::fromStdString(sPrachConfig106));
