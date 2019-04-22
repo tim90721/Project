@@ -22,6 +22,8 @@ Model::Model(){
     outputFileUE = "UE";
     outputFileCell = "Cell";
     mode = DrawMode::DrawCell;
+    nPreambles = 64;
+    preambleSCS = 1.25;
 }
 
 // Set mouse XY position
@@ -67,9 +69,9 @@ void Model::setMousePressed(bool isPressed){
     if(mousePressed){
         if(countPressedReleased == 1 && mode == DrawMode::DrawCell){
             if(cellType == celltype::Macro)
-                tempCell = new MacroCell(mouseX, mouseY, cellIndex++, nBeams, cellType, prachConfigIndex); 
+                tempCell = new MacroCell(mouseX, mouseY, cellIndex++, nBeams, cellType, prachConfigIndex, nPreambles, cellBW, preambleSCS); 
             else
-                tempCell = new FemtoCell(mouseX, mouseY, cellIndex++, nBeams, cellType, prachConfigIndex);
+                tempCell = new FemtoCell(mouseX, mouseY, cellIndex++, nBeams, cellType, prachConfigIndex, nPreambles, cellBW, preambleSCS);
             tempCell->initializeBeams();
         }
         
@@ -113,6 +115,13 @@ void Model::draw(QPainter &painter){
 // get number of mouse pressed count
 int Model::getPressedCount(){
     return countPressedReleased;
+}
+
+// get FR mode
+// 0: FR1
+// 1: FR2
+unsigned int Model::getFR(){
+    return FR;
 }
 
 // notify all IPaintObservor
@@ -284,6 +293,27 @@ void Model::setPrachConfigIndex(string s){
 void Model::setDrawMode(DrawMode::Mode mode){
     this->mode = mode;
     SPDLOG_TRACE("mode: {0}", this->mode);
+}
+
+// set number of preambles
+// nPreambles: number of preambles
+void Model::setNPreambles(const int nPreambles){
+    this->nPreambles = nPreambles;
+    SPDLOG_TRACE("nPreambles: {0}", this->nPreambles);
+}
+
+// set preamble SCS
+// preambleSCS: preamble SCS
+void Model::setPreambleSCS(const double preambleSCS){
+    this->preambleSCS = preambleSCS;
+    SPDLOG_TRACE("praemble SCS: {0}", this->preambleSCS);
+}
+
+// set cell BW
+// cellBW: cell BW
+void Model::setCellBW(const int cellBW){
+    this->cellBW = cellBW;
+    SPDLOG_TRACE("cell BW: {0}", this->cellBW);
 }
 
 // set FR

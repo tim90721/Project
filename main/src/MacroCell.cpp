@@ -5,7 +5,7 @@
 // x: gNB x position
 // y: gNB y position
 // cellType: gNB CellType, Macro or Femto //FIXME maybe reduntant
-MacroCell::MacroCell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex):Cell(x, y, cellIndex, nBeams, cellType, prachConfigIndex){
+MacroCell::MacroCell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex, int nPreambles, int cellBW, double preambleSCS):Cell(x, y, cellIndex, nBeams, cellType, prachConfigIndex, nPreambles, cellBW, preambleSCS){
     this->cellAngle = 120;
     this->cellSupportDistance = 300;
 }

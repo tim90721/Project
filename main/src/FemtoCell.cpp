@@ -5,7 +5,7 @@
 // x: gNB x position
 // y: gNB y position
 // cellType: gNB CellType, Macro or Femto //FIXME maybe reduntant
-FemtoCell::FemtoCell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex):Cell(x, y, cellIndex, nBeams, cellType, prachConfigIndex){
+FemtoCell::FemtoCell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex, int nPreambles, int cellBW, double preambleSCS):Cell(x, y, cellIndex, nBeams, cellType, prachConfigIndex, nPreambles, cellBW, preambleSCS){
     this->cellAngle = 360; //FIXME
     this->cellSupportDistance = 100;
 }

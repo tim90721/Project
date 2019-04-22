@@ -5,10 +5,13 @@
 // x: gNB x position
 // y: gNB y position
 // cellType: gNB CellType, Macro or Femto //FIXME maybe reduntant
-Cell::Cell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex) : x(x), y(y), cellIndex(cellIndex), nBeams(nBeams), cellPixelSize(10), subframeIndex(0), frameIndex(0), raResponseWindow(1), cellType(cellType){
+Cell::Cell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex, int nPreambles, int cellBW, double preambleSCS) : x(x), y(y), cellIndex(cellIndex), nBeams(nBeams), cellPixelSize(10), subframeIndex(0), frameIndex(0), raResponseWindow(1), nPreambles(nPreambles), cellBW(cellBW), preambleSCS(preambleSCS), cellType(cellType){
     double ssbperRAO = 1;
     int msg1FDM = 1;
-    int nPreambles = 64;
+    //int nPreambles = 64;
+    SPDLOG_TRACE("cell {0} nPreambles: {1}", this->cellIndex, this->nPreambles);
+    SPDLOG_INFO("cell {0} cell BW: {1}", this->cellIndex, this->cellBW);
+    SPDLOG_INFO("cell{0} preamble SCS: {1}", this->cellIndex, this->preambleSCS);
     estimateUEs = 0;
     prachConfig = new PRACHConfigFR1(prachConfigIndex);
     prachConfig->configRA();
@@ -18,7 +21,6 @@ Cell::Cell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType,
     mRA = new MonitorRAFunction(availiableRAO, prachConfig);
     successUEs = 0;
     failedUEs = 0;
-    SPDLOG_WARN("testing: {0}", TESTING);
 }
 
 // Set gNB x position

@@ -5,7 +5,7 @@
 
 class MacroCell : public Cell{
     public:
-        MacroCell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex);
+        MacroCell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex, int nPreambles, int cellBW, double preambleSCS);
         void draw(QPainter &painter);
         void initializeBeams();
         void setBeamStartAngle(int diffX, int diffY);

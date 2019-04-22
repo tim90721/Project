@@ -26,7 +26,7 @@ class UE;
 
 class Cell : public IDrawable{
     public:
-        Cell(int x, int y,int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex);
+        Cell(int x, int y,int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex, int nPreambles, int cellBW, double preambleSCS);
         virtual void draw(QPainter &painter) = 0;
         void setCellType(celltype::CellType cellType);
         void setX(int x);
@@ -82,6 +82,8 @@ class Cell : public IDrawable{
         int subframeIndex;
         int frameIndex;
         int raResponseWindow;
+        int nPreambles;
+        int cellBW;
         unsigned long successUEs;
         unsigned long failedUEs;
         double estimateUEs;
@@ -89,6 +91,7 @@ class Cell : public IDrawable{
         double startAngle;
         double endAngle;
         double beamStartAngle;
+        double preambleSCS;
         celltype::CellType cellType;
         vector<Beam*> beams;
         vector<UE*> ues;

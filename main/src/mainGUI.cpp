@@ -25,21 +25,12 @@ MainGUI::MainGUI(QWidget *parent):
     initialPrachConfig();
     initialArrivalRateArea();
     initialSimulationTimeArea();
+    initialDrawingButtonArea();
+    initialNumberofPreambeArea();
+    initialPreambleSCSArea();
+    initialCellBandwithArea();
     initialSystemArea();
     initialMainLayout();
-
-    btnClear = new QPushButton(this);
-    btnClear->setText(QString::fromStdString(sBtnClear));
-
-    btnDrawCell = new QPushButton(this);
-    btnDrawCell->setText(QString::fromStdString(sBtnDrawCell));
-    btnDrawCell->setEnabled(false);
-
-    layoutDrawing = new QHBoxLayout;
-    layoutDrawing->addWidget(btnDrawCell);
-    layoutDrawing->addWidget(btnClear);
-
-    layoutSetting->addLayout(layoutDrawing, 5, 0);
 
     connectSignals();
 }
@@ -146,6 +137,93 @@ void MainGUI::initialSimulationTimeArea(){
     layoutSimulationTime->addWidget(labelUnitSimulationTime);
 }
 
+// configurate draw cell erase cell area
+void MainGUI::initialDrawingButtonArea(){
+    btnClear = new QPushButton(this);
+    btnClear->setText(QString::fromStdString(sBtnClear));
+
+    btnDrawCell = new QPushButton(this);
+    btnDrawCell->setText(QString::fromStdString(sBtnDrawCell));
+    btnDrawCell->setEnabled(false);
+
+    layoutDrawing = new QHBoxLayout;
+    layoutDrawing->addWidget(btnDrawCell);
+    layoutDrawing->addWidget(btnClear);
+
+}
+
+// initialize number of preamble area
+void MainGUI::initialNumberofPreambeArea(){
+    labelNumberofRAPreamble = new QLabel(this);
+    labelNumberofRAPreamble->setText(QString::fromStdString(sNumberofPreamble));
+    lEditNumberofPreamble = new QLineEdit(this);
+    lEditNumberofPreamble->setValidator(new QIntValidator(lEditNumberofPreamble));
+    //lEditSimulationTime->setMaximumSize(50, 50);
+    lEditNumberofPreamble->setAlignment(Qt::AlignRight);
+    lEditNumberofPreamble->setText(QString::number(64));
+
+    layoutNumberofPreamble = new QHBoxLayout;
+    layoutNumberofPreamble->addWidget(labelNumberofRAPreamble);
+    layoutNumberofPreamble->addWidget(lEditNumberofPreamble);
+}
+
+// initialize area for preamble SCS
+void MainGUI::initialPreambleSCSArea(){
+    labelPreambleSCS = new QLabel(this);
+    labelPreambleSCS->setText(QString::fromStdString(sPreambleSCS));
+
+    comboPreambleSCS = new QComboBox(this);
+    comboPreambleSCS->setEditable(false);
+    comboPreambleSCS->insertItem(0, QString::number(1.25));
+    comboPreambleSCS->insertItem(1, QString::number(5));
+    comboPreambleSCS->insertItem(2, QString::number(15));
+    comboPreambleSCS->insertItem(3, QString::number(30));
+    //sp = comboPreambleSCS->sizePolicy();
+    //sp.setVerticalPolicy(QSizePolicy::Minimum);
+    //comboPreambleSCS->setSizePolicy(sp);
+
+    layoutPreambleSCS = new QHBoxLayout;
+    //layoutPreambleSCS->setAlignment(Qt::AlignTop);
+    //lEditArrivalRate->setAlignment(Qt::AlignRight);
+    layoutPreambleSCS->addWidget(labelPreambleSCS);
+    layoutPreambleSCS->addWidget(comboPreambleSCS);
+}
+
+// initialize area for cell BW configuration
+void MainGUI::initialCellBandwithArea(){
+    labelCellBW = new QLabel(this);
+    labelCellBW->setText(QString::fromStdString(sCellBW));
+    labelCellBW->setMinimumSize(110, 30);
+    labelCellBW->setMaximumSize(110, 30);
+    sp = labelCellBW->sizePolicy();
+    sp.setVerticalPolicy(QSizePolicy::Maximum);
+    sp.setHorizontalPolicy(QSizePolicy::Minimum);
+    labelCellBW->setSizePolicy(sp);
+
+    labelBWUnit = new QLabel(this);
+    labelBWUnit->setText(QString::fromStdString(sBWUnit));
+    labelBWUnit->setMaximumSize(30, 50);
+    sp = labelBWUnit->sizePolicy();
+    sp.setVerticalPolicy(QSizePolicy::Preferred);
+    sp.setHorizontalPolicy(QSizePolicy::Maximum);
+    labelBWUnit->setSizePolicy(sp);
+
+    comboCellBW = new QComboBox(this);
+    comboCellBW->setEditable(false);
+    comboCellBW->insertItem(0, QString::number(5));
+    comboCellBW->insertItem(1, QString::number(10));
+    comboCellBW->insertItem(2, QString::number(25));
+    comboCellBW->insertItem(3, QString::number(50));
+    comboCellBW->insertItem(4, QString::number(100));
+    comboCellBW->insertItem(5, QString::number(200));
+    comboCellBW->insertItem(6, QString::number(400));
+
+    layoutCellBW = new QHBoxLayout;
+    layoutCellBW->addWidget(labelCellBW);
+    layoutCellBW->addWidget(comboCellBW);
+    layoutCellBW->addWidget(labelBWUnit);
+}
+
 // initial area for button start or load, save config area
 void MainGUI::initialSystemArea(){
     // initialize load config button
@@ -187,11 +265,14 @@ void MainGUI::initialMainLayout(){
     layoutSetting->addWidget(groupFR, 1, 0);
     layoutSetting->addWidget(groupgNBType, 2, 0);
     layoutSetting->addWidget(groupBeams, 3, 0);
-    //layoutSetting->addWidget(groupPreambleFormat, 1, 1, 3, 1);
-    layoutSetting->addLayout(layoutSimulationTime, 4, 0);
+    layoutSetting->addLayout(layoutCellBW, 4, 0);
+    layoutSetting->addLayout(layoutArrivalRate, 5, 0);
+    layoutSetting->addLayout(layoutSimulationTime, 6, 0);
+    layoutSetting->addLayout(layoutDrawing, 7, 0);
     layoutSetting->addWidget(listPrachConfig, 1, 1, 3, 1);
-    layoutSetting->addLayout(layoutArrivalRate, 4, 1);
-    layoutSetting->addLayout(layoutSystem, 5, 1);
+    layoutSetting->addLayout(layoutPreambleSCS, 4, 1);
+    layoutSetting->addLayout(layoutNumberofPreamble, 5, 1);
+    layoutSetting->addLayout(layoutSystem, 7, 1);
 
     // Main Area Setting
     layoutMain = new QGridLayout(this);
@@ -213,6 +294,9 @@ void MainGUI::connectSignals(){
 
     connect(btnDrawCell, SIGNAL(clicked()), this, SLOT(handleButtonDrawCellClick()));
     connect(btnClear, SIGNAL(clicked()), this, SLOT(handleButtonClearClick()));
+    connect(lEditNumberofPreamble, SIGNAL(textChanged(const QString&)), this, SLOT(handleNumberofPreambleChanged(const QString&)));
+    connect(comboPreambleSCS, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(handlePreambleSCSChanged(const QString&)));
+    connect(comboCellBW, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(handleCellBWChanged(const QString&)));
 }
 
 // handle start button click event
@@ -256,12 +340,30 @@ void MainGUI::handleFemtoRadBtnClick(){
 // handle FR1 radio button click event
 void MainGUI::handleFR1RadBtnClick(){
     SPDLOG_TRACE("FR1 selected\n");
+    if(model->getFR() == 1){
+        comboPreambleSCS->removeItem(1);
+        comboPreambleSCS->removeItem(0);
+        comboPreambleSCS->insertItem(0, QString::number(1.25));
+        comboPreambleSCS->insertItem(1, QString::number(5));
+        comboPreambleSCS->insertItem(2, QString::number(15));
+        comboPreambleSCS->insertItem(3, QString::number(30));
+        comboPreambleSCS->setCurrentIndex(0);
+    }
     model->setFR(iFR1);
 }
 
 // handle FR2 radio button click event
 void MainGUI::handleFR2RadBtnClick(){
     SPDLOG_TRACE("FR2 selected\n");
+    if(model->getFR() == 0){
+        comboPreambleSCS->removeItem(3);
+        comboPreambleSCS->removeItem(2);
+        comboPreambleSCS->removeItem(1);
+        comboPreambleSCS->removeItem(0);
+        comboPreambleSCS->insertItem(0, QString::number(60));
+        comboPreambleSCS->insertItem(1, QString::number(120));
+        comboPreambleSCS->setCurrentIndex(0);
+    }
     model->setFR(iFR2);
 }
 
@@ -284,12 +386,30 @@ void MainGUI::handleButtonClearClick(){
     btnClear->setEnabled(false);
 }
 
+// handle lineedit number of preamble changed
+void MainGUI::handleNumberofPreambleChanged(const QString& text){
+    model->setNPreambles(text.toInt());
+}
+
+// handle preamble scs changed
+void MainGUI::handlePreambleSCSChanged(const QString& text){
+    model->setPreambleSCS(text.toDouble());
+}
+
+// handle cell BW changed
+void MainGUI::handleCellBWChanged(const QString& text){
+    model->setCellBW(text.toInt());
+}
+
 // destructor
 MainGUI::~MainGUI(){
     delete model;
     delete layoutMain;
     delete layoutArrivalRate;
     delete layoutSimulationTime;
+    delete layoutCellBW;
+    delete layoutPreambleSCS;
+    delete layoutNumberofPreamble;
     delete layoutDrawing;
     delete layoutSystem;
     delete layoutSetting;
@@ -300,6 +420,12 @@ MainGUI::~MainGUI(){
     delete labelSimulationTime;
     delete labelUnitArrivalRate;
     delete labelUnitSimulationTime;
+    delete labelNumberofRAPreamble;
+    delete labelPreambleSCS;
+    delete labelCellBW;
+    delete labelBWUnit;
+    delete comboPreambleSCS;
+    delete comboCellBW;
     delete btnStart;
     delete btnSaveConfig;
     delete btnLoadConfig;
@@ -318,6 +444,7 @@ MainGUI::~MainGUI(){
     delete groupBeams;
     delete lEditArrivalRate;
     delete lEditSimulationTime;
+    delete lEditNumberofPreamble;
     delete widgetSetting;
     delete canvas;
 }

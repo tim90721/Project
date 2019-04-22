@@ -42,6 +42,7 @@ class Model : public IPaintSubject{
         void setMousePressed(bool isPressed);
         bool isMousePressed();
         int getPressedCount();
+        unsigned int getFR();
         void notifyAll();
         void registerPaintObservor(IPaintObservor *observor);
         void traverseUEs();
@@ -55,6 +56,9 @@ class Model : public IPaintSubject{
         void setArrivalRate(const unsigned int arrivalRate);
         void setPrachConfigIndex(std::string s);
         void setDrawMode(DrawMode::Mode mode);
+        void setNPreambles(const int nPreambles);
+        void setPreambleSCS(const double preambleSCS);
+        void setCellBW(const int cellBW);
         ~Model();
     private:
         void run(bool isTimesUp);
@@ -88,6 +92,9 @@ class Model : public IPaintSubject{
         int simulationTime;
         int simulationCounter;
         int nBeams;
+        int nPreambles;
+        int cellBW;
+        double preambleSCS;
         std::string outputFolderName;
         std::string outputFileExtension;
         std::string outputFileUE;

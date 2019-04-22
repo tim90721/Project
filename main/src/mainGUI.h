@@ -34,18 +34,26 @@ private:
     void initialPrachConfig();
     void initialArrivalRateArea();
     void initialSimulationTimeArea();
+    void initialDrawingButtonArea();
+    void initialNumberofPreambeArea();
+    void initialPreambleSCSArea();
+    void initialCellBandwithArea();
     void initialSystemArea(); // for start save area
     void initialMainLayout();
     void connectSignals();
     QLabel *labelArrivalRate;
     QLabel *labelSimulationTime;
-    //QLabel *labelUnitms;
     QLabel *labelUnitArrivalRate;
     QLabel *labelUnitSimulationTime;
+    QLabel *labelNumberofRAPreamble;
+    QLabel *labelPreambleSCS;
+    QLabel *labelCellBW;
+    QLabel *labelBWUnit;
     QPushButton *btnStart;
     QPushButton *btnSaveConfig;
     QPushButton *btnLoadConfig;
     QPushButton *btnClear;
+    QPushButton *btnNumberofPreamble;
     QPushButton *btnDrawCell;
     QRadioButton *rBtnMacrogNB;
     QRadioButton *rBtnFemtogNB;
@@ -60,6 +68,9 @@ private:
     QGroupBox *groupBeams;
     QLineEdit *lEditArrivalRate;
     QLineEdit *lEditSimulationTime;
+    QLineEdit *lEditNumberofPreamble;
+    QComboBox *comboPreambleSCS;
+    QComboBox *comboCellBW;
     QGridLayout *layoutSetting;
     QGridLayout *layoutMain;
     QHBoxLayout *layoutgNBType;
@@ -69,6 +80,9 @@ private:
     QHBoxLayout *layoutSimulationTime;
     QHBoxLayout *layoutSystem; // for button start, save...
     QHBoxLayout *layoutDrawing;
+    QHBoxLayout *layoutNumberofPreamble;
+    QHBoxLayout *layoutPreambleSCS;
+    QHBoxLayout *layoutCellBW;
     QWidget *widgetSetting;
     SimulationCanvas *canvas; //fixed this
     QSizePolicy sp;
@@ -103,10 +117,15 @@ private:
     std::string sBtnLoadConfig = "Load Config";
     std::string sBtnClear = "Erase Cell";
     std::string sBtnDrawCell = "Draw Cell";
-    int widthWindow = 515;
+    std::string sBtnSetNumberofPreamble = "Set";
+    std::string sNumberofPreamble = "Number of CBRA Preamble:";
+    std::string sPreambleSCS = "Preamble Subcarrier Spacing:";
+    std::string sCellBW = "Cell Bandwidth:";
+    std::string sBWUnit = "MHz";
+    int widthWindow = 540;
     int heightWindow = 700;
-    unsigned int FR1 = 0;
-    unsigned int FR2 = 1;
+    //unsigned int FR1 = 0;
+    //unsigned int FR2 = 1;
     unsigned int beams4 = 4;
     unsigned int beams8 = 8;
     unsigned int beams64 = 64;
@@ -124,6 +143,9 @@ private slots:
     void handleListPrachIndexChange(int selectedRow);
     void handleButtonDrawCellClick();
     void handleButtonClearClick();
+    void handleNumberofPreambleChanged(const QString& text);
+    void handlePreambleSCSChanged(const QString& text);
+    void handleCellBWChanged(const QString& text);
 };
 #endif
 
