@@ -38,6 +38,8 @@ private:
     void initialNumberofPreambeArea();
     void initialPreambleSCSArea();
     void initialCellBandwithArea();
+    void initialArrivalPattern();
+    void initialTotalUEArea();
     void initialSystemArea(); // for start save area
     void initialMainLayout();
     void connectSignals();
@@ -49,6 +51,8 @@ private:
     QLabel *labelPreambleSCS;
     QLabel *labelCellBW;
     QLabel *labelBWUnit;
+    QLabel *labelArrivalPattern;
+    QLabel *labelTotalUE;
     QPushButton *btnStart;
     QPushButton *btnSaveConfig;
     QPushButton *btnLoadConfig;
@@ -69,8 +73,10 @@ private:
     QLineEdit *lEditArrivalRate;
     QLineEdit *lEditSimulationTime;
     QLineEdit *lEditNumberofPreamble;
+    QLineEdit *lEditTotalUE;
     QComboBox *comboPreambleSCS;
     QComboBox *comboCellBW;
+    QComboBox *comboArrivalPattern;
     QGridLayout *layoutSetting;
     QGridLayout *layoutMain;
     QHBoxLayout *layoutgNBType;
@@ -83,6 +89,8 @@ private:
     QHBoxLayout *layoutNumberofPreamble;
     QHBoxLayout *layoutPreambleSCS;
     QHBoxLayout *layoutCellBW;
+    QHBoxLayout *layoutArrivalPattern;
+    QHBoxLayout *layoutTotalUE;
     QWidget *widgetSetting;
     SimulationCanvas *canvas; //fixed this
     QSizePolicy sp;
@@ -122,6 +130,8 @@ private:
     std::string sPreambleSCS = "Preamble Subcarrier Spacing:";
     std::string sCellBW = "Cell Bandwidth:";
     std::string sBWUnit = "MHz";
+    std::string sArrivalPattern = "Arrival Pattern:";
+    std::string sTotalUE = "Total Number of UE:";
     int widthWindow = 540;
     int heightWindow = 700;
     //unsigned int FR1 = 0;
@@ -146,6 +156,7 @@ private slots:
     void handleNumberofPreambleChanged(const QString& text);
     void handlePreambleSCSChanged(const QString& text);
     void handleCellBWChanged(const QString& text);
+    void handleArrivalPatternChanged(const QString& text);
 };
 #endif
 

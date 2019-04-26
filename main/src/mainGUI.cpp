@@ -29,6 +29,8 @@ MainGUI::MainGUI(QWidget *parent):
     initialNumberofPreambeArea();
     initialPreambleSCSArea();
     initialCellBandwithArea();
+    initialArrivalPattern();
+    initialTotalUEArea();
     initialSystemArea();
     initialMainLayout();
 
@@ -184,7 +186,6 @@ void MainGUI::initialPreambleSCSArea(){
 
     layoutPreambleSCS = new QHBoxLayout;
     //layoutPreambleSCS->setAlignment(Qt::AlignTop);
-    //lEditArrivalRate->setAlignment(Qt::AlignRight);
     layoutPreambleSCS->addWidget(labelPreambleSCS);
     layoutPreambleSCS->addWidget(comboPreambleSCS);
 }
@@ -222,6 +223,44 @@ void MainGUI::initialCellBandwithArea(){
     layoutCellBW->addWidget(labelCellBW);
     layoutCellBW->addWidget(comboCellBW);
     layoutCellBW->addWidget(labelBWUnit);
+}
+
+// initialize area for arrival pattern
+void MainGUI::initialArrivalPattern(){
+    labelArrivalPattern = new QLabel(this);
+    labelArrivalPattern->setText(QString::fromStdString(sArrivalPattern));
+
+    comboArrivalPattern = new QComboBox(this);
+    comboArrivalPattern->insertItem(0, "Uniform");
+    comboArrivalPattern->insertItem(1, "Beta");
+    comboArrivalPattern->setMinimumSize(130, 20);
+    sp = comboArrivalPattern->sizePolicy();
+    sp.setHorizontalPolicy(QSizePolicy::Minimum);
+    comboArrivalPattern->setSizePolicy(sp);
+
+    layoutArrivalPattern = new QHBoxLayout;
+    layoutArrivalPattern->addWidget(labelArrivalPattern);
+    layoutArrivalPattern->addWidget(comboArrivalPattern);
+}
+
+// handle total number of ue area
+void MainGUI::initialTotalUEArea(){
+    labelTotalUE = new QLabel(this);
+    labelTotalUE->setText(QString::fromStdString(sTotalUE));
+
+    lEditTotalUE = new QLineEdit(this);
+    lEditTotalUE->setValidator(new QIntValidator(lEditTotalUE));
+    lEditTotalUE->setAlignment(Qt::AlignRight);
+    lEditTotalUE->setText(QString::number(10000));
+
+    labelTotalUE->setVisible(false);
+    lEditTotalUE->setVisible(false);
+
+    layoutTotalUE = new QHBoxLayout;
+    layoutTotalUE->addWidget(labelTotalUE);
+    layoutTotalUE->addWidget(lEditTotalUE);
+
+    //layoutTotalUE->setVisible(false);
 }
 
 // initial area for button start or load, save config area
@@ -266,12 +305,14 @@ void MainGUI::initialMainLayout(){
     layoutSetting->addWidget(groupgNBType, 2, 0);
     layoutSetting->addWidget(groupBeams, 3, 0);
     layoutSetting->addLayout(layoutCellBW, 4, 0);
-    layoutSetting->addLayout(layoutArrivalRate, 5, 0);
-    layoutSetting->addLayout(layoutSimulationTime, 6, 0);
+    layoutSetting->addLayout(layoutArrivalPattern, 5, 0);
+    layoutSetting->addLayout(layoutArrivalRate, 6, 0);
+    layoutSetting->addLayout(layoutTotalUE, 6, 0);
     layoutSetting->addLayout(layoutDrawing, 7, 0);
     layoutSetting->addWidget(listPrachConfig, 1, 1, 3, 1);
     layoutSetting->addLayout(layoutPreambleSCS, 4, 1);
     layoutSetting->addLayout(layoutNumberofPreamble, 5, 1);
+    layoutSetting->addLayout(layoutSimulationTime, 6, 1);
     layoutSetting->addLayout(layoutSystem, 7, 1);
 
     // Main Area Setting
@@ -297,13 +338,17 @@ void MainGUI::connectSignals(){
     connect(lEditNumberofPreamble, SIGNAL(textChanged(const QString&)), this, SLOT(handleNumberofPreambleChanged(const QString&)));
     connect(comboPreambleSCS, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(handlePreambleSCSChanged(const QString&)));
     connect(comboCellBW, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(handleCellBWChanged(const QString&)));
+    connect(comboArrivalPattern, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(handleArrivalPatternChanged(const QString&)));
 }
 
 // handle start button click event
 void MainGUI::handleButtonStartClick(){
     SPDLOG_TRACE("start button click");
     model->setSimulationTime(lEditSimulationTime->text().toInt());
-    model->setArrivalRate(lEditArrivalRate->text().toInt());
+    if(model->getArrivalMode() == ArrivalMode::Uniform)
+        model->setArrivalRate(lEditArrivalRate->text().toInt());
+    else
+        model->setTotalUE(lEditTotalUE->text().toInt());
     model->startSimulation();
 }
 
@@ -401,13 +446,36 @@ void MainGUI::handleCellBWChanged(const QString& text){
     model->setCellBW(text.toInt());
 }
 
+// handle arrival pattern changed
+void MainGUI::handleArrivalPatternChanged(const QString& text){
+    //SPDLOG_INFO("{0}", text.fromStdString());
+    if(!text.toStdString().compare("Uniform")){
+        model->setArrivalMode(ArrivalMode::Uniform);
+        labelArrivalRate->setVisible(true);
+        labelUnitArrivalRate->setVisible(true);
+        lEditArrivalRate->setVisible(true);
+        labelTotalUE->setVisible(false);
+        lEditTotalUE->setVisible(false);
+    }
+    else{
+        model->setArrivalMode(ArrivalMode::Beta);
+        labelArrivalRate->setVisible(false);
+        labelUnitArrivalRate->setVisible(false);
+        lEditArrivalRate->setVisible(false);
+        labelTotalUE->setVisible(true);
+        lEditTotalUE->setVisible(true);
+    }
+}
+
 // destructor
 MainGUI::~MainGUI(){
     delete model;
     delete layoutMain;
     delete layoutArrivalRate;
     delete layoutSimulationTime;
+    delete layoutTotalUE;
     delete layoutCellBW;
+    delete layoutArrivalPattern;
     delete layoutPreambleSCS;
     delete layoutNumberofPreamble;
     delete layoutDrawing;
@@ -424,8 +492,11 @@ MainGUI::~MainGUI(){
     delete labelPreambleSCS;
     delete labelCellBW;
     delete labelBWUnit;
+    delete labelArrivalPattern;
+    delete labelTotalUE;
     delete comboPreambleSCS;
     delete comboCellBW;
+    delete comboArrivalPattern;
     delete btnStart;
     delete btnSaveConfig;
     delete btnLoadConfig;
@@ -445,6 +516,7 @@ MainGUI::~MainGUI(){
     delete lEditArrivalRate;
     delete lEditSimulationTime;
     delete lEditNumberofPreamble;
+    delete lEditTotalUE;
     delete widgetSetting;
     delete canvas;
 }

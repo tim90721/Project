@@ -35,15 +35,21 @@ def plotAverageResult(average, filename=""):
         plt.savefig(filename)
     #plt.show()
 
-def plotLantencyCDF(latency, prachIndex, simulationTime, arrivalRate, saveFolderName=""):
+def plotLantencyCDF(latency, prachIndex, simulationTime, arrivalMode, arrival, saveFolderName=""):
     global figureCount
-    subTitle = "Prach Configuration Index: {0}\n".format(prachIndex) \
-            + "Simulation Time: {0} ".format(str(int(simulationTime) / 1000)) \
-            + "UE Arrival Rate: {0}\n".format(arrivalRate)
-    filenameFig = "CDF_prach-{0}_simu-{1}_arrival-{2}".format(prachIndex,
+    subTitle = "Prach Configuration Index: {0}, ".format(prachIndex) \
+            + "Simulation Time: {0}\n".format(str(int(simulationTime) / 1000)) \
+            + "Arrival Mode: {0}, ".format(arrivalMode)
+    if arrivalMode == "uniform":
+        subTitle = subTitle + "Arrival Rate: {0}".format(arrival)
+    else:
+        subTitle = subTitle + "Totle UE: {0}".format(arrival)
+    filenameFig = "CDF_prach-{0}_simu-{1}_{2}_arrival-{3}".format(prachIndex,
             simulationTime,
-            arrivalRate)
+            arrivalMode,
+            arrival)
 
+    latency.insert(0, 0)
     X = np.linspace(min(latency), max(latency), max(latency) - min(latency))
     hist, bin_edges = np.histogram(latency, bins=max(latency) - min(latency), density=True)
     hist = np.cumsum(hist)
@@ -56,8 +62,8 @@ def plotLantencyCDF(latency, prachIndex, simulationTime, arrivalRate, saveFolder
     plt.xlabel("Latency (ms)")
     plt.ylabel("CDF")
     plt.suptitle("UE Latency CDF", fontsize=14, fontweight="bold")
-    ax.set_title(subTitle, y=0.93)
-    plt.axis([min(latency), max(latency), 0, 1.1])
+    ax.set_title(subTitle)
+    plt.axis([0, max(latency), 0, 1.1])
     plt.grid(True)
     if saveFolderName:
         plt.savefig(saveFolderName + filenameFig)
@@ -68,39 +74,55 @@ def plotLantencyCDF(latency, prachIndex, simulationTime, arrivalRate, saveFolder
 ueFile = 'UE.csv'
 cellFile = 'Cell.csv'
 resultSourceFolder = "./candidateResult/"
-savefigureName = "result.png"
+savefigureNameUniform = "result_uniform.png"
+savefigurenameBeta = "result_beta.png"
 
 folderName = [name for name in os.listdir(resultSourceFolder)]
-folderName.remove(savefigureName)
+folderName = [name for name in folderName if "png" not in name]
 
-############ get parameters ############
+#if savefigureName in folderName:
+#    folderName.remove(savefigureName)
+
+############# get parameters ############
 prachIndex = [name.split("prach-")[1] for name in folderName]
 prachIndex = [name.split("_")[0] for name in prachIndex]
 simulationTime = [name.split("simu-")[1] for name in folderName]
 simulationTime = [name.split("_")[0] for name in simulationTime]
-arrivalRate = [name.split("arrival-")[1] for name in folderName]
-arrivalRate = [name.split("_")[0] for name in arrivalRate]
+arrivalMode = [name.split("_")[4] for name in folderName]
+arrival = [name.split("_")[5] for name in folderName]
+arrival = [name.split("-")[1] for name in arrival]
+#for i in range(len(folderName)):
+#    print(folderName[i])
+#    print(arrivalMode[i])
+#    print(arrival[i])
 ############ get parameters ############
 
-avgs = {}
+avgs_uniform = {}
+avgs_beta = {}
 latencies = []
 
 while(len(prachIndex) > 0):
     maxIndex = prachIndex.index(max(prachIndex))
     filename = resultSourceFolder + folderName[maxIndex] + "/" + ueFile
     latency = collectDataUE(filename)
-    avgs[getSubframePeriod(int(prachIndex[maxIndex]))] = np.mean(list(latency.values()))
-    plotLantencyCDF(list(latency.values()), prachIndex[maxIndex], simulationTime[maxIndex], arrivalRate[maxIndex], resultSourceFolder)
+    if arrivalMode[maxIndex] == "uniform":
+        avgs_uniform[getSubframePeriod(int(prachIndex[maxIndex]))] = np.mean(list(latency.values()))
+    else:
+        avgs_beta[getSubframePeriod(int(prachIndex[maxIndex]))] = np.mean(list(latency.values()))
+
+    plotLantencyCDF(list(latency.values()), prachIndex[maxIndex], simulationTime[maxIndex], arrivalMode[maxIndex], arrival[maxIndex], resultSourceFolder)
     #print(prachIndex[maxIndex])
     #print(folderName[maxIndex])
     #print(filename)
     #print(len(latency))
     del prachIndex[maxIndex]
     del simulationTime[maxIndex]
-    del arrivalRate[maxIndex]
+    del arrivalMode[maxIndex]
+    del arrival[maxIndex]
     del folderName[maxIndex]
 
-print(avgs)
-plotAverageResult(avgs, resultSourceFolder + savefigureName)
+print(avgs_uniform)
+plotAverageResult(avgs_uniform, resultSourceFolder + savefigureNameUniform)
+plotAverageResult(avgs_beta, resultSourceFolder + savefigurenameBeta)
 plt.show()
-del avgs
+del avgs_uniform

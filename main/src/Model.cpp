@@ -22,8 +22,10 @@ Model::Model(){
     outputFileUE = "UE";
     outputFileCell = "Cell";
     mode = DrawMode::DrawCell;
+    arrivalMode = ArrivalMode::Uniform;
     nPreambles = 64;
     preambleSCS = 1.25;
+    totalUE = 0;
 }
 
 // Set mouse XY position
@@ -122,6 +124,12 @@ int Model::getPressedCount(){
 // 1: FR2
 unsigned int Model::getFR(){
     return FR;
+}
+
+// get arrival mode
+// return: arrival mode
+ArrivalMode::Mode Model::getArrivalMode(){
+    return arrivalMode;
 }
 
 // notify all IPaintObservor
@@ -225,7 +233,7 @@ void Model::startSimulation(){
         cells.at(i)->resetFrame();
     }
     for(int i = 0;i < simulationTime;i++){
-        run(isTimesUp);
+        run(isTimesUp, i);
     }
     isTimesUp = true;
     if(UEs.size() > 0 && !TESTING){
@@ -235,13 +243,13 @@ void Model::startSimulation(){
             }
         }
         while(remainingUEs){
-            run(isTimesUp);
+            run(isTimesUp, 0);
             SPDLOG_TRACE("remaining UEs: {0}", remainingUEs);
         }
     }
     SPDLOG_INFO("simulation: {0} complete", simulationCounter++);
     if(!TESTING){
-        recordCellsInfo();
+        recordCellsInfo(isTimesUp);
         restoreCells2Initial();
         plotResult();
         closeOutFiles();
@@ -316,6 +324,20 @@ void Model::setCellBW(const int cellBW){
     SPDLOG_TRACE("cell BW: {0}", this->cellBW);
 }
 
+// set arrival mode
+// mode: arrival mode
+void Model::setArrivalMode(ArrivalMode::Mode mode){
+    arrivalMode = mode;
+    SPDLOG_WARN("arrival mode: {0}", arrivalMode);
+}
+
+// set total arrival ue
+// totalUE: total arrival ue
+void Model::setTotalUE(const unsigned long totalUE){
+    this->totalUE = totalUE;
+    SPDLOG_WARN("total ue: {0}", this->totalUE);
+}
+
 // set FR
 // FR: FR
 void Model::setFR(const unsigned int FR){
@@ -329,11 +351,11 @@ void Model::setFR(const unsigned int FR){
 // third, transmit UE's UL
 // isTimesUp: when simulationTime is 0, set this value to true
 // for proceeding remaining UEs RA
-void Model::run(bool isTimesUp){
+void Model::run(bool isTimesUp, int timestamp){
     SPDLOG_INFO("=================info=================");
-    recordCellsInfo();
+    recordCellsInfo(isTimesUp);
     if(!isTimesUp)
-        generateRandomUEs();
+        generateRandomUEs(timestamp);
     SPDLOG_INFO("frame: {0}, subframe: {1}", 
             cells.at(0)->getFrameIndex(),
             cells.at(0)->getSubframeIndex());
@@ -358,10 +380,17 @@ void Model::run(bool isTimesUp){
 // and random generated distance has a 10 tolerance
 // for decreasing the probability of cell cannot detect ue
 // then calculate random x, y point based on distance and angle
-void Model::generateRandomUEs(){
+void Model::generateRandomUEs(int timestamp){
     Cell *cell;
     SPDLOG_TRACE("generating ues\n");
-    for(int i = 0;i < ueArrivalRate;i++){
+    int nUE;
+    if(arrivalMode == ArrivalMode::Uniform)
+        nUE = ueArrivalRate;
+    else 
+        nUE = generateBetaUEs(timestamp);
+
+    SPDLOG_WARN("generating number of ue: {0}", nUE);
+    for(int i = 0;i < nUE;i++){
         int rndCellIndex = getRnd(0, cells.size() - 1);
 
         cell = cells[rndCellIndex];
@@ -380,6 +409,19 @@ void Model::generateRandomUEs(){
         ue->setActiveTime(cell->getFrameIndex(), cell->getSubframeIndex());
         UEs.push_back(ue);
     }
+}
+
+// generate ues based on beta distribution
+// timestamp: current time
+// return: number of ue
+int Model::generateBetaUEs(const int timestamp){
+    int alpha = 3;
+    int beta = 4;
+    int output = round(totalUE * pow(timestamp, alpha - 1)
+            * pow((simulationTime - timestamp), beta - 1)
+            / pow(simulationTime, alpha + beta - 1)
+            * 60);
+    return output;
 }
 
 // record ue active and departed frame and subframe index to a file
@@ -407,11 +449,11 @@ void Model::recordUELatency(UE *ue){
 }
 
 // record each cells information every 160ms
-void Model::recordCellsInfo(){
+void Model::recordCellsInfo(bool isTimesUp){
     auto it = cells.begin();
     const int frame = (*it)->getFrameIndex();
     const int subframe = (*it)->getSubframeIndex();
-    if((frame * 10 + subframe) % 160 != 0 && UEs.size() != 0)
+    if((frame * 10 + subframe) % 160 != 0 && (!isTimesUp || UEs.size() != 0))
         return;
     for(;it != cells.end();it++){
         outFileCell << (*it)->getCellIndex() << ", "
@@ -437,8 +479,16 @@ void Model::initializeOutFiles(){
 
     outputFolderName = outputFolderName + curTime 
         + "_prach-" + to_string(cells[0]->getPrachConfigIndex()) 
-        + "_simu-" + to_string(simulationTime / 10) 
-        + "_arrival-" + to_string(ueArrivalRate) + "/";
+        + "_simu-" + to_string(simulationTime / 1000); 
+    if(arrivalMode == ArrivalMode::Uniform){
+        outputFolderName = outputFolderName + "_uniform"
+            + "_arrival-" + to_string(ueArrivalRate);
+    }
+    else{
+        outputFolderName = outputFolderName + "_beta" 
+            + "_totalUE-" + to_string(totalUE);
+    }
+    outputFolderName += "/";
 
     string command = "mkdir " + outputFolderName; 
     system(command.c_str());
@@ -460,7 +510,13 @@ void Model::closeOutFiles(){
 
 // plot result done recently
 void Model::plotResult(){
-    string command = "python3 ./scripts/plot_result.py " + outputFolderName + " " + filenameUE + " " + filenameCell + " " + to_string(cells[0]->getPrachConfigIndex()) + " " + to_string(simulationTime) + " " + to_string(ueArrivalRate);
+    string command = "python3 ./scripts/plot_result.py " + outputFolderName + " " + filenameUE + " " + filenameCell + " " + to_string(cells[0]->getPrachConfigIndex()) + " " + to_string(simulationTime);
+    if(arrivalMode == ArrivalMode::Uniform){
+        command += " uniform " + to_string(ueArrivalRate);
+    }
+    else{
+        command += " beta " + to_string(totalUE);
+    }
     system(command.c_str());
 }
 

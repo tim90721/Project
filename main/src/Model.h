@@ -30,6 +30,13 @@ namespace DrawMode{
     };
 };
 
+namespace ArrivalMode{
+    enum Mode{
+        Uniform,
+        Beta
+    };
+};
+
 class Model : public IPaintSubject{
     public:
         Model();
@@ -43,6 +50,7 @@ class Model : public IPaintSubject{
         bool isMousePressed();
         int getPressedCount();
         unsigned int getFR();
+        ArrivalMode::Mode getArrivalMode();
         void notifyAll();
         void registerPaintObservor(IPaintObservor *observor);
         void traverseUEs();
@@ -59,12 +67,14 @@ class Model : public IPaintSubject{
         void setNPreambles(const int nPreambles);
         void setPreambleSCS(const double preambleSCS);
         void setCellBW(const int cellBW);
+        void setArrivalMode(ArrivalMode::Mode mode);
+        void setTotalUE(const unsigned long totalUE);
         ~Model();
     private:
-        void run(bool isTimesUp);
-        void generateRandomUEs();
+        void run(bool isTimesUp, int timestamp);
+        void generateRandomUEs(int timestamp);
         void recordUELatency(UE *ue);
-        void recordCellsInfo();
+        void recordCellsInfo(bool isTimesUp);
         void initializeOutFiles();
         void closeOutFiles();
         void plotResult();
@@ -72,6 +82,7 @@ class Model : public IPaintSubject{
         void drawing(QPainter &painter);
         void erasing(QPainter &painter);
         void detectCellInEraseArea();
+        int generateBetaUEs(const int timestamp);
 
         unsigned long ueIndex;
         int remainingUEs;
@@ -106,5 +117,7 @@ class Model : public IPaintSubject{
         ofstream outFileCell;
         std::string curTime;
         DrawMode::Mode mode;
+        ArrivalMode::Mode arrivalMode;
+        unsigned long totalUE;
 };
 #endif

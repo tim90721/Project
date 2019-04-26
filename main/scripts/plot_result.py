@@ -31,12 +31,12 @@ def collectDataCell(filename):
             estimateUEs.append(int(row[8]))
         del successUEs[-1]
         del estimateUEs[-1]
+        estimateUEs.insert(0, 0)
 
     return successUEs, estimateUEs
 
 def plotDataUE(latencies, upperBound, filenameFig1 = None, subTitle = ""):
     newXticks = np.linspace(0, len(latencies), 11)
-    newYticks = range(0, upperBound + 5, 5)
     fig = plt.figure(1)
     ax = plt.subplot(1, 1, 1)
     fig.subplots_adjust(top=0.85)
@@ -44,33 +44,25 @@ def plotDataUE(latencies, upperBound, filenameFig1 = None, subTitle = ""):
     plt.xlabel("UE Index")
     plt.ylabel("Latency (ms)")
     plt.suptitle("Each UE Latency", fontsize=14, fontweight="bold")
-    plt.title(subTitle, y=0.93)
-    plt.axis([0, len(latencies), 0, upperBound])
+    plt.title(subTitle)
+    plt.axis([0, len(latencies), 0, upperBound + 5])
     plt.xticks(newXticks)
-    plt.yticks(newYticks)
     plt.grid(True)
     manager = plt.get_current_fig_manager()
     manager.window.wm_geometry("700x500+50+50")
-    #manager.window.SetPosition("+500+0")
     if filenameFig1:
         plt.savefig(filenameFig1)
     del newXticks
-    del newYticks
 
 def plotDataCell(successUEs, estimateUEs, filenameFig2 = None, subTitle = ""):
-    #newXticks = np.linspace(0, len(successUEs), 11);
-    #for i in range(len(newXticks)):
-    #    newXticks[i] = newXticks[i] * 16
-    #print(newXticks)
     fig = plt.figure(2)
     ax = plt.subplot(1, 1, 1)
     line1, = ax.plot([x * 16 for x in range(len(successUEs))], successUEs, 'g-*', label='Success UEs')
     line2, = ax.plot([x * 16 for x in range(len(estimateUEs))], estimateUEs, 'b-o', label='estimate UEs')
-    ax.legend(loc="lower right")
-    #ax.xaxis.set_major_locator(ticker.FixedLocator(newXticks))
+    ax.legend(loc="upper right")
     fig.subplots_adjust(top=0.85)
     plt.suptitle("Estimate UEs vs Actual Success UEs", fontsize=14, fontweight="bold")
-    ax.set_title(subTitle, y=0.93)
+    ax.set_title(subTitle)
     plt.xlabel("Subframe Index")
     plt.ylabel("Number of UEs")
     plt.axis([0, len(successUEs) * 16, 0, max([max(successUEs), max(estimateUEs)]) + 10])
@@ -79,8 +71,6 @@ def plotDataCell(successUEs, estimateUEs, filenameFig2 = None, subTitle = ""):
     manager.window.wm_geometry("700x500+750+50")
     if filenameFig2:
         plt.savefig(filenameFig2)
-    #plt.xticks([newXticks, newXticks])
-    #del newXticks
 
 if __name__ == '__main__':
     print('number of input: {0}'.format(len(sys.argv)))
@@ -95,12 +85,20 @@ if __name__ == '__main__':
     cellFile = sys.argv[3]
     prachConfig = sys.argv[4]
     simulationTime = sys.argv[5]
-    arrivalRate = sys.argv[6]
+    arrivalMode = sys.argv[6]
+    if arrivalMode == "uniform":
+        arrivalRate = sys.argv[7]
+    else:
+        totalUE = sys.argv[7]
     
-    subTitle = "\nPrach Configuration Index: {0}\n".format(prachConfig) \
-            + "Simulation Time: {0} ".format(str(int(simulationTime) / 10)) \
-            + "UE Arrival Rate: {0}\n".format(arrivalRate)
-    
+    subTitle = "Prach Configuration Index: {0}, ".format(prachConfig) \
+            + "Simulation Time: {0}s\n".format(str(int(simulationTime) / 1000)) \
+            + "Arrival Mode: {0}, ".format(arrivalMode)
+    if arrivalMode == "uniform":
+        subTitle = subTitle + "Arrival Rate: {0} ".format(arrivalRate)
+    else:
+        subTitle = subTitle + "Total UE: {0} ".format(totalUE)
+
     filenameFig1 = outputFolderName + "UE_latency"
     filenameFig2 = outputFolderName + "Estimate_UEs"
     print(filenameFig1)

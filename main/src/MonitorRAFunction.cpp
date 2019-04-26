@@ -179,7 +179,7 @@ int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
     SPDLOG_TRACE("msg1fdm index: {0}", i);
     double newMsg1FDM = pow(2, i);
     if(*newSSBPerRAO < ssbPerRAO && newTau > tau && newTau > 5 && msg1FDM < 8){
-        newMsg1FDM = (((double)(successUEs * ssbPerRAO * exp(1)))
+        newMsg1FDM = (((double)(estimateUEs * ssbPerRAO * exp(1)))
             / ((double)availiableRAO->getNumberofPreambles() * nSSB))
             * (((double)availiableRAO->getTotalNeedRAO())
             / ((double)prachConfig->getNumberofTimeDomainRAO() * raCount));
@@ -189,7 +189,7 @@ int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
         *newSSBPerRAO = ssbPerRAO;
         if(newMsg1FDM > 8){
             *newSSBPerRAO = (((double)availiableRAO->getNumberofPreambles() * nSSB)
-                / ((double)successUEs * exp(1)))
+                / ((double)estimateUEs * exp(1)))
                 * (((double)prachConfig->getNumberofTimeDomainRAO() * newMsg1FDM)
                 / (double)availiableRAO->getTotalNeedRAO())
                 * raCount;
@@ -254,7 +254,7 @@ double MonitorRAFunction::getDelta(const int nPreambles, const double ssbPerRAO)
 // calculate new ssb per rao based on success ues
 // return: new ssb per rao
 double MonitorRAFunction::calculateNewSSBPerRAO(){
-    double newSSBPerRAO = (availiableRAO->getNumberofPreambles() * nSSB) / (successUEs * exp(1))
+    double newSSBPerRAO = (availiableRAO->getNumberofPreambles() * nSSB) / (estimateUEs * exp(1))
         * ((double)(prachConfig->getNumberofTimeDomainRAO() * availiableRAO->getMsg1FDM()) / (double)availiableRAO->getTotalNeedRAO()) * raCount;
     SPDLOG_TRACE("new ssb per rao in double: {0}", newSSBPerRAO);
     if(newSSBPerRAO > nSSB && nSSB != 64){
@@ -312,7 +312,7 @@ unsigned long MonitorRAFunction::estimateNextUEsBySlot(){
         SPDLOG_WARN("historySlot is not enough, return first slot success UEs");
         return successUEs;
     }
-    if(historySlot.size() > raCount * 4){
+    if(historySlot.size() > raCount * 2){
         SPDLOG_WARN("ra count: {0}", raCount);
         SPDLOG_WARN("history maximum size reached");
         SPDLOG_WARN("historySlot size: {0}", historySlot.size());
