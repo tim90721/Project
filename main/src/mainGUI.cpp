@@ -223,6 +223,10 @@ void MainGUI::initialCellBandwithArea(){
     layoutCellBW->addWidget(labelCellBW);
     layoutCellBW->addWidget(comboCellBW);
     layoutCellBW->addWidget(labelBWUnit);
+    
+    labelCellBW->setVisible(false);
+    labelBWUnit->setVisible(false);
+    comboCellBW->setVisible(false);
 }
 
 // initialize area for arrival pattern
@@ -305,14 +309,14 @@ void MainGUI::initialMainLayout(){
     layoutSetting->addWidget(groupgNBType, 2, 0);
     layoutSetting->addWidget(groupBeams, 3, 0);
     layoutSetting->addLayout(layoutCellBW, 4, 0);
-    layoutSetting->addLayout(layoutArrivalPattern, 5, 0);
-    layoutSetting->addLayout(layoutArrivalRate, 6, 0);
-    layoutSetting->addLayout(layoutTotalUE, 6, 0);
+    layoutSetting->addLayout(layoutArrivalPattern, 4, 0);
+    layoutSetting->addLayout(layoutArrivalRate, 5, 0);
+    layoutSetting->addLayout(layoutTotalUE, 5, 0);
+    layoutSetting->addLayout(layoutSimulationTime, 6, 0);
     layoutSetting->addLayout(layoutDrawing, 7, 0);
     layoutSetting->addWidget(listPrachConfig, 1, 1, 3, 1);
     layoutSetting->addLayout(layoutPreambleSCS, 4, 1);
     layoutSetting->addLayout(layoutNumberofPreamble, 5, 1);
-    layoutSetting->addLayout(layoutSimulationTime, 6, 1);
     layoutSetting->addLayout(layoutSystem, 7, 1);
 
     // Main Area Setting
