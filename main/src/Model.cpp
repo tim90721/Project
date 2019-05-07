@@ -26,6 +26,8 @@ Model::Model(){
     nPreambles = 64;
     preambleSCS = 1.25;
     totalUE = 0;
+    participateUEs = 0;
+    arrivalUEs = 0;
 }
 
 // Set mouse XY position
@@ -157,9 +159,9 @@ void Model::traverseUEs(){
             recordUELatency(ue);
             UEs.erase(UEs.begin() + i);
             delete ue;
-            i--;
+            --i;
             if(remainingUEs)
-                remainingUEs--;
+                --remainingUEs;
             continue;
         }
         //printf("ues size: %lu\n", UEs.size());
@@ -253,6 +255,8 @@ void Model::startSimulation(){
         restoreCells2Initial();
         plotResult();
         closeOutFiles();
+        participateUEs = 0;
+        arrivalUEs = 0;
     }
 }
 
@@ -328,14 +332,14 @@ void Model::setCellBW(const int cellBW){
 // mode: arrival mode
 void Model::setArrivalMode(ArrivalMode::Mode mode){
     arrivalMode = mode;
-    SPDLOG_WARN("arrival mode: {0}", arrivalMode);
+    SPDLOG_TRACE("arrival mode: {0}", arrivalMode);
 }
 
 // set total arrival ue
 // totalUE: total arrival ue
 void Model::setTotalUE(const unsigned long totalUE){
     this->totalUE = totalUE;
-    SPDLOG_WARN("total ue: {0}", this->totalUE);
+    SPDLOG_TRACE("total ue: {0}", this->totalUE);
 }
 
 // set FR
@@ -388,6 +392,8 @@ void Model::generateRandomUEs(int timestamp){
         nUE = ueArrivalRate;
     else 
         nUE = generateBetaUEs(timestamp);
+    participateUEs += nUE;
+    arrivalUEs += nUE;
 
     SPDLOG_WARN("generating number of ue: {0}", nUE);
     for(int i = 0;i < nUE;i++){
@@ -431,20 +437,20 @@ void Model::recordUELatency(UE *ue){
     for(it;it != cells.end();it++)
         if((*it)->getCellIndex() == cellIndexUE)
             break;
-    outFileUE << ue->getID() << ", " 
-        << ue->getCellIndex() << ", " 
-        << (*it)->getnBeams() << ", "
-        << ue->getBeamIndex() << ", "
-        << ue->getRASSBPerRAO() << ", "
-        << ue->getRAMsg1FDM() << ", "
-        << ue->getActiveFrame() << ", " 
-        << ue->getActiveSubframe() << ", " 
-        << ue->getRAFrame() << ", "
-        << ue->getRASubframe() << ", "
-        << ue->getDepartedFrame() << ", " 
-        << ue->getDepartedSubframe() << ", "
-        << ue->getSelectRAOIndex() << ", "
-        << ue->getSelectPreambleIndex() << ", "
+    outFileUE << ue->getID() << "," 
+        << ue->getCellIndex() << "," 
+        << (*it)->getnBeams() << ","
+        << ue->getBeamIndex() << ","
+        << ue->getRASSBPerRAO() << ","
+        << ue->getRAMsg1FDM() << ","
+        << ue->getActiveFrame() << "," 
+        << ue->getActiveSubframe() << "," 
+        << ue->getRAFrame() << ","
+        << ue->getRASubframe() << ","
+        << ue->getDepartedFrame() << "," 
+        << ue->getDepartedSubframe() << ","
+        << ue->getSelectRAOIndex() << ","
+        << ue->getSelectPreambleIndex() << ","
         << ue->isCollided() << endl;
 }
 
@@ -456,16 +462,23 @@ void Model::recordCellsInfo(bool isTimesUp){
     if((frame * 10 + subframe) % 160 != 0 && (!isTimesUp || UEs.size() != 0))
         return;
     for(;it != cells.end();it++){
-        outFileCell << (*it)->getCellIndex() << ", "
-            << (*it)->getnBeams() << ", "
-            << (*it)->getFrameIndex() << ", "
-            << (*it)->getSubframeIndex() << ", "
-            << (*it)->getSSBPerRAO() << ", "
-            << (*it)->getMsg1FDM() << ", "
-            << (*it)->getPrachConfigIndex() << ", " 
-            << (*it)->getSuccessUEs() << ", "
-            << (*it)->getEstimateUEs() << ", "
-            << (*it)->getFailedUEs() << endl;
+        outFileCell << (*it)->getCellIndex() << ","
+            << (*it)->getPreambleSCS() << ","
+            << (*it)->getnBeams() << ","
+            << (*it)->getFrameIndex() << ","
+            << (*it)->getSubframeIndex() << ","
+            << (*it)->getSSBPerRAO() << ","
+            << (*it)->getMsg1FDM() << ","
+            << (*it)->getPrachConfigIndex() << "," 
+            << (*it)->getTau() << ","
+            << (*it)->getTotalChannelCapacity() << ","
+            << arrivalUEs << ","
+            << (*it)->getSuccessUEs() << ","
+            << (*it)->getEstimateUEs() << ","
+            << (*it)->getFailedUEs() << ","
+            << participateUEs << endl;
+        participateUEs -= (*it)->getSuccessUEs();
+        arrivalUEs = 0;
     }
 }
 
@@ -496,9 +509,9 @@ void Model::initializeOutFiles(){
     filenameUE = outputFolderName + outputFileUE + outputFileExtension;
     filenameCell = outputFolderName + outputFileCell + outputFileExtension;
     outFileUE = ofstream(filenameUE);
-    outFileUE << "\"UE ID\", \"Cell ID\", \"Total Beams\", \"Beam Index\", \"SSB per RAO\", \"msg1-FDM\", \"Active Frame\", \"Active Subframe\", \"RA Frame\", \"RA Subframe\", \"Departed Frame\", \"Departed Subframe\", \"Selected RAO Undex\", \"Selected Preamble\", \"Collided\"" << endl;
+    outFileUE << "\"UE ID\",\"Cell ID\",\"Total Beams\",\"Beam Index\",\"SSB per RAO\",\"msg1-FDM\",\"Active Frame\",\"Active Subframe\",\"RA Frame\",\"RA Subframe\",\"Departed Frame\",\"Departed Subframe\",\"Selected RAO Undex\",\"Selected Preamble\",\"Collided\"" << endl;
     outFileCell = ofstream(filenameCell);
-    outFileCell << "\"Cell ID\", \"Total Beams\", \"Current Frame\", \"Current Subframe\", \"SSB per RAO\", \"msg1-FDM\", \"prach-ConfigurationIndex\", \"Success UEs\", \"Estimate UEs\", \"Failed UEs\"" << endl;
+    outFileCell << "\"Cell ID\",\"Preamble SCS\",\"Total Beams\",\"Current Frame\",\"Current Subframe\",\"SSB per RAO\",\"msg1-FDM\",\"prach-ConfigurationIndex\",\"Tau\",\"Total Channel Capacity\",\"Arrival UEs\",\"Success UEs\",\"Estimate UEs\",\"Failed UEs\",\"Participate UEs\"" << endl;
 }
 
 // close output files

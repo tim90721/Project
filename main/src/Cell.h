@@ -61,9 +61,12 @@ class Cell : public IDrawable{
         int getMsg1FDM();
         int getRaResponseWindow();
         int getPrachConfigIndex();
+        int getTau();
         double getBeamStartAngle();
         double getSSBPerRAO();
         double getCellSpanAngle();
+        double getPreambleSCS();
+        double getTotalChannelCapacity();
         unsigned long getSuccessUEs();
         unsigned long getFailedUEs();
         double getEstimateUEs();

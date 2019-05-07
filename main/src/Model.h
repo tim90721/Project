@@ -85,6 +85,9 @@ class Model : public IPaintSubject{
         int generateBetaUEs(const int timestamp);
 
         unsigned long ueIndex;
+        unsigned long participateUEs;
+        unsigned long arrivalUEs;
+        
         int remainingUEs;
         int cellIndex;
         int ueArrivalRate;

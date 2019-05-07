@@ -105,24 +105,20 @@ while(len(prachIndex) > 0):
     maxIndex = prachIndex.index(max(prachIndex))
     filename = resultSourceFolder + folderName[maxIndex] + "/" + ueFile
     latency = collectDataUE(filename)
-    if arrivalMode[maxIndex] == "uniform":
-        avgs_uniform[getSubframePeriod(int(prachIndex[maxIndex]))] = np.mean(list(latency.values()))
-    else:
-        avgs_beta[getSubframePeriod(int(prachIndex[maxIndex]))] = np.mean(list(latency.values()))
-
-    plotLantencyCDF(list(latency.values()), prachIndex[maxIndex], simulationTime[maxIndex], arrivalMode[maxIndex], arrival[maxIndex], resultSourceFolder)
-    #print(prachIndex[maxIndex])
-    #print(folderName[maxIndex])
-    #print(filename)
-    #print(len(latency))
-    del prachIndex[maxIndex]
-    del simulationTime[maxIndex]
-    del arrivalMode[maxIndex]
-    del arrival[maxIndex]
-    del folderName[maxIndex]
-
-print(avgs_uniform)
-plotAverageResult(avgs_uniform, resultSourceFolder + savefigureNameUniform)
-plotAverageResult(avgs_beta, resultSourceFolder + savefigurenameBeta)
-plt.show()
-del avgs_uniform
+#    if arrivalMode[maxIndex] == "uniform":
+#        avgs_uniform[getSubframePeriod(int(prachIndex[maxIndex]))] = np.mean(list(latency.values()))
+#    else:
+#        avgs_beta[getSubframePeriod(int(prachIndex[maxIndex]))] = np.mean(list(latency.values()))
+#
+#    plotLantencyCDF(list(latency.values()), prachIndex[maxIndex], simulationTime[maxIndex], arrivalMode[maxIndex], arrival[maxIndex], resultSourceFolder)
+#    del prachIndex[maxIndex]
+#    del simulationTime[maxIndex]
+#    del arrivalMode[maxIndex]
+#    del arrival[maxIndex]
+#    del folderName[maxIndex]
+#
+#print(avgs_uniform)
+#plotAverageResult(avgs_uniform, resultSourceFolder + savefigureNameUniform)
+#plotAverageResult(avgs_beta, resultSourceFolder + savefigurenameBeta)
+#plt.show()
+#del avgs_uniform

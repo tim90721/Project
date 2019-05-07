@@ -4,14 +4,14 @@
 // availiableRAO: need ssb per rao etc. parameter
 // prachConfig: need RA configuration period etc. parameter
 MonitorRAFunction::MonitorRAFunction(AvailiableRAO *availiableRAO, IPRACHConfig *prachConfig) :
-    successUEs(0), failedUEs(0), raCount(0), estimateUEs(0),
+    successUEs(0), failedUEs(0), raCount(0), totalDelta(0), estimateUEs(0), 
     availiableRAO(availiableRAO), prachConfig(prachConfig){
     //setbuf(stdout, NULL);
     tau = getTau();
     SPDLOG_DEBUG("tau: {0}", tau);
     nSSB = availiableRAO->getNumberofSSB();
     ssbPerRAO = availiableRAO->getSSBPerRAO();
-    delta = getDelta(availiableRAO->getNumberofPreambles(),
+    delta = calculateDelta(availiableRAO->getNumberofPreambles(),
             availiableRAO->getSSBPerRAO());
     SPDLOG_DEBUG("delta: {0}", delta);
 }
@@ -34,7 +34,7 @@ void MonitorRAFunction::updateRAOs(){
     //    return;
     history.push_back(successUEs);
     estimateUEs = estimateNextUEsBySlot();
-    double totalDelta = delta * raCount;
+    totalDelta = delta * raCount;
     //double estimateUEs = (double)successUEs * ssbPerRAO * exp(1);
     double newSSBPerRAO = calculateNewSSBPerRAO();
     int newMsg1FDM = getNewMsg1FDMver2(&newSSBPerRAO);
@@ -52,7 +52,8 @@ void MonitorRAFunction::updateRAOs(){
     availiableRAO->updateAssociationFrame();
     ssbPerRAO = newSSBPerRAO;
     tau = getTau();
-    delta = getDelta(availiableRAO->getNumberofPreambles(), newSSBPerRAO);
+    delta = calculateDelta(availiableRAO->getNumberofPreambles(), newSSBPerRAO);
+    //totalDelta = delta * raCount;
     successUEs = 0;
     failedUEs = 0;
     raCount = 0;
@@ -66,12 +67,13 @@ void MonitorRAFunction::restore2Initial(){
     ssbPerRAO = initSSBPerRAO;
     tau = getTau();
     SPDLOG_WARN("tau: {0}", tau);
-    delta = getDelta(availiableRAO->getNumberofPreambles(),
+    delta = calculateDelta(availiableRAO->getNumberofPreambles(),
             availiableRAO->getSSBPerRAO());
     successUEs = 0;
     failedUEs = 0;
     estimateUEs = 0;
     raCount = 0;
+    totalDelta = 0;
     historySlot.erase(historySlot.begin(), historySlot.end());
     history.erase(history.begin(), history.end());
 }
@@ -188,28 +190,34 @@ int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
         SPDLOG_TRACE("new msg1FDM: {0}", newMsg1FDM);
         *newSSBPerRAO = ssbPerRAO;
         if(newMsg1FDM > 8){
-            *newSSBPerRAO = (((double)availiableRAO->getNumberofPreambles() * nSSB)
-                / ((double)estimateUEs * exp(1)))
-                * (((double)prachConfig->getNumberofTimeDomainRAO() * newMsg1FDM)
-                / (double)availiableRAO->getTotalNeedRAO())
-                * raCount;
+            //*newSSBPerRAO = (((double)availiableRAO->getNumberofPreambles() * nSSB)
+            //    / ((double)estimateUEs * exp(1)))
+            //    * (((double)prachConfig->getNumberofTimeDomainRAO() * newMsg1FDM)
+            //    / (double)availiableRAO->getTotalNeedRAO())
+            //    * raCount;
 
+            ////////////// should be more elegent ////////////
+            //if(*newSSBPerRAO > nSSB && nSSB != 64){
+            //    SPDLOG_WARN("new ssb per rao is larger than nSSB");
+            //    SPDLOG_WARN("new ssb per rao: {0}", *newSSBPerRAO);
+            //    *newSSBPerRAO = nSSB;
+            //}
+            //if(sRAO[0] > *newSSBPerRAO){
+            //    SPDLOG_INFO("maximum ssb per rao reached");
+            //    *newSSBPerRAO = sRAO[0];
+            //}
+            //int i = 0;
+            //while(i < 7 && !(sRAO[i] <= *newSSBPerRAO && *newSSBPerRAO <= sRAO[i + 1]))
+            //    i++;
+            //SPDLOG_WARN("new ssb per rao: {0}", sRAO[i]);
+            //*newSSBPerRAO = sRAO[i];
             //////////// should be more elegent ////////////
-            if(*newSSBPerRAO > nSSB && nSSB != 64){
-                SPDLOG_WARN("new ssb per rao is larger than nSSB");
-                SPDLOG_WARN("new ssb per rao: {0}", *newSSBPerRAO);
-                *newSSBPerRAO = nSSB;
-            }
-            if(sRAO[0] > *newSSBPerRAO){
-                SPDLOG_INFO("maximum ssb per rao reached");
-                *newSSBPerRAO = sRAO[0];
-            }
-            int i = 0;
-            while(i < 7 && !(sRAO[i] <= *newSSBPerRAO && *newSSBPerRAO <= sRAO[i + 1]))
-                i++;
-            SPDLOG_WARN("new ssb per rao: {0}", sRAO[i]);
-            *newSSBPerRAO = sRAO[i];
-            //////////// should be more elegent ////////////
+            *newSSBPerRAO = calculateNewSSBPerRAO(availiableRAO->getNumberofPreambles(),
+                    nSSB,
+                    estimateUEs,
+                    prachConfig->getNumberofTimeDomainRAO(),
+                    newMsg1FDM,
+                    availiableRAO->getTotalNeedRAO());
 
             SPDLOG_TRACE("new ssb per rao: {0}", *newSSBPerRAO);
             SPDLOG_INFO("msg1-FDM reach maximum capacity");
@@ -217,19 +225,47 @@ int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
         }
     }
     else if(*newSSBPerRAO > ssbPerRAO){
-        while(newMsg1FDM > 1){
-            newMsg1FDM = pow(2, --i);
+        newMsg1FDM = (((double)(estimateUEs * ssbPerRAO * exp(1)))
+            / ((double)availiableRAO->getNumberofPreambles() * nSSB))
+            * (((double)availiableRAO->getTotalNeedRAO())
+            / ((double)prachConfig->getNumberofTimeDomainRAO() * raCount));
+        SPDLOG_TRACE("new msg1FDM in double: {0}", newMsg1FDM);
+        if(newMsg1FDM < 1){
+            SPDLOG_INFO("msg1FDM reach minimum capacity\n");
+            newMsg1FDM = 1;
+        }
+        newMsg1FDM = pow(2, ceil(log(newMsg1FDM) / log(2)));
+        SPDLOG_TRACE("new msg1FDM: {0}", newMsg1FDM);
+        i = log(newMsg1FDM) / log(2);
+        int j = log(ssbPerRAO) / log(2);
+        SPDLOG_TRACE("msg1fdm index: {0}", i);
+        *newSSBPerRAO = ssbPerRAO;
+        while(newMsg1FDM < 8){
+            //newMsg1FDM = pow(2, --i);
+            SPDLOG_TRACE("msg1fdm index: {0}", i);
             int newTotalRAOPerSubframe = prachConfig->getNumberofTimeDomainRAO() * newMsg1FDM;
             newTau = getTau(prachConfig->getX(),
                     nSSB / *newSSBPerRAO,
                     newTotalRAOPerSubframe,
                     prachConfig->getNumberofRASubframe());
-            if(newTau > tau){
+            SPDLOG_TRACE("new tau: {0}", newTau);
+            SPDLOG_TRACE("lod tau: {0}", tau);
+            if(newTau > tau && newTau > 10){
                 newMsg1FDM = pow(2, ++i);
+                *newSSBPerRAO = calculateNewSSBPerRAO(availiableRAO->getNumberofPreambles(),
+                        nSSB,
+                        estimateUEs,
+                        prachConfig->getNumberofTimeDomainRAO(),
+                        newMsg1FDM,
+                        availiableRAO->getTotalNeedRAO());
+            }
+            else{
                 break;
             }
         }
-        if(i == 0)
+        if(i == 3)
+            SPDLOG_INFO("msg1FDM reach maximum capacity\n");
+        else
             SPDLOG_INFO("msg1FDM reach minimum capacity\n");
     }
     SPDLOG_TRACE("new tau: {0}", newTau);
@@ -240,7 +276,7 @@ int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
 // nPreambles: number of CBRA preambles
 // ssbPerRAO: ssb per rao
 // return: delta
-double MonitorRAFunction::getDelta(const int nPreambles, const double ssbPerRAO){
+double MonitorRAFunction::calculateDelta(const int nPreambles, const double ssbPerRAO){
     //printf("nPreamble: %d\n", nPreambles);
     //printf("ssb per rao: %f\n", ssbPerRAO);
     double newDelta = ((double)(nPreambles * nSSB)) / (exp(1) * ssbPerRAO) 
@@ -251,11 +287,35 @@ double MonitorRAFunction::getDelta(const int nPreambles, const double ssbPerRAO)
     return newDelta;
 }
 
-// calculate new ssb per rao based on success ues
+// calculate new ssb per rao based on estimate ues
 // return: new ssb per rao
 double MonitorRAFunction::calculateNewSSBPerRAO(){
-    double newSSBPerRAO = (availiableRAO->getNumberofPreambles() * nSSB) / (estimateUEs * exp(1))
-        * ((double)(prachConfig->getNumberofTimeDomainRAO() * availiableRAO->getMsg1FDM()) / (double)availiableRAO->getTotalNeedRAO()) * raCount;
+    //double newSSBPerRAO = (availiableRAO->getNumberofPreambles() * nSSB) / (estimateUEs * exp(1))
+    //    * ((double)(prachConfig->getNumberofTimeDomainRAO() * availiableRAO->getMsg1FDM()) / (double)availiableRAO->getTotalNeedRAO()) * raCount;
+    //SPDLOG_TRACE("new ssb per rao in double: {0}", newSSBPerRAO);
+    //if(newSSBPerRAO > nSSB && nSSB != 64){
+    //    SPDLOG_WARN("new ssb per rao is larger than nSSB");
+    //    SPDLOG_WARN("new ssb per rao: {0}", newSSBPerRAO);
+    //    return nSSB;
+    //}
+    //if(sRAO[0] > newSSBPerRAO){
+    //    SPDLOG_INFO("maximum ssb per rao reached\n");
+    //    return sRAO[0];
+    //}
+    //double newsRAO = pow(2, ceil(log(newSSBPerRAO) / log(2)));
+    ////int i = 0;
+    ////while(i < 7 && !(sRAO[i] <= newSSBPerRAO && newSSBPerRAO <= sRAO[i + 1]))
+    ////    i++;
+    //SPDLOG_WARN("new ssb per rao: {0}", newsRAO);
+    return calculateNewSSBPerRAO(availiableRAO->getNumberofPreambles(), nSSB, estimateUEs, prachConfig->getNumberofTimeDomainRAO(), availiableRAO->getMsg1FDM(), availiableRAO->getTotalNeedRAO());
+    //return newsRAO;
+}
+
+// calculate new ssb per rao based on estimate ues
+// return: new ssb per rao
+double MonitorRAFunction::calculateNewSSBPerRAO(const double nPreambles, const double nSSB, const double estimateUEs, const double tRAO, const double fRAO, const double totalNeedRAO){
+    double newSSBPerRAO = (nPreambles * nSSB) / (estimateUEs * exp(1))
+        * ((tRAO * fRAO) / totalNeedRAO) * raCount;
     SPDLOG_TRACE("new ssb per rao in double: {0}", newSSBPerRAO);
     if(newSSBPerRAO > nSSB && nSSB != 64){
         SPDLOG_WARN("new ssb per rao is larger than nSSB");
@@ -266,11 +326,12 @@ double MonitorRAFunction::calculateNewSSBPerRAO(){
         SPDLOG_INFO("maximum ssb per rao reached\n");
         return sRAO[0];
     }
-    int i = 0;
-    while(i < 7 && !(sRAO[i] <= newSSBPerRAO && newSSBPerRAO <= sRAO[i + 1]))
-        i++;
-    SPDLOG_WARN("new ssb per rao: {0}", sRAO[i]);
-    return sRAO[i];
+    double newsRAO = pow(2, ceil(log(newSSBPerRAO) / log(2)));
+    //int i = 0;
+    //while(i < 7 && !(sRAO[i] <= newSSBPerRAO && newSSBPerRAO <= sRAO[i + 1]))
+    //    i++;
+    SPDLOG_WARN("new ssb per rao: {0}", newsRAO);
+    return newsRAO;
 }
 
 // estimate next period's arrival ues by AR
@@ -371,4 +432,10 @@ unsigned long MonitorRAFunction::getFailedUEs(){
 // return: estimate ues
 double MonitorRAFunction::getEstimateUEs(){
     return estimateUEs;
+}
+
+// get delta
+// return: channel capacity delta
+double MonitorRAFunction::getTotalDelta(){
+    return totalDelta;
 }

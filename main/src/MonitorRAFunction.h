@@ -19,6 +19,7 @@ class MonitorRAFunction{
         //double coefThreshold;
         double ssbPerRAO;
         double delta;
+        double totalDelta;
         double estimateUEs;
         const double sRAO[8] = {0.125, 0.25, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0};
         const int fRAO[4] = {1, 2, 4, 8};
@@ -31,8 +32,9 @@ class MonitorRAFunction{
         int getTau(const int RAConfigPeriod, const int totalNeedRAO, const int totalRAOPerSubframe, const int nRASubframe);
         int getNewMsg1FDM(const double newSSBPerRAO);
         int getNewMsg1FDMver2(double *newSSBPerRAO);
-        double getDelta(const int nPreambles, const double ssbPerRAO);
+        double calculateDelta(const int nPreambles, const double ssbPerRAO);
         double calculateNewSSBPerRAO();
+        double calculateNewSSBPerRAO(const double nPreambles, const double nSSB, const double estimateUEs, const double tRAO, const double fRAO, const double totalNeedRAO); 
         unsigned long estimateNextUEsBySIBPeriod();
         unsigned long estimateNextUEsBySlot();
 
@@ -45,6 +47,7 @@ class MonitorRAFunction{
         unsigned long getSuccessUEs();
         unsigned long getFailedUEs();
         double getEstimateUEs();
+        double getTotalDelta();
 };
 
 #endif

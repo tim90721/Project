@@ -403,6 +403,12 @@ int Cell::getPrachConfigIndex(){
     return prachConfig->getPrachConfigIndex();
 }
 
+// get RA attempt period
+// return: tau
+int Cell::getTau(){
+    return mRA->getTau();
+}
+
 // get cell start angle
 // return: cell start angle
 double Cell::getBeamStartAngle(){
@@ -419,6 +425,18 @@ double Cell::getSSBPerRAO(){
 // return: cell cover angle
 double Cell::getCellSpanAngle(){
     return cellAngle;
+}
+
+// get cell preamble SCS
+// return cell's preamble SCS
+double Cell::getPreambleSCS(){
+    return preambleSCS;
+}
+
+// get current channel capacity
+// return: current channel capacity
+double Cell::getTotalChannelCapacity(){
+    return mRA->getTotalDelta();
 }
 
 // get success ues count record from monitor ra function
