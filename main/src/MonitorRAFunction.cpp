@@ -326,7 +326,7 @@ double MonitorRAFunction::calculateNewSSBPerRAO(const double nPreambles, const d
         SPDLOG_INFO("maximum ssb per rao reached\n");
         return sRAO[0];
     }
-    double newsRAO = pow(2, ceil(log(newSSBPerRAO) / log(2)));
+    double newsRAO = pow(2, floor(log(newSSBPerRAO) / log(2)));
     //int i = 0;
     //while(i < 7 && !(sRAO[i] <= newSSBPerRAO && newSSBPerRAO <= sRAO[i + 1]))
     //    i++;
