@@ -1,3 +1,4 @@
+import os
 import sys
 import csv
 import collections
@@ -44,9 +45,11 @@ def collectDataCell(filename):
     participateUEs = []
     delta = []
     tau = []
+    timing = []
     with open(filename, newline='') as csvfile:
         rows = csv.DictReader(csvfile)
         for row in rows:
+            timing.append(int(row['Current Frame']) * 10 + int(row['Current Subframe']))
             successUEs.append(int(row['Success UEs']))
             estimateUEs.append(int(row['Estimate UEs']))
             arrivalUEs.append(int(row['Arrival UEs']))
@@ -62,7 +65,7 @@ def collectDataCell(filename):
         delta.insert(0, delta[0])
         delta.insert(len(delta), delta[-1])
 
-    return arrivalUEs, participateUEs, successUEs, estimateUEs, delta, tau
+    return timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, tau
 
 def plotDataUE(latencies, upperBound, filenameFig1 = None, subTitle = ""):
     newXticks = np.linspace(0, len(latencies), 11)
@@ -84,15 +87,15 @@ def plotDataUE(latencies, upperBound, filenameFig1 = None, subTitle = ""):
         plt.savefig(filenameFig1)
     del newXticks
 
-def plotDataCell(arrivalUEs, participateUEs, successUEs, estimateUEs, delta, filenameFig2 = None, subTitle = ""):
+def plotDataCell(timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, filenameFig2 = None, subTitle = ""):
     fig = plt.figure(2)
     fig.set_size_inches(9.375, 7.3)
     ax = plt.subplot(1, 1, 1)
-    line1, = ax.plot([x * 160 for x in range(len(successUEs))], successUEs, 'g-*', label='Success UEs')
-    line2, = ax.plot([x * 160 for x in range(len(estimateUEs))], estimateUEs, 'b-o', label='Estimate UEs')
-    line3, = ax.plot([x * 160 for x in range(len(arrivalUEs))], arrivalUEs, 'k-^', label='Arrival UEs')
-    line4, = ax.plot([x * 160 for x in range(len(participateUEs))], participateUEs, 'r-D', label='Participate UEs')
-    line5, = ax.plot([x * 160 for x in range(len(delta))], delta, 'm-D', label='Total Channel Capacity')
+    line1, = ax.plot(timing, successUEs, 'g-*', label='Success UEs')
+    line2, = ax.plot(timing, estimateUEs, 'b-o', label='Estimate UEs')
+    line3, = ax.plot(timing, arrivalUEs, 'k-^', label='Arrival UEs')
+    line4, = ax.plot(timing, participateUEs, 'r-D', label='Participate UEs')
+    line5, = ax.plot(timing, delta, 'm-D', label='Total Channel Capacity')
     ax.legend(loc="upper left")
     fig.subplots_adjust(top=0.85)
     plt.suptitle("UEs Condition & Esitimate UEs", fontsize=14, fontweight="bold")
@@ -136,24 +139,30 @@ def plotSIBLatencyAndTau(avgSIBlatencies, tau, filename=None):
         plt.savefig(filename)
 
 if __name__ == '__main__':
-    print('number of input: {0}'.format(len(sys.argv)))
+    ueFile = 'UE.csv'
+    cellFile = 'Cell.csv'
+    resultSourceFolder = "./result/"
     
-    print('list of argument')
-    
-    for i in range(len(sys.argv) - 1):
-        print(sys.argv[i + 1])
-    
-    outputFolderName = sys.argv[1]
-    ueFile = sys.argv[2]
-    cellFile = sys.argv[3]
-    prachConfig = sys.argv[4]
-    simulationTime = sys.argv[5]
-    arrivalMode = sys.argv[6]
+    dirs = [(resultSourceFolder + d) for d in os.listdir(resultSourceFolder) if os.path.isdir(resultSourceFolder + d)]
+    folderName = max(dirs, key=os.path.getmtime)
+    print(folderName)
+
+    prachConfig = folderName.split("prach-")[1]
+    prachConfig = prachConfig.split("_")[0]
+    simulationTime = folderName.split("simu-")[1]
+    simulationTime = simulationTime.split("_")[0]
+    arrivalMode = folderName.split("_")[4]
+    arrival = folderName.split("_")[5]
+    arrival = arrival.split("-")[1]
     if arrivalMode == "uniform":
-        arrivalRate = sys.argv[7]
+        arrivalRate = arrival
     else:
-        totalUE = sys.argv[7]
-    
+        totalUE = arrival
+    #print("prach:" + prachIndex)
+    #print("simu:" + simulationTime)
+    #print("arrival mode:" + arrivalMode)
+    #print("arrival:" + arrival)
+
     subTitle = "Prach Configuration Index: {0}, ".format(prachConfig) \
             + "Simulation Time: {0}s\n".format(str(int(simulationTime) / 1000)) \
             + "Arrival Mode: {0}, ".format(arrivalMode)
@@ -162,9 +171,11 @@ if __name__ == '__main__':
     else:
         subTitle = subTitle + "Total UE: {0} ".format(totalUE)
 
-    filenameFig1 = outputFolderName + "UE_latency"
-    filenameFig2 = outputFolderName + "Estimate_UEs"
-    filenameFig3 = outputFolderName + "AvgLatency_and_Tau"
+    filenameFig1 = folderName + "/" + "UE_latency"
+    filenameFig2 = folderName + "/" + "Estimate_UEs"
+    filenameFig3 = folderName + "/" + "AvgLatency_and_Tau"
+    ueFile = folderName + "/" + ueFile
+    cellFile = folderName + "/" + cellFile
     print(filenameFig1)
     print(filenameFig2)
     
@@ -175,12 +186,13 @@ if __name__ == '__main__':
     while (upperBound % 5) != 0:
         upperBound += 1
         
-    arrivalUEs, participateUEs, successUEs, estimateUEs, delta, tau = collectDataCell(cellFile)
+    timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, tau = collectDataCell(cellFile)
+    print(timing)
     ############################ collect data ############################
     
     ############################ plot data ############################
     plotDataUE(latencies, upperBound, filenameFig1, subTitle)
-    plotDataCell(arrivalUEs, participateUEs, successUEs, estimateUEs, delta, filenameFig2, subTitle)
+    plotDataCell(timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, filenameFig2, subTitle)
     plotSIBLatencyAndTau(avgSIBlatencies, tau, filenameFig3)
     plt.show()
     ############################ plot data ############################
@@ -195,3 +207,4 @@ if __name__ == '__main__':
     del estimateUEs
     del delta
     del avgSIBlatencies
+    del timing

@@ -395,7 +395,7 @@ void Model::generateRandomUEs(int timestamp){
     participateUEs += nUE;
     arrivalUEs += nUE;
 
-    SPDLOG_WARN("generating number of ue: {0}", nUE);
+    SPDLOG_INFO("generating number of ue: {0}", nUE);
     for(int i = 0;i < nUE;i++){
         int rndCellIndex = getRnd(0, cells.size() - 1);
 
@@ -523,13 +523,7 @@ void Model::closeOutFiles(){
 
 // plot result done recently
 void Model::plotResult(){
-    string command = "python3 ./scripts/plot_result.py " + outputFolderName + " " + filenameUE + " " + filenameCell + " " + to_string(cells[0]->getPrachConfigIndex()) + " " + to_string(simulationTime);
-    if(arrivalMode == ArrivalMode::Uniform){
-        command += " uniform " + to_string(ueArrivalRate);
-    }
-    else{
-        command += " beta " + to_string(totalUE);
-    }
+    string command = "python3 ./scripts/plot_result.py";
     system(command.c_str());
 }
 
