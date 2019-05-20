@@ -26,7 +26,7 @@ class UE;
 
 class Cell : public IDrawable{
     public:
-        Cell(int x, int y,int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex, int nPreambles, int cellBW, double preambleSCS);
+        Cell(int x, int y,int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex, int nPreambles, int cellBW, int ssbSCS, double preambleSCS);
         virtual void draw(QPainter &painter) = 0;
         void setCellType(celltype::CellType cellType);
         void setX(int x);
@@ -87,6 +87,9 @@ class Cell : public IDrawable{
         int raResponseWindow;
         int nPreambles;
         int cellBW;
+        int ssbSCS;
+        int startBeamIndex;
+        int endBeamIndex;
         unsigned long successUEs;
         unsigned long failedUEs;
         double estimateUEs;
@@ -105,6 +108,8 @@ class Cell : public IDrawable{
 
     private:
         bool checkUEisExist(UE *ue);
+        bool isBeamAllowedPBCH(const int beamIndex);
+        void updateSSBStartAndEndIndex();
         MonitorRAFunction *mRA;
 
 };

@@ -26,6 +26,7 @@ Model::Model(){
     nPreambles = 64;
     preambleSCS = 1.25;
     totalUE = 0;
+    ssbSCS = 15;
     participateUEs = 0;
     arrivalUEs = 0;
 }
@@ -73,9 +74,9 @@ void Model::setMousePressed(bool isPressed){
     if(mousePressed){
         if(countPressedReleased == 1 && mode == DrawMode::DrawCell){
             if(cellType == celltype::Macro)
-                tempCell = new MacroCell(mouseX, mouseY, cellIndex++, nBeams, cellType, prachConfigIndex, nPreambles, cellBW, preambleSCS); 
+                tempCell = new MacroCell(mouseX, mouseY, cellIndex++, nBeams, cellType, prachConfigIndex, nPreambles, cellBW, 15, preambleSCS); 
             else
-                tempCell = new FemtoCell(mouseX, mouseY, cellIndex++, nBeams, cellType, prachConfigIndex, nPreambles, cellBW, preambleSCS);
+                tempCell = new FemtoCell(mouseX, mouseY, cellIndex++, nBeams, cellType, prachConfigIndex, nPreambles, cellBW, 15, preambleSCS);
             tempCell->initializeBeams();
         }
         
@@ -240,13 +241,24 @@ void Model::startSimulation(){
     isTimesUp = true;
     if(UEs.size() > 0 && !TESTING){
         for(auto it = UEs.begin();it != UEs.end();it++){
-            if((*it)->isBindCell()){
-                remainingUEs++;
-            }
+            //if((*it)->isBindCell()){
+            remainingUEs++;
+            //}
         }
+        int fade = 0;
         while(remainingUEs){
             run(isTimesUp, 0);
             SPDLOG_TRACE("remaining UEs: {0}", remainingUEs);
+            if(fade < 5)
+                fade++;
+            if(fade == 5){
+                remainingUEs = 0;
+                for(auto it = UEs.begin();it != UEs.end();it++){
+                    //if((*it)->isBindCell()){
+                    remainingUEs++;
+                    //}
+                }
+            }
         }
     }
     SPDLOG_INFO("simulation: {0} complete", simulationCounter++);
@@ -340,6 +352,13 @@ void Model::setArrivalMode(ArrivalMode::Mode mode){
 void Model::setTotalUE(const unsigned long totalUE){
     this->totalUE = totalUE;
     SPDLOG_TRACE("total ue: {0}", this->totalUE);
+}
+
+// set ssb scs
+// ssbSCS: ssb scs
+void Model::setSSBSCS(const int ssbSCS){
+    this->ssbSCS = ssbSCS;
+    SPDLOG_INFO("ssb scs: {0}", this->ssbSCS);
 }
 
 // set FR

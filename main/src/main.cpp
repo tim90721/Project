@@ -26,6 +26,7 @@ void initialize_log(){
 
         auto combined = std::make_shared<spdlog::logger>("multi sinks", begin(sinks), end(sinks));
         combined->set_level(spdlog::level::trace);
+        //combined->flush_on(spdlog::level::trace);
         spdlog::register_logger(combined);
 
         spdlog::set_default_logger(combined);

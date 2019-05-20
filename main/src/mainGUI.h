@@ -40,6 +40,7 @@ private:
     void initialCellBandwithArea();
     void initialArrivalPattern();
     void initialTotalUEArea();
+    void initialSSBSCSArea();
     void initialSystemArea(); // for start save area
     void initialMainLayout();
     void connectSignals();
@@ -53,6 +54,8 @@ private:
     QLabel *labelBWUnit;
     QLabel *labelArrivalPattern;
     QLabel *labelTotalUE;
+    QLabel *labelSSBSCS;
+    QLabel *labelUnitSCS;
     QPushButton *btnStart;
     QPushButton *btnSaveConfig;
     QPushButton *btnLoadConfig;
@@ -77,6 +80,7 @@ private:
     QComboBox *comboPreambleSCS;
     QComboBox *comboCellBW;
     QComboBox *comboArrivalPattern;
+    QComboBox *comboSSBSCS;
     QGridLayout *layoutSetting;
     QGridLayout *layoutMain;
     QHBoxLayout *layoutgNBType;
@@ -91,6 +95,7 @@ private:
     QHBoxLayout *layoutCellBW;
     QHBoxLayout *layoutArrivalPattern;
     QHBoxLayout *layoutTotalUE;
+    QHBoxLayout *layoutSSBSCS;
     QWidget *widgetSetting;
     SimulationCanvas *canvas; //fixed this
     QSizePolicy sp;
@@ -132,6 +137,8 @@ private:
     std::string sBWUnit = "MHz";
     std::string sArrivalPattern = "Arrival Pattern:";
     std::string sTotalUE = "Total Number of UE:";
+    std::string sSSBSCS = "SSB Subcarrier Spacing:";
+    std::string sSCSUnit = "kHz";
     int widthWindow = 540;
     int heightWindow = 700;
     //unsigned int FR1 = 0;
@@ -157,6 +164,7 @@ private slots:
     void handlePreambleSCSChanged(const QString& text);
     void handleCellBWChanged(const QString& text);
     void handleArrivalPatternChanged(const QString& text);
+    void handleSSBSCSChanged(const QString& text);
 };
 #endif
 

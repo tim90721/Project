@@ -5,7 +5,7 @@
 // x: gNB x position
 // y: gNB y position
 // cellType: gNB CellType, Macro or Femto //FIXME maybe reduntant
-Cell::Cell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex, int nPreambles, int cellBW, double preambleSCS) : x(x), y(y), cellIndex(cellIndex), nBeams(nBeams), cellPixelSize(10), subframeIndex(0), frameIndex(0), raResponseWindow(1), nPreambles(nPreambles), cellBW(cellBW), preambleSCS(preambleSCS), cellType(cellType){
+Cell::Cell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType, int prachConfigIndex, int nPreambles, int cellBW, int ssbSCS, double preambleSCS) : x(x), y(y), cellIndex(cellIndex), nBeams(nBeams), cellPixelSize(10), subframeIndex(0), frameIndex(0), raResponseWindow(1), nPreambles(nPreambles), cellBW(cellBW), ssbSCS(ssbSCS), preambleSCS(preambleSCS), cellType(cellType){
     double ssbperRAO = 1;
     int msg1FDM = 1;
     //int nPreambles = 64;
@@ -21,6 +21,9 @@ Cell::Cell(int x, int y, int cellIndex, int nBeams, celltype::CellType cellType,
     mRA = new MonitorRAFunction(availiableRAO, prachConfig);
     successUEs = 0;
     failedUEs = 0;
+    startBeamIndex = -1;
+    endBeamIndex = -1;
+    updateSSBStartAndEndIndex();
 }
 
 // Set gNB x position
@@ -105,14 +108,92 @@ bool Cell::checkUEisExist(UE *ue){
     return false;
 }
 
+// check beam index in current subframe, frame is allowed to 
+// transmit braodcast message
+// beamIndex: beam index
+// return: true for allowed
+bool Cell::isBeamAllowedPBCH(const int beamIndex){
+    SPDLOG_TRACE("start beam index: {0}", startBeamIndex);
+    SPDLOG_TRACE("end beam index: {0}", endBeamIndex);
+    SPDLOG_TRACE("beam index: {0}", beamIndex);
+    if(startBeamIndex == -1 && endBeamIndex == -1){
+        SPDLOG_TRACE("current frame {0} subframe {1} is not for PBCH", 
+                frameIndex, subframeIndex);
+        return false;
+    }
+    else if(startBeamIndex <= beamIndex && beamIndex < endBeamIndex){
+        return true;
+    }
+    SPDLOG_TRACE("current frame {0} subframe {1} is not for beam {2} PBCH", 
+            frameIndex, subframeIndex, beamIndex);
+    return false;
+}
+
+// update start and end ssb index that is allowed to transmit PBCH
+void Cell::updateSSBStartAndEndIndex(){
+    if(frameIndex % 2 == 1 || (frameIndex % 2 == 0 && subframeIndex > 4)){
+        SPDLOG_TRACE("next frame {0} subframe {1} is not for PBCH", 
+                frameIndex, subframeIndex);
+        startBeamIndex = -1;
+        endBeamIndex = -1;
+    }
+    switch(ssbSCS){
+        case 15:
+            startBeamIndex = subframeIndex * 2;
+            endBeamIndex = (subframeIndex + 1) * 2;
+            if(((nBeams == 4) && (subframeIndex > 1))
+                    || subframeIndex > 3){
+                startBeamIndex = -1;
+                endBeamIndex = -1;
+            }
+            break;
+        case 30:
+            startBeamIndex = subframeIndex * 4;
+            endBeamIndex = (subframeIndex + 1) * 4;
+            if((nBeams == 4 && subframeIndex > 0)
+                    || subframeIndex > 1){
+                startBeamIndex = -1;
+                endBeamIndex = -1;
+            }
+            break;
+        case 120:
+            startBeamIndex = subframeIndex * 16;
+            endBeamIndex = (subframeIndex + 1) * 16;
+            if(subframeIndex > 1){
+                endBeamIndex -= 4;
+            }
+            if(subframeIndex > 2){
+                startBeamIndex -= 4;
+            }
+            if(subframeIndex == 4){
+                startBeamIndex = 56;
+                endBeamIndex = 63;
+            }
+            break;
+        case 240:
+            startBeamIndex = subframeIndex * 32;
+            endBeamIndex = (subframeIndex + 1) * 32;
+            if(subframeIndex > 1){
+                startBeamIndex = -1;
+                endBeamIndex = -1;
+            }
+            break;
+        default:
+            SPDLOG_WARN("ssb SCS not support now");
+            startBeamIndex = -1;
+            endBeamIndex = -1;
+    }
+}
+
 // broadcasting cell's SI
 void Cell::broadcastSI(){
     SPDLOG_TRACE("Broadcast cell index {0} system information", cellIndex);
     UE *ue;
     for(unsigned int i = 0;i < ues.size();i++){
         ue = ues.at(i);
-        if(ue->receiveSI(this))
-            i--;
+        if(isBeamAllowedPBCH(ue->getBeamIndex()) && ue->receiveSI(this)){
+                i--;
+        }
     }
     //ue->receiveSI(this);
 }
@@ -159,6 +240,7 @@ void Cell::updateSubframe(){
         estimateUEs = mRA->getEstimateUEs();
     } 
     availiableRAO->updateStartandEndRAOofSubframe(frameIndex, subframeIndex);
+    updateSSBStartAndEndIndex();
 }
 
 // reset the subframe and frame nubmer
@@ -259,10 +341,12 @@ void Cell::transmitRAR(){
     SPDLOG_TRACE("rar size: {0}" ,subframeRar.size());
     for(decltype(ues.size()) i = 0;i < ues.size();i++){
         ue = ues.at(i);
-        SPDLOG_TRACE("Cell: {0} transmitting RAR to UE :{1}",
-                cellIndex,
-                ue->getID());
-        ue->receiveRAR(subframeRar, cellIndex);
+        if(ue->isBindCell()){
+            SPDLOG_TRACE("Cell: {0} transmitting RAR to UE :{1}",
+                    cellIndex,
+                    ue->getID());
+            ue->receiveRAR(subframeRar, cellIndex);
+        }
     }
 
     // delete each stored and transmitted RAR
@@ -309,7 +393,7 @@ void Cell::transmitCR(){
     int countFailed = 0;
     for(decltype(ues.size()) i = 0;i < ues.size();i++){
         ue = ues.at(i);
-        if(ue->receiveCR(msg3s, cellIndex)){
+        if(ue->isBindCell() && ue->receiveCR(msg3s, cellIndex)){
             if(ue->isRASuccess()){
                 SPDLOG_TRACE("removing UE id: {0} from cell index: {1}", 
                         ue->getID(),

@@ -31,6 +31,7 @@ MainGUI::MainGUI(QWidget *parent):
     initialCellBandwithArea();
     initialArrivalPattern();
     initialTotalUEArea();
+    initialSSBSCSArea();
     initialSystemArea();
     initialMainLayout();
 
@@ -267,6 +268,28 @@ void MainGUI::initialTotalUEArea(){
     //layoutTotalUE->setVisible(false);
 }
 
+// handle ssb scs area
+void MainGUI::initialSSBSCSArea(){
+    labelSSBSCS = new QLabel(this);
+    labelSSBSCS->setText(QString::fromStdString(sSSBSCS));
+
+    labelUnitSCS = new QLabel(this);
+    labelUnitSCS->setText(QString::fromStdString(sSCSUnit));
+
+    comboSSBSCS = new QComboBox(this);
+    comboSSBSCS->insertItem(0, "15");
+    comboSSBSCS->insertItem(1, "30");
+    comboSSBSCS->setMinimumSize(60, 20);
+    sp = comboArrivalPattern->sizePolicy();
+    sp.setHorizontalPolicy(QSizePolicy::Minimum);
+    comboArrivalPattern->setSizePolicy(sp);
+
+    layoutSSBSCS = new QHBoxLayout;
+    layoutSSBSCS->addWidget(labelSSBSCS);
+    layoutSSBSCS->addWidget(comboSSBSCS);
+    layoutSSBSCS->addWidget(labelUnitSCS);
+}
+
 // initial area for button start or load, save config area
 void MainGUI::initialSystemArea(){
     // initialize load config button
@@ -308,15 +331,16 @@ void MainGUI::initialMainLayout(){
     layoutSetting->addWidget(groupFR, 1, 0);
     layoutSetting->addWidget(groupgNBType, 2, 0);
     layoutSetting->addWidget(groupBeams, 3, 0);
-    layoutSetting->addLayout(layoutCellBW, 4, 0);
-    layoutSetting->addLayout(layoutArrivalPattern, 4, 0);
-    layoutSetting->addLayout(layoutArrivalRate, 5, 0);
-    layoutSetting->addLayout(layoutTotalUE, 5, 0);
-    layoutSetting->addLayout(layoutSimulationTime, 6, 0);
+    layoutSetting->addLayout(layoutSSBSCS, 4, 0);
+    layoutSetting->addLayout(layoutCellBW, 5, 0);
+    layoutSetting->addLayout(layoutArrivalPattern, 5, 0);
+    layoutSetting->addLayout(layoutArrivalRate, 6, 0);
+    layoutSetting->addLayout(layoutTotalUE, 6, 0);
     layoutSetting->addLayout(layoutDrawing, 7, 0);
     layoutSetting->addWidget(listPrachConfig, 1, 1, 3, 1);
     layoutSetting->addLayout(layoutPreambleSCS, 4, 1);
     layoutSetting->addLayout(layoutNumberofPreamble, 5, 1);
+    layoutSetting->addLayout(layoutSimulationTime, 6, 1);
     layoutSetting->addLayout(layoutSystem, 7, 1);
 
     // Main Area Setting
@@ -343,6 +367,7 @@ void MainGUI::connectSignals(){
     connect(comboPreambleSCS, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(handlePreambleSCSChanged(const QString&)));
     connect(comboCellBW, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(handleCellBWChanged(const QString&)));
     connect(comboArrivalPattern, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(handleArrivalPatternChanged(const QString&)));
+    connect(comboSSBSCS, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(handleSSBSCSChanged(const QString&)));
 }
 
 // handle start button click event
@@ -397,6 +422,12 @@ void MainGUI::handleFR1RadBtnClick(){
         comboPreambleSCS->insertItem(2, QString::number(15));
         comboPreambleSCS->insertItem(3, QString::number(30));
         comboPreambleSCS->setCurrentIndex(0);
+
+        comboSSBSCS->removeItem(1);
+        comboSSBSCS->removeItem(0);
+        comboSSBSCS->insertItem(0, QString::number(15));
+        comboSSBSCS->insertItem(1, QString::number(30));
+        comboSSBSCS->setCurrentIndex(0);
     }
     model->setFR(iFR1);
 }
@@ -412,6 +443,12 @@ void MainGUI::handleFR2RadBtnClick(){
         comboPreambleSCS->insertItem(0, QString::number(60));
         comboPreambleSCS->insertItem(1, QString::number(120));
         comboPreambleSCS->setCurrentIndex(0);
+
+        comboSSBSCS->removeItem(1);
+        comboSSBSCS->removeItem(0);
+        comboSSBSCS->insertItem(0, QString::number(120));
+        comboSSBSCS->insertItem(1, QString::number(240));
+        comboSSBSCS->setCurrentIndex(0);
     }
     model->setFR(iFR2);
 }
@@ -471,12 +508,18 @@ void MainGUI::handleArrivalPatternChanged(const QString& text){
     }
 }
 
+// handle ssb scs changed
+void MainGUI::handleSSBSCSChanged(const QString& text){
+    model->setSSBSCS(text.toInt());
+}
+
 // destructor
 MainGUI::~MainGUI(){
     delete model;
     delete layoutMain;
     delete layoutArrivalRate;
     delete layoutSimulationTime;
+    delete layoutSSBSCS;
     delete layoutTotalUE;
     delete layoutCellBW;
     delete layoutArrivalPattern;
@@ -498,9 +541,12 @@ MainGUI::~MainGUI(){
     delete labelBWUnit;
     delete labelArrivalPattern;
     delete labelTotalUE;
+    delete labelSSBSCS;
+    delete labelUnitSCS;
     delete comboPreambleSCS;
     delete comboCellBW;
     delete comboArrivalPattern;
+    delete comboSSBSCS;
     delete btnStart;
     delete btnSaveConfig;
     delete btnLoadConfig;

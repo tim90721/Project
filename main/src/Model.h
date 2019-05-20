@@ -69,6 +69,7 @@ class Model : public IPaintSubject{
         void setCellBW(const int cellBW);
         void setArrivalMode(ArrivalMode::Mode mode);
         void setTotalUE(const unsigned long totalUE);
+        void setSSBSCS(const int ssbSCS);
         ~Model();
     private:
         void run(bool isTimesUp, int timestamp);
@@ -108,6 +109,7 @@ class Model : public IPaintSubject{
         int nBeams;
         int nPreambles;
         int cellBW;
+        int ssbSCS;
         double preambleSCS;
         std::string outputFolderName;
         std::string outputFileExtension;

@@ -190,28 +190,6 @@ int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
         SPDLOG_TRACE("new msg1FDM: {0}", newMsg1FDM);
         *newSSBPerRAO = ssbPerRAO;
         if(newMsg1FDM > 8){
-            //*newSSBPerRAO = (((double)availiableRAO->getNumberofPreambles() * nSSB)
-            //    / ((double)estimateUEs * exp(1)))
-            //    * (((double)prachConfig->getNumberofTimeDomainRAO() * newMsg1FDM)
-            //    / (double)availiableRAO->getTotalNeedRAO())
-            //    * raCount;
-
-            ////////////// should be more elegent ////////////
-            //if(*newSSBPerRAO > nSSB && nSSB != 64){
-            //    SPDLOG_WARN("new ssb per rao is larger than nSSB");
-            //    SPDLOG_WARN("new ssb per rao: {0}", *newSSBPerRAO);
-            //    *newSSBPerRAO = nSSB;
-            //}
-            //if(sRAO[0] > *newSSBPerRAO){
-            //    SPDLOG_INFO("maximum ssb per rao reached");
-            //    *newSSBPerRAO = sRAO[0];
-            //}
-            //int i = 0;
-            //while(i < 7 && !(sRAO[i] <= *newSSBPerRAO && *newSSBPerRAO <= sRAO[i + 1]))
-            //    i++;
-            //SPDLOG_WARN("new ssb per rao: {0}", sRAO[i]);
-            //*newSSBPerRAO = sRAO[i];
-            //////////// should be more elegent ////////////
             *newSSBPerRAO = calculateNewSSBPerRAO(availiableRAO->getNumberofPreambles(),
                     nSSB,
                     estimateUEs,
