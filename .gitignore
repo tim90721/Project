@@ -8,3 +8,4 @@ main/log/trace_log.log
 main/candidateResult
 main/scripts/__pycache__/*
 main/compare/*
+main/preserve/*
