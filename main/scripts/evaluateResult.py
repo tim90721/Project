@@ -177,91 +177,93 @@ def plotCellMsg1FDM(celldatas, folderName=""):
     plt.title(title, fontsize=16)
     plt.savefig(folderName + filename)
 
-ueFile = 'UE.csv'
-cellFile = 'Cell.csv'
-resultSourceFolder = "./candidateResult/"
-savefigureNameUniform = "result_uniform.png"
-savefigurenameBeta = "result_beta.png"
-folderNameUniform = "uniform/"
-folderNameBeta = "beta/"
-
-if not os.path.exists(resultSourceFolder + folderNameUniform):
-    os.makedirs(resultSourceFolder + folderNameUniform)
-if not os.path.exists(resultSourceFolder + folderNameBeta):
-    os.makedirs(resultSourceFolder + folderNameBeta)
-
-folderName = [name for name in os.listdir(resultSourceFolder)]
-folderName = [name for name in folderName if "png" not in name]
-folderName.remove('beta')
-folderName.remove('uniform')
-
-#if savefigureName in folderName:
-#    folderName.remove(savefigureName)
-
-############# get parameters ############
-prachIndex = [name.split("prach-")[1] for name in folderName]
-prachIndex = [name.split("_")[0] for name in prachIndex]
-simulationTime = [name.split("simu-")[1] for name in folderName]
-simulationTime = [name.split("_")[0] for name in simulationTime]
-arrivalMode = [name.split("_")[4] for name in folderName]
-arrival = [name.split("_")[5] for name in folderName]
-arrival = [name.split("-")[1] for name in arrival]
-#for i in range(len(folderName)):
-#    print(prachIndex[i])
-#    print(simulationTime[i])
-#    print(arrivalMode[i])
-#    print(arrival[i])
-############ get parameters ############
-
-avgs_uniform = {}
-avgs_beta = {}
-ue_uniform = []
-ue_beta = []
-cell_uniform = []
-cell_beta = []
-
-while(len(prachIndex) > 0):
-    maxIndex = prachIndex.index(max(prachIndex))
-    #### get ue data ####
-    filename = resultSourceFolder + folderName[maxIndex] + "/" + ueFile
-    latency = [x['latency'] for x in collectDataUE(filename).values()]
-    ue_data = {'latency':latency, 'prachIndex':prachIndex[maxIndex], 'simulationTime':simulationTime[maxIndex], 'arrivalMode':arrivalMode[maxIndex], 'arrival':arrival[maxIndex]}
-    #### get ue data ####
-    #### get cell data ####
-    filename = resultSourceFolder + folderName[maxIndex] + "/" + cellFile
-    preambleSCS, timing, msg1FDM = collectCellMsg1FDM(filename)
-    cell_data = {'prachIndex':prachIndex[maxIndex], 'preambleSCS':preambleSCS, 'preambleLength':getPreambleLength(float(preambleSCS)), 'timing':timing, 'msg1FDM':msg1FDM, 'simulationTime':simulationTime[maxIndex], 'arrivalMode': arrivalMode[maxIndex], 'arrival':arrival[maxIndex]}
-    #### get cell data ####
-    if arrivalMode[maxIndex] == "uniform":
-        avgs_uniform[getSubframePeriod(int(prachIndex[maxIndex]))] = np.mean(latency)
-        cell_uniform.append(cell_data)
-        ue_uniform.append(ue_data)
-    else:
-        avgs_beta[getSubframePeriod(int(prachIndex[maxIndex]))] = np.mean(latency)
-        cell_beta.append(cell_data)
-        ue_beta.append(ue_data)
-
-#    plotLantencyCDF(latency, prachIndex[maxIndex], simulationTime[maxIndex], arrivalMode[maxIndex], arrival[maxIndex], resultSourceFolder)
-    del prachIndex[maxIndex]
-    del simulationTime[maxIndex]
-    del arrivalMode[maxIndex]
-    del arrival[maxIndex]
-    del folderName[maxIndex]
-
-print(avgs_uniform)
-plotLantencyCDF(ue_uniform, resultSourceFolder + folderNameUniform)
-plotEachLantencyCDF(ue_uniform, resultSourceFolder + folderNameUniform)
-plotAverageResult(avgs_uniform, resultSourceFolder + folderNameUniform + savefigureNameUniform)
-plotCellMsg1FDM(cell_uniform, resultSourceFolder + folderNameUniform)
-
-plotLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
-plotEachLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
-plotAverageResult(avgs_beta, resultSourceFolder + folderNameBeta+ savefigurenameBeta)
-plotCellMsg1FDM(cell_beta, resultSourceFolder + folderNameBeta)
-#plt.show()
-del avgs_uniform
-del avgs_beta
-del cell_uniform
-del cell_beta
-del ue_uniform
-del ue_beta
+if __name__ == '__main__':
+    
+    ueFile = 'UE.csv'
+    cellFile = 'Cell.csv'
+    resultSourceFolder = "./candidateResult/"
+    savefigureNameUniform = "result_uniform.png"
+    savefigurenameBeta = "result_beta.png"
+    folderNameUniform = "uniform/"
+    folderNameBeta = "beta/"
+    
+    if not os.path.exists(resultSourceFolder + folderNameUniform):
+        os.makedirs(resultSourceFolder + folderNameUniform)
+    if not os.path.exists(resultSourceFolder + folderNameBeta):
+        os.makedirs(resultSourceFolder + folderNameBeta)
+    
+    folderName = [name for name in os.listdir(resultSourceFolder)]
+    folderName = [name for name in folderName if "png" not in name]
+    folderName.remove('beta')
+    folderName.remove('uniform')
+    
+    #if savefigureName in folderName:
+    #    folderName.remove(savefigureName)
+    
+    ############# get parameters ############
+    prachIndex = [name.split("prach-")[1] for name in folderName]
+    prachIndex = [name.split("_")[0] for name in prachIndex]
+    simulationTime = [name.split("simu-")[1] for name in folderName]
+    simulationTime = [name.split("_")[0] for name in simulationTime]
+    arrivalMode = [name.split("_")[4] for name in folderName]
+    arrival = [name.split("_")[5] for name in folderName]
+    arrival = [name.split("-")[1] for name in arrival]
+    #for i in range(len(folderName)):
+    #    print(prachIndex[i])
+    #    print(simulationTime[i])
+    #    print(arrivalMode[i])
+    #    print(arrival[i])
+    ############ get parameters ############
+    
+    avgs_uniform = {}
+    avgs_beta = {}
+    ue_uniform = []
+    ue_beta = []
+    cell_uniform = []
+    cell_beta = []
+    
+    while(len(prachIndex) > 0):
+        maxIndex = prachIndex.index(max(prachIndex))
+        #### get ue data ####
+        filename = resultSourceFolder + folderName[maxIndex] + "/" + ueFile
+        latency = [x['latency'] for x in collectDataUE(filename).values()]
+        ue_data = {'latency':latency, 'prachIndex':prachIndex[maxIndex], 'simulationTime':simulationTime[maxIndex], 'arrivalMode':arrivalMode[maxIndex], 'arrival':arrival[maxIndex]}
+        #### get ue data ####
+        #### get cell data ####
+        filename = resultSourceFolder + folderName[maxIndex] + "/" + cellFile
+        preambleSCS, timing, msg1FDM = collectCellMsg1FDM(filename)
+        cell_data = {'prachIndex':prachIndex[maxIndex], 'preambleSCS':preambleSCS, 'preambleLength':getPreambleLength(float(preambleSCS)), 'timing':timing, 'msg1FDM':msg1FDM, 'simulationTime':simulationTime[maxIndex], 'arrivalMode': arrivalMode[maxIndex], 'arrival':arrival[maxIndex]}
+        #### get cell data ####
+        if arrivalMode[maxIndex] == "uniform":
+            avgs_uniform[getSubframePeriod(int(prachIndex[maxIndex]))] = np.mean(latency)
+            cell_uniform.append(cell_data)
+            ue_uniform.append(ue_data)
+        else:
+            avgs_beta[getSubframePeriod(int(prachIndex[maxIndex]))] = np.mean(latency)
+            cell_beta.append(cell_data)
+            ue_beta.append(ue_data)
+    
+    #    plotLantencyCDF(latency, prachIndex[maxIndex], simulationTime[maxIndex], arrivalMode[maxIndex], arrival[maxIndex], resultSourceFolder)
+        del prachIndex[maxIndex]
+        del simulationTime[maxIndex]
+        del arrivalMode[maxIndex]
+        del arrival[maxIndex]
+        del folderName[maxIndex]
+    
+    print(avgs_uniform)
+    plotLantencyCDF(ue_uniform, resultSourceFolder + folderNameUniform)
+    plotEachLantencyCDF(ue_uniform, resultSourceFolder + folderNameUniform)
+    plotAverageResult(avgs_uniform, resultSourceFolder + folderNameUniform + savefigureNameUniform)
+    plotCellMsg1FDM(cell_uniform, resultSourceFolder + folderNameUniform)
+    
+    plotLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
+    plotEachLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
+    plotAverageResult(avgs_beta, resultSourceFolder + folderNameBeta+ savefigurenameBeta)
+    plotCellMsg1FDM(cell_beta, resultSourceFolder + folderNameBeta)
+    #plt.show()
+    del avgs_uniform
+    del avgs_beta
+    del cell_uniform
+    del cell_beta
+    del ue_uniform
+    del ue_beta
