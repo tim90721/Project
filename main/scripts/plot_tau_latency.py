@@ -9,6 +9,12 @@ from math import log
 
 figureCount = 0
 
+line_width = 3.0
+marker_size = 10.0
+label_font_size = 14
+title_font_size = 16
+legend_font_size = 12
+
 def findCandidateFolder(targetPrach, targetArrival, folderName):
     candidateIndex = [index for index in range(len(folderName)) if "prach-"+targetPrach in folderName[index]]
     candidateIndex = [candidateIndex[index] for index in range(len(candidateIndex)) if targetArrival in folderName[candidateIndex[index]]]
@@ -50,7 +56,7 @@ def collectDataCell(filename):
 
 
 def plotLantencyCDF(uedatas, saveFolderName=""):
-    print("Plotting Latency CDF")
+    print("Plotting Latency CDF...")
     global figureCount
     for arrivalMode in ['uniform', 'beta']:
         for prach in [16, 19, 22, 25, 27]:
@@ -61,9 +67,9 @@ def plotLantencyCDF(uedatas, saveFolderName=""):
                 fig.subplots_adjust(top=0.85)
                 ax = plt.subplot(1, 1, 1)
 
-                plt.xlabel("Latency (ms)", fontsize=12)
-                plt.ylabel("CDF",fontsize=12)
-                plt.suptitle("UE Latency CDF", fontsize=14, fontweight="bold")
+                plt.xlabel("Latency (ms)", fontsize=label_font_size)
+                plt.ylabel("CDF",fontsize=label_font_size)
+                plt.suptitle("UE Latency CDF", fontsize=title_font_size, fontweight="bold")
                 for tau in [10, 20, 40, 80, 160]:
                     candidateIndex = findCandidate(tau, str(prach), arrivalMode, str(simulation), uedatas)
                     data = uedatas[candidateIndex]
@@ -75,15 +81,15 @@ def plotLantencyCDF(uedatas, saveFolderName=""):
                         subTitle = subTitle + "Arrival Rate: {0}".format(arrival)
                     else:
                         subTitle = subTitle + "Total UE: {0}".format(arrival)
-                    ax.set_title(subTitle)
+                    ax.set_title(subTitle, fontsize=title_font_size)
                     
                     latency.insert(0, 0)
                     X = np.linspace(min(latency), max(latency), max(latency) - min(latency))
                     hist, bin_edges = np.histogram(latency, bins=max(latency) - min(latency), density=True)
                     hist = np.cumsum(hist)
 
-                    plt.plot(X, hist, label=r"$\tau\ Threshold$="+str(tau))
-                    ax.legend(loc="lower right")
+                    plt.plot(X, hist, label=r"$\tau\ Threshold$="+str(tau), linewidth=line_width)
+                    ax.legend(loc="lower right", fontsize=legend_font_size)
                 filenameFig = "latency_CDF_prach-{0}_simu-{1}_{2}_arrival-{3}".format(prach,
                         simulation,
                         arrivalMode,
@@ -98,7 +104,7 @@ def plotLantencyCDF(uedatas, saveFolderName=""):
                 del bin_edges
 
 def plotCellMsg1FDM(celldatas, saveFolderName=""):
-    print("Plotting Msg1FDM")
+    print("Plotting Msg1FDM...")
     global figureCount
     newYTick = [fdm*celldatas[0]['preambleLength']*float(celldatas[0]['preambleSCS'])/1000 for fdm in [1, 2, 4, 8]]
     for arrivalMode in ['uniform', 'beta']:
@@ -110,12 +116,12 @@ def plotCellMsg1FDM(celldatas, saveFolderName=""):
                 fig.subplots_adjust(top=0.85)
                 ax = plt.subplot(1, 1, 1)
 
-                plt.xlabel("Subframe Index", fontsize=12)
-                plt.ylabel("Preamble Occupied Bandwidth (MHz)", fontsize=12)
-                plt.suptitle(r"RA Used Bandwidth For Each $\tau$ Threshold", fontsize=14, fontweight="bold")
+                plt.xlabel("Subframe Index", fontsize=label_font_size)
+                plt.ylabel("Preamble Occupied Bandwidth (MHz)", fontsize=label_font_size)
+                plt.suptitle(r"RA Used Bandwidth For Each $\tau$ Threshold", fontsize=title_font_size, fontweight="bold")
                 plt.yticks(newYTick)
                 i = 0
-                attr = ['b-s', 'r-o', 'm-D', 'c-^', 'g-*']
+                attr = ['b-^', 'r-o', 'm-D', 'c-s', 'g-p']
                 maxTiming = 0
                 for tau in [10, 20, 40, 80, 160]:
                     candidateIndex = findCandidate(tau, str(prach), arrivalMode, str(simulation), celldatas)
@@ -128,17 +134,17 @@ def plotCellMsg1FDM(celldatas, saveFolderName=""):
                         subTitle = subTitle + "Arrival Rate: {0}".format(arrival)
                     else:
                         subTitle = subTitle + "Total UE: {0}".format(arrival)
-                    ax.set_title(subTitle)
+                    ax.set_title(subTitle, fontsize=title_font_size)
                     
                     preambleBW = [fdm*data['preambleLength']*float(data['preambleSCS'])/1000 for fdm in data['msg1FDM']]
                     maxTiming = max([maxTiming, max(data['timing'])])
-                    ax.plot(data['timing'], preambleBW, attr[i], label=r'$\tau\ Threshold$='+str(tau))
+                    ax.plot(data['timing'], preambleBW, attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size)
                     i = i + 1
                 filenameFig = "RA_Used_BW_prach-{0}_simu-{1}_{2}_arrival-{3}".format(prach,
                         simulation,
                         arrivalMode,
                         arrival)
-                ax.legend(loc="upper left")
+                ax.legend(loc="upper left", fontsize=legend_font_size)
                 ax.set_xlim(0, maxTiming)
                 ax.set_ylim(0, math.ceil(max(newYTick) / 10) * 10)
                 plt.grid(True)
@@ -147,7 +153,7 @@ def plotCellMsg1FDM(celldatas, saveFolderName=""):
                     plt.close()
                     
 def plotCellSSBPerRAO(celldatas, saveFolderName=""):
-    print("Plotting SSB per RAO")
+    print("Plotting SSB per RAO...")
     global figureCount
     newYTick = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16]
     for arrivalMode in ['uniform', 'beta']:
@@ -159,12 +165,12 @@ def plotCellSSBPerRAO(celldatas, saveFolderName=""):
                 fig.subplots_adjust(top=0.85)
                 ax = plt.subplot(1, 1, 1)
 
-                plt.xlabel("Subframe Index", fontsize=12)
-                plt.ylabel(r"SSB Per RAO $S_{RAO}$", fontsize=12)
-                plt.suptitle(r"Number of SSB Per RAO $S_{RAO}$ For Each $\tau$ Threshold", fontsize=14, fontweight="bold")
+                plt.xlabel("Subframe Index", fontsize=label_font_size)
+                plt.ylabel(r"SSB Per RAO $S_{RAO}$", fontsize=label_font_size)
+                plt.suptitle(r"Number of SSB Per RAO $S_{RAO}$ For Each $\tau$ Threshold", fontsize=title_font_size, fontweight="bold")
                 plt.yticks(newYTick)
                 i = 0
-                attr = ['b-s', 'r-o', 'm-D', 'c-^', 'g-*']
+                attr = ['b-^', 'r-o', 'm-D', 'c-s', 'g-v']
                 maxTiming = 0
                 for tau in [10, 20, 40, 80, 160]:
                     candidateIndex = findCandidate(tau, str(prach), arrivalMode, str(simulation), celldatas)
@@ -177,16 +183,16 @@ def plotCellSSBPerRAO(celldatas, saveFolderName=""):
                         subTitle = subTitle + "Arrival Rate: {0}".format(arrival)
                     else:
                         subTitle = subTitle + "Total UE: {0}".format(arrival)
-                    ax.set_title(subTitle)
+                    ax.set_title(subTitle, fontsize=title_font_size)
                     
                     maxTiming = max([maxTiming, max(data['timing'])])
-                    ax.plot(data['timing'], data['ssbPerRAO'], attr[i], label=r'$\tau\ Threshold$='+str(tau))
+                    ax.plot(data['timing'], data['ssbPerRAO'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size)
                     i = i + 1
                 filenameFig = "S_RAO_prach-{0}_simu-{1}_{2}_arrival-{3}".format(prach,
                         simulation,
                         arrivalMode,
                         arrival)
-                ax.legend(loc="upper left")
+                ax.legend(loc="upper left", fontsize=legend_font_size)
                 ax.set_xlim(0, maxTiming)
                 ax.set_ylim(newYTick[0], newYTick[-1])
                 ax.set_yscale('log', basey=2)
@@ -196,7 +202,7 @@ def plotCellSSBPerRAO(celldatas, saveFolderName=""):
                     plt.close()
 
 def plotCellDelta(celldatas, saveFolderName=""):
-    print("Plotting Channel Capacity")
+    print("Plotting Channel Capacity...")
     global figureCount
     for arrivalMode in ['uniform', 'beta']:
         for prach in [16, 19, 22, 25, 27]:
@@ -207,11 +213,11 @@ def plotCellDelta(celldatas, saveFolderName=""):
                 fig.subplots_adjust(top=0.85)
                 ax = plt.subplot(1, 1, 1)
 
-                plt.xlabel("Subframe Index", fontsize=12)
-                plt.ylabel(r"Channel Capacity $\delta$", fontsize=12)
-                plt.suptitle(r"Channel Capacity $\delta$ For Each $\tau$ Threshold", fontsize=14, fontweight="bold")
+                plt.xlabel("Subframe Index", fontsize=label_font_size)
+                plt.ylabel(r"Channel Capacity $\delta$", fontsize=label_font_size)
+                plt.suptitle(r"Channel Capacity $\delta$ For Each $\tau$ Threshold", fontsize=title_font_size, fontweight="bold")
                 i = 0
-                attr = ['b-s', 'r-o', 'm-D', 'c-^', 'g-*']
+                attr = ['b-s', 'r-o', 'm-D', 'c-^', 'g-v']
                 maxTiming = 0
                 maxDelta = 0
                 for tau in [10, 20, 40, 80, 160]:
@@ -225,17 +231,17 @@ def plotCellDelta(celldatas, saveFolderName=""):
                         subTitle = subTitle + "Arrival Rate: {0}".format(arrival)
                     else:
                         subTitle = subTitle + "Total UE: {0}".format(arrival)
-                    ax.set_title(subTitle)
+                    ax.set_title(subTitle, fontsize=title_font_size)
                     
                     maxTiming = max([maxTiming, max(data['timing'])])
                     maxDelta = max([maxDelta, max(data['delta'])])
-                    ax.plot(data['timing'], data['delta'], attr[i], label=r'$\tau\ Threshold$='+str(tau))
+                    ax.plot(data['timing'], data['delta'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size)
                     i = i + 1
                 filenameFig = "Delta_prach-{0}_simu-{1}_{2}_arrival-{3}".format(prach,
                         simulation,
                         arrivalMode,
                         arrival)
-                ax.legend(loc="upper left")
+                ax.legend(loc="upper left", fontsize=legend_font_size)
                 ax.set_xlim(0, maxTiming)
                 exponential = math.floor(log(maxDelta, 10))
                 coef = maxDelta / pow(10, exponential)
@@ -247,7 +253,7 @@ def plotCellDelta(celldatas, saveFolderName=""):
                     plt.close()
 
 def plotCellTau(celldatas, saveFolderName=""):
-    print("Plotting Tau")
+    print("Plotting Tau...")
     global figureCount
     for arrivalMode in ['uniform', 'beta']:
         for prach in [16, 19, 22, 25, 27]:
@@ -258,11 +264,11 @@ def plotCellTau(celldatas, saveFolderName=""):
                 fig.subplots_adjust(top=0.85)
                 ax = plt.subplot(1, 1, 1)
 
-                plt.xlabel("Subframe Index", fontsize=12)
-                plt.ylabel(r"RA Attempt Period $\tau$", fontsize=12)
-                plt.suptitle(r"RA Attempt Period $\tau$ For Each $\tau$ Threshold", fontsize=14, fontweight="bold")
+                plt.xlabel("Subframe Index", fontsize=label_font_size)
+                plt.ylabel(r"RA Attempt Period $\tau$", fontsize=label_font_size)
+                plt.suptitle(r"RA Attempt Period $\tau$ For Each $\tau$ Threshold", fontsize=title_font_size, fontweight="bold")
                 i = 0
-                attr = ['b-s', 'r-o', 'm-D', 'c-^', 'g-*']
+                attr = ['b-s', 'r-o', 'm-D', 'c-^', 'g-v']
                 maxTiming = 0
                 maxTau = 0
                 for tau in [10, 20, 40, 80, 160]:
@@ -276,17 +282,17 @@ def plotCellTau(celldatas, saveFolderName=""):
                         subTitle = subTitle + "Arrival Rate: {0}".format(arrival)
                     else:
                         subTitle = subTitle + "Total UE: {0}".format(arrival)
-                    ax.set_title(subTitle)
+                    ax.set_title(subTitle, fontsize=title_font_size)
                     
                     maxTiming = max([maxTiming, max(data['timing'])])
                     maxTau = max([maxTau, max(data['RA attempt period'])])
-                    ax.plot(data['timing'], data['RA attempt period'], attr[i], label=r'$\tau\ Threshold$='+str(tau))
+                    ax.plot(data['timing'], data['RA attempt period'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size)
                     i = i + 1
                 filenameFig = "RA_attempt_periodprach-{0}_simu-{1}_{2}_arrival-{3}".format(prach,
                         simulation,
                         arrivalMode,
                         arrival)
-                ax.legend(loc="upper left")
+                ax.legend(loc="upper left", fontsize=legend_font_size)
                 ax.set_xlim(0, maxTiming)
                 #exponential = math.floor(log(maxTau, 10))
                 #coef = maxTau / pow(10, exponential)
@@ -297,6 +303,7 @@ def plotCellTau(celldatas, saveFolderName=""):
                     plt.savefig(saveFolderName + arrivalMode + "/"  + filenameFig)
                     plt.close()
 
+print("Collecting Datas...")
 resultSourceFolder = "./candidateResult/"
 folderNameUniform = "uniform/"
 folderNameBeta = "beta/"

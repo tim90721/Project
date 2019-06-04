@@ -8,13 +8,19 @@ import math
 
 figureCount = 0
 
+line_width = 3.0
+marker_size = 10.0
+label_font_size = 14
+title_font_size = 16
+legend_font_size = 12
+
 def getSubframePeriod(prachIndex):
     if prachIndex == 27:
         return 1
     elif prachIndex == 25:
         return 2
     elif prachIndex == 22:
-        return 3.5
+        return 3
     elif prachIndex == 19:
         return 5
     elif prachIndex == 16:
@@ -42,12 +48,13 @@ def plotAverageResult(average, filename=""):
     global figureCount
     fig = plt.figure(figureCount)
     figureCount = figureCount + 1
-    fig.subplots_adjust(top = 0.85)
+    fig.subplots_adjust(top = 0.9)
+    fig.set_size_inches(9.375, 7.3)
     ax = plt.subplot(1, 1, 1)
-    plt.plot(average.keys(), average.values(), 'b-o')
-    plt.xlabel("RA Subframe Period")
-    plt.ylabel("Average Latency (ms)")
-    plt.suptitle("Average UE Latency vs RA Subframe Period", fontsize=14, fontweight="bold")
+    plt.plot(average.keys(), average.values(), 'b-o', linewidth=line_width, markersize=marker_size)
+    plt.xlabel("RA Subframe Period", fontsize=label_font_size)
+    plt.ylabel("Average Latency (ms)", fontsize=label_font_size)
+    plt.suptitle("Average UE Latency vs RA Subframe Period", fontsize=title_font_size, fontweight="bold")
     plt.axis([0, max(average.keys()) + 2, 0, max(average.values()) + 10])
     plt.grid(True)
     if filename:
@@ -59,11 +66,12 @@ def plotLantencyCDF(uedata, saveFolderName=""):
     fig = plt.figure(figureCount)
     figureCount = figureCount + 1
     fig.subplots_adjust(top=0.85)
+    fig.set_size_inches(9.375, 7.3)
     ax = plt.subplot(1, 1, 1)
 
-    plt.xlabel("Latency (ms)")
-    plt.ylabel("CDF")
-    plt.suptitle("UE Latency CDF", fontsize=14, fontweight="bold")
+    plt.xlabel("Latency (ms)", fontsize=label_font_size)
+    plt.ylabel("CDF", fontsize=label_font_size)
+    plt.suptitle("UE Latency CDF", fontsize=title_font_size, fontweight="bold")
 
     for data in uedata:
         latency = data['latency']
@@ -80,15 +88,15 @@ def plotLantencyCDF(uedata, saveFolderName=""):
         filenameFig = "CDF_simu-{0}_{1}_arrival-{2}".format(simulationTime,
                 arrivalMode,
                 arrival)
-        ax.set_title(subTitle)
+        ax.set_title(subTitle, fontsize=title_font_size)
 
         latency.insert(0, 0)
         X = np.linspace(min(latency), max(latency), max(latency) - min(latency))
         hist, bin_edges = np.histogram(latency, bins=max(latency) - min(latency), density=True)
         hist = np.cumsum(hist)
 
-        plt.plot(X, hist, label="Prach Configuration Index="+prachIndex)
-        ax.legend(loc="lower right")
+        plt.plot(X, hist, label="Prach Configuration Index="+prachIndex, linewidth=line_width)
+        ax.legend(loc="lower right", fontsize=legend_font_size)
     plt.axis([0, max(latency), 0, 1.1])
     plt.grid(True)
     if saveFolderName:
@@ -102,12 +110,14 @@ def plotEachLantencyCDF(uedata, saveFolderName=""):
     for data in uedata:
         fig = plt.figure(figureCount)
         figureCount = figureCount + 1
+        fig.set_size_inches(9.375, 7.3)
         fig.subplots_adjust(top=0.85)
+        fig.set_size_inches(9.375, 7.3)
         ax = plt.subplot(1, 1, 1)
 
-        plt.xlabel("Latency (ms)")
-        plt.ylabel("CDF")
-        plt.suptitle("UE Latency CDF", fontsize=14, fontweight="bold")
+        plt.xlabel("Latency (ms)", fontsize=label_font_size)
+        plt.ylabel("CDF", fontsize=label_font_size)
+        plt.suptitle("UE Latency CDF", fontsize=title_font_size, fontweight="bold")
         latency = data['latency']
         prachIndex = data['prachIndex']
         simulationTime = data['simulationTime']
@@ -124,14 +134,14 @@ def plotEachLantencyCDF(uedata, saveFolderName=""):
                 simulationTime,
                 arrivalMode,
                 arrival)
-        ax.set_title(subTitle)
+        ax.set_title(subTitle, fontsize=title_font_size)
 
         latency.insert(0, 0)
         X = np.linspace(min(latency), max(latency), max(latency) - min(latency))
         hist, bin_edges = np.histogram(latency, bins=max(latency) - min(latency), density=True)
         hist = np.cumsum(hist)
 
-        plt.plot(X, hist, 'b-')
+        plt.plot(X, hist, 'b-', linewidth=line_width)
         plt.axis([0, max(latency), 0, 1.1])
         plt.grid(True)
         if saveFolderName:
@@ -154,17 +164,17 @@ def plotCellMsg1FDM(celldatas, folderName=""):
     i = 0
     for data in celldatas:
         preambleBW = [fdm*data['preambleLength']*float(data['preambleSCS'])/1000 for fdm in data['msg1FDM']]
-        ax.plot(data['timing'], preambleBW, attr[i], label='prach-ConfigurationIndex='+data['prachIndex'])
+        ax.plot(data['timing'], preambleBW, attr[i], label='prach-ConfigurationIndex='+data['prachIndex'], linewidth=line_width, markersize=marker_size)
         i = i + 1
     newYTick = [fdm*celldatas[0]['preambleLength']*float(celldatas[0]['preambleSCS'])/1000 for fdm in [1, 2, 4, 8]]
 
     plt.yticks(newYTick)
-    ax.legend(loc='upper left')
+    ax.legend(loc='upper left', fontsize=legend_font_size)
     ax.set_xlim(0, maxTiming)
     ax.set_ylim(0, math.ceil(max(newYTick) / 10) * 10)
     ax.grid(True)
-    plt.xlabel("Subframe Index", fontsize=14)
-    plt.ylabel("Preamble Occupied Bandwidth (MHz)",fontsize=14)
+    plt.xlabel("Subframe Index", fontsize=label_font_size)
+    plt.ylabel("Preamble Occupied Bandwidth (MHz)",fontsize=label_font_size)
     plt.suptitle("RA Used Bandwidth", fontsize=18, fontweight="bold")
     title = "Simulation Time: {0}\nArrival Mode:{1}".format(simulationTime, arrivalMode)
     if arrivalMode == "uniform":
@@ -174,7 +184,7 @@ def plotCellMsg1FDM(celldatas, folderName=""):
     filename = "msg1FDM_simu-{0}_{1}_arrival-{2}.png".format(simulationTime,
             arrivalMode,
             arrival)
-    plt.title(title, fontsize=16)
+    plt.title(title, fontsize=title_font_size)
     plt.savefig(folderName + filename)
 
 if __name__ == '__main__':

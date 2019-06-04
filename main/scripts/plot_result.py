@@ -7,6 +7,12 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import math
 
+line_width = 3.0
+marker_size = 7.0
+label_font_size = 14
+title_font_size = 16
+legend_font_size = 12
+
 def avgSIBPeriodUELatency(latencies):
     total = 0
     sibPeriod = 160
@@ -56,13 +62,13 @@ def collectDataCell(filename):
             participateUEs.append(int(row['Participate UEs']))
             delta.append(float(row['Total Channel Capacity']))
             tau.append(int(row['Tau']))
-        del estimateUEs[-1]
-        del delta[-1]
+#        del estimateUEs[-1]
+#        del delta[-1]
         del delta[0]
         del tau[-1]
-        estimateUEs.insert(0, 0)
+#        estimateUEs.insert(0, 0)
         tau.insert(0, tau[0])
-        delta.insert(0, delta[0])
+#        delta.insert(0, delta[0])
         delta.insert(len(delta), delta[-1])
 
     return timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, tau
@@ -74,10 +80,10 @@ def plotDataUE(latencies, upperBound, filenameFig1 = None, subTitle = ""):
     ax = plt.subplot(1, 1, 1)
     fig.subplots_adjust(top=0.85)
     plt.plot(range(len(latencies)), [x['latency'] for x in latencies.values()], 'r-')
-    plt.xlabel("UE Index")
-    plt.ylabel("Latency (ms)")
-    plt.suptitle("Each UE Latency", fontsize=14, fontweight="bold")
-    plt.title(subTitle)
+    plt.xlabel("UE Index", fontsize=label_font_size)
+    plt.ylabel("Latency (ms)", fontsize=label_font_size)
+    plt.suptitle("Each UE Latency", fontweight="bold", fontsize=title_font_size)
+    plt.title(subTitle, fontsize=title_font_size)
     plt.axis([0, len(latencies), 0, upperBound + 5])
     plt.xticks(newXticks)
     plt.grid(True)
@@ -85,29 +91,42 @@ def plotDataUE(latencies, upperBound, filenameFig1 = None, subTitle = ""):
     manager.window.wm_geometry("900x700+50+50")
     if filenameFig1:
         plt.savefig(filenameFig1)
+        plt.close()
     del newXticks
 
 def plotDataCell(timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, filenameFig2 = None, subTitle = ""):
+    maxNum = max([max(arrivalUEs), 
+        max(participateUEs), 
+        max(successUEs), 
+        max(estimateUEs), 
+        max(delta)])
+    power = math.floor(math.log(maxNum, 10))
+    ylimit = math.floor(maxNum / pow(10, power))
+    ylimit = (ylimit + 2) * pow(10, power)
+
     fig = plt.figure(2)
     fig.set_size_inches(9.375, 7.3)
     ax = plt.subplot(1, 1, 1)
-    line1, = ax.plot(timing, successUEs, 'g-*', label='Success UEs')
-    line2, = ax.plot(timing, estimateUEs, 'b-o', label='Estimate UEs')
-    line3, = ax.plot(timing, arrivalUEs, 'k-^', label='Arrival UEs')
-    line4, = ax.plot(timing, participateUEs, 'r-D', label='Participate UEs')
-    line5, = ax.plot(timing, delta, 'm-D', label='Total Channel Capacity')
-    ax.legend(loc="upper left")
+    line1, = ax.plot(timing, successUEs, 'g-s', label='Success UEs', linewidth=line_width, markersize=marker_size)
+    line2, = ax.plot(timing, estimateUEs, 'b-o', label='Estimate UEs', linewidth=line_width, markersize=marker_size)
+    line3, = ax.plot(timing, arrivalUEs, 'k-^', label='Arrival UEs', linewidth=line_width, markersize=marker_size)
+    line4, = ax.plot(timing, participateUEs, 'r-v', label='Participate UEs', linewidth=line_width, markersize=marker_size)
+    line5, = ax.plot(timing, delta, 'm-D', label='Total Channel Capacity', linewidth=line_width, markersize=marker_size) 
+    ax.legend(loc="upper left", fontsize=legend_font_size)
+    ax.set_ylim(0, ylimit)
     fig.subplots_adjust(top=0.85)
-    plt.suptitle("UEs Condition & Esitimate UEs", fontsize=14, fontweight="bold")
-    ax.set_title(subTitle)
-    plt.xlabel("Subframe Index")
-    plt.ylabel("Number of UEs")
+    plt.suptitle("UEs Condition & Esitimate UEs", fontsize=title_font_size, fontweight="bold")
+    #plt.suptitle("Beta Distribution Arrival", fontsize=14, fontweight="bold")
+    ax.set_title(subTitle, fontsize=title_font_size)
+    plt.xlabel("Subframe Index", fontsize=label_font_size)
+    plt.ylabel("Number of UEs", fontsize=label_font_size)
     #plt.axis([0, len(successUEs) * 160, 0, max([max(successUEs), max(estimateUEs), max(arrivalUEs), max(participateUEs)]) + 10])
     plt.grid(True)
     manager = plt.get_current_fig_manager()
     manager.window.wm_geometry("900x700+450+50")
     if filenameFig2:
         plt.savefig(filenameFig2)
+        plt.close()
 
 def plotSIBLatencyAndTau(avgSIBlatencies, tau, filename=None):
     del tau[0]
@@ -117,17 +136,17 @@ def plotSIBLatencyAndTau(avgSIBlatencies, tau, filename=None):
     fig.set_size_inches(9.375, 7.3)
     ax1 = plt.subplot(1, 1, 1)
     t = [x + 1 for x in range(len(tau))]
-    ax1.plot(t, avgSIBlatencies, 'r-o')
-    ax1.set_xlabel('SIB Period Index', fontsize=12)
-    ax1.set_ylabel('Averge Latency (ms)', color='r', fontsize=12)
+    ax1.plot(t, avgSIBlatencies, 'r-o', linewidth=line_width, markersize=marker_size)
+    ax1.set_xlabel('SIB Period Index', fontsize=label_font_size)
+    ax1.set_ylabel('Averge Latency (ms)', color='r', fontsize=label_font_size)
     ax1.tick_params('y', colors='r')
 
     ax2 = ax1.twinx()
-    ax2.plot(t, tau, 'b-^')
-    ax2.set_ylabel('RA Attemp Period (ms)', color='b', fontsize=12)
+    ax2.plot(t, tau, 'b-^', linewidth=line_width, markersize=marker_size)
+    ax2.set_ylabel('RA Attemp Period (ms)', color='b', fontsize=label_font_size)
     ax2.tick_params('y', colors='b')
-    fig.subplots_adjust(top=0.85)
-    plt.suptitle("Each SIB Period UE Average Latency vs RA Attempt Period", fontsize=14, fontweight="bold")
+    fig.subplots_adjust(top=0.9)
+    plt.suptitle("Each SIB Period UE Average Latency vs RA Attempt Period", fontsize=title_font_size, fontweight="bold")
     ax1.grid(True)
     ytop = 10 * (int(max([max(avgSIBlatencies), max(tau)]) / 10) + 1)
     ax1.set_ylim(0, ytop)
@@ -137,6 +156,7 @@ def plotSIBLatencyAndTau(avgSIBlatencies, tau, filename=None):
     manager.window.wm_geometry("900x700+1050+50")
     if filename:
         plt.savefig(filename)
+        plt.close()
 
 if __name__ == '__main__':
     ueFile = 'UE.csv'
@@ -166,6 +186,8 @@ if __name__ == '__main__':
     subTitle = "Prach Configuration Index: {0}, ".format(prachConfig) \
             + "Simulation Time: {0}s\n".format(str(int(simulationTime) / 1000)) \
             + "Arrival Mode: {0}, ".format(arrivalMode)
+    #subTitle = "Simulation Time: {0}s\n".format(str(int(simulationTime) / 1000)) \
+    #        + "Arrival Mode: {0}, ".format(arrivalMode)
     if arrivalMode == "uniform":
         subTitle = subTitle + "Arrival Rate: {0} ".format(arrivalRate)
     else:
