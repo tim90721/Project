@@ -9,3 +9,4 @@ main/candidateResult
 main/scripts/__pycache__/*
 main/compare/*
 main/preserve/*
+main/backup/*
