@@ -184,7 +184,7 @@ if __name__ == '__main__':
     #print("arrival:" + arrival)
 
     subTitle = "Prach Configuration Index: {0}, ".format(prachConfig) \
-            + "Simulation Time: {0}s\n".format(str(int(simulationTime) / 1000)) \
+            + "Simulation Time: {0}s\n".format(str(int(simulationTime))) \
             + "Arrival Mode: {0}, ".format(arrivalMode)
     #subTitle = "Simulation Time: {0}s\n".format(str(int(simulationTime) / 1000)) \
     #        + "Arrival Mode: {0}, ".format(arrivalMode)
