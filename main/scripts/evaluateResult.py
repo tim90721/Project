@@ -3,28 +3,16 @@ import os
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
-from plot_result import collectDataUE
+from plot_result import collectDataUE, getSubframePeriod
 import math
 
 figureCount = 0
 
 line_width = 3.0
 marker_size = 10.0
-label_font_size = 14
-title_font_size = 16
+label_font_size = 20
+title_font_size = 24
 legend_font_size = 12
-
-def getSubframePeriod(prachIndex):
-    if prachIndex == 27:
-        return 1
-    elif prachIndex == 25:
-        return 2
-    elif prachIndex == 22:
-        return 3
-    elif prachIndex == 19:
-        return 5
-    elif prachIndex == 16:
-        return 10
 
 def getPreambleLength(preambleSCS):
     if preambleSCS == 1.25 or preambleSCS == 5:
@@ -52,8 +40,10 @@ def plotAverageResult(average, filename=""):
     fig.set_size_inches(9.375, 7.3)
     ax = plt.subplot(1, 1, 1)
     plt.plot(average.keys(), average.values(), 'b-o', linewidth=line_width, markersize=marker_size)
-    plt.xlabel("RA Subframe Period", fontsize=label_font_size)
+    plt.xlabel("RA Subframe Period (ms)", fontsize=label_font_size)
     plt.ylabel("Average Latency (ms)", fontsize=label_font_size)
+    for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+        label.set_fontsize(16)
     plt.suptitle("Average UE Latency vs RA Subframe Period", fontsize=title_font_size, fontweight="bold")
     plt.axis([0, max(average.keys()) + 2, 0, max(average.values()) + 10])
     plt.grid(True)
@@ -65,7 +55,7 @@ def plotLantencyCDF(uedata, saveFolderName=""):
     global figureCount
     fig = plt.figure(figureCount)
     figureCount = figureCount + 1
-    fig.subplots_adjust(top=0.85)
+    fig.subplots_adjust(top=0.83)
     fig.set_size_inches(9.375, 7.3)
     ax = plt.subplot(1, 1, 1)
 
@@ -79,7 +69,7 @@ def plotLantencyCDF(uedata, saveFolderName=""):
         simulationTime = data['simulationTime']
         arrivalMode = data['arrivalMode']
         arrival = data['arrival']
-        subTitle = "Simulation Time: {0}\n".format(str(int(simulationTime))) \
+        subTitle = "Simulation Time: {0}s\n".format(str(int(simulationTime))) \
                 + "Arrival Mode: {0}, ".format(arrivalMode)
         if arrivalMode == "uniform":
             subTitle = subTitle + "Arrival Rate: {0}".format(arrival)
@@ -95,8 +85,10 @@ def plotLantencyCDF(uedata, saveFolderName=""):
         hist, bin_edges = np.histogram(latency, bins=max(latency) - min(latency), density=True)
         hist = np.cumsum(hist)
 
-        plt.plot(X, hist, label="Prach Configuration Index="+prachIndex, linewidth=line_width)
+        plt.plot(X, hist, label="RA Subframe Period="+str(getSubframePeriod(prachIndex))+"ms", linewidth=line_width)
         ax.legend(loc="lower right", fontsize=legend_font_size)
+        for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+            label.set_fontsize(16)
     plt.axis([0, max(latency), 0, 1.1])
     plt.grid(True)
     if saveFolderName:
@@ -111,7 +103,7 @@ def plotEachLantencyCDF(uedata, saveFolderName=""):
         fig = plt.figure(figureCount)
         figureCount = figureCount + 1
         fig.set_size_inches(9.375, 7.3)
-        fig.subplots_adjust(top=0.85)
+        fig.subplots_adjust(top=0.83)
         fig.set_size_inches(9.375, 7.3)
         ax = plt.subplot(1, 1, 1)
 
@@ -123,8 +115,8 @@ def plotEachLantencyCDF(uedata, saveFolderName=""):
         simulationTime = data['simulationTime']
         arrivalMode = data['arrivalMode']
         arrival = data['arrival']
-        subTitle = "Prach Configuration Index: {0}, ".format(prachIndex) \
-                + "Simulation Time: {0}\n".format(str(int(simulationTime))) \
+        subTitle = "RA Subframe Period: {0}ms, ".format(getSubframePeriod(prachIndex)) \
+                + "Simulation Time: {0}s\n".format(str(int(simulationTime))) \
                 + "Arrival Mode: {0}, ".format(arrivalMode)
         if arrivalMode == "uniform":
             subTitle = subTitle + "Arrival Rate: {0}".format(arrival)
@@ -141,6 +133,9 @@ def plotEachLantencyCDF(uedata, saveFolderName=""):
         hist, bin_edges = np.histogram(latency, bins=max(latency) - min(latency), density=True)
         hist = np.cumsum(hist)
 
+        for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+            label.set_fontsize(16)
+
         plt.plot(X, hist, 'b-', linewidth=line_width)
         plt.axis([0, max(latency), 0, 1.1])
         plt.grid(True)
@@ -154,6 +149,7 @@ def plotCellMsg1FDM(celldatas, folderName=""):
     global figureCount
     fig = plt.figure(figureCount)
     fig.set_size_inches(9.375, 7.3)
+    fig.subplots_adjust(top=0.83)
     simulationTime = celldatas[0]['simulationTime']
     arrivalMode = celldatas[0]['arrivalMode']
     arrival = celldatas[0]['arrival']
@@ -164,7 +160,16 @@ def plotCellMsg1FDM(celldatas, folderName=""):
     i = 0
     for data in celldatas:
         preambleBW = [fdm*data['preambleLength']*float(data['preambleSCS'])/1000 for fdm in data['msg1FDM']]
-        ax.plot(data['timing'], preambleBW, attr[i], label='prach-ConfigurationIndex='+data['prachIndex'], linewidth=line_width, markersize=marker_size)
+        if i == 0:
+            ax.plot(data['timing'], preambleBW, attr[i], label='RA Subframe Period='+str(getSubframePeriod(int(data['prachIndex'])))+"ms", linewidth=line_width, markersize=marker_size + 7)
+        elif i == 1:
+            ax.plot(data['timing'], preambleBW, attr[i], label='RA Subframe Period='+str(getSubframePeriod(int(data['prachIndex'])))+"ms", linewidth=line_width, markersize=marker_size + 3)
+        elif i == 2:
+            ax.plot(data['timing'], preambleBW, attr[i], label='RA Subframe Period='+str(getSubframePeriod(int(data['prachIndex'])))+"ms", linewidth=line_width, markersize=marker_size + 7, fillstyle="none", markeredgewidth=3.0)
+        elif i == 4:
+            ax.plot(data['timing'], preambleBW, attr[i], label='RA Subframe Period='+str(getSubframePeriod(int(data['prachIndex'])))+"ms", linewidth=line_width, markersize=marker_size + 7)
+        else:
+            ax.plot(data['timing'], preambleBW, attr[i], label='RA Subframe Period='+str(getSubframePeriod(int(data['prachIndex'])))+"ms", linewidth=line_width, markersize=marker_size)
         i = i + 1
     newYTick = [fdm*celldatas[0]['preambleLength']*float(celldatas[0]['preambleSCS'])/1000 for fdm in [1, 2, 4, 8]]
 
@@ -172,11 +177,13 @@ def plotCellMsg1FDM(celldatas, folderName=""):
     ax.legend(loc='upper left', fontsize=legend_font_size)
     ax.set_xlim(0, maxTiming)
     ax.set_ylim(0, math.ceil(max(newYTick) / 10) * 10)
+    for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+        label.set_fontsize(16)
     ax.grid(True)
     plt.xlabel("Subframe Index", fontsize=label_font_size)
     plt.ylabel("Preamble Occupied Bandwidth (MHz)",fontsize=label_font_size)
-    plt.suptitle("RA Used Bandwidth", fontsize=18, fontweight="bold")
-    title = "Simulation Time: {0}\nArrival Mode:{1}".format(simulationTime, arrivalMode)
+    plt.suptitle("RA Used Bandwidth", fontsize=title_font_size, fontweight="bold")
+    title = "Simulation Time: {0}s\nArrival Mode:{1}".format(simulationTime, arrivalMode)
     if arrivalMode == "uniform":
         title = title + ", Arrival Rate:{0}".format(arrival)
     else:

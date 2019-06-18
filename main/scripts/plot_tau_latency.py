@@ -3,7 +3,7 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 import math
-from plot_result import collectDataUE
+from plot_result import collectDataUE, getSubframePeriod
 from evaluateResult import collectCellMsg1FDM, getPreambleLength
 from math import log
 
@@ -11,8 +11,8 @@ figureCount = 0
 
 line_width = 3.0
 marker_size = 10.0
-label_font_size = 14
-title_font_size = 16
+label_font_size = 20
+title_font_size = 24
 legend_font_size = 12
 
 def findCandidateFolder(targetPrach, targetArrival, folderName):
@@ -64,7 +64,7 @@ def plotLantencyCDF(uedatas, saveFolderName=""):
                 fig = plt.figure(figureCount)
                 figureCount = figureCount + 1
                 fig.set_size_inches(9.375, 7.3)
-                fig.subplots_adjust(top=0.85)
+                fig.subplots_adjust(top=0.83)
                 ax = plt.subplot(1, 1, 1)
 
                 plt.xlabel("Latency (ms)", fontsize=label_font_size)
@@ -75,7 +75,7 @@ def plotLantencyCDF(uedatas, saveFolderName=""):
                     data = uedatas[candidateIndex]
                     latency = data['latency']
                     arrival = data['arrival']
-                    subTitle = "prach-ConfigurationIndex: {0} Simulation Time: {1}\n".format(str(prach), str(simulation)) \
+                    subTitle = "RA Subframe Period: {0}ms Simulation Time: {1}s\n".format(str(getSubframePeriod(prach)), str(simulation)) \
                             + "Arrival Mode: {0}, ".format(arrivalMode)
                     if arrivalMode == "uniform":
                         subTitle = subTitle + "Arrival Rate: {0}".format(arrival)
@@ -90,6 +90,8 @@ def plotLantencyCDF(uedatas, saveFolderName=""):
 
                     plt.plot(X, hist, label=r"$\tau\ Threshold$="+str(tau), linewidth=line_width)
                     ax.legend(loc="lower right", fontsize=legend_font_size)
+                    for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+                        label.set_fontsize(16)
                 filenameFig = "latency_CDF_prach-{0}_simu-{1}_{2}_arrival-{3}".format(prach,
                         simulation,
                         arrivalMode,
@@ -113,7 +115,7 @@ def plotCellMsg1FDM(celldatas, saveFolderName=""):
                 fig = plt.figure(figureCount)
                 figureCount = figureCount + 1
                 fig.set_size_inches(9.375, 7.3)
-                fig.subplots_adjust(top=0.85)
+                fig.subplots_adjust(top=0.83)
                 ax = plt.subplot(1, 1, 1)
 
                 plt.xlabel("Subframe Index", fontsize=label_font_size)
@@ -127,8 +129,8 @@ def plotCellMsg1FDM(celldatas, saveFolderName=""):
                     candidateIndex = findCandidate(tau, str(prach), arrivalMode, str(simulation), celldatas)
                     data = celldatas[candidateIndex]
                     arrival = data['arrival']
-                    subTitle = "prach-ConfigurationIndex: {0}".format(str(prach)) \
-                            + " Simulation Time: {0}\n".format(str(simulation)) \
+                    subTitle = "RA Subframe Period: {0}ms".format(str(getSubframePeriod(prach))) \
+                            + " Simulation Time: {0}s\n".format(str(simulation)) \
                             + "Arrival Mode: {0}, ".format(arrivalMode)
                     if arrivalMode == "uniform":
                         subTitle = subTitle + "Arrival Rate: {0}".format(arrival)
@@ -138,8 +140,19 @@ def plotCellMsg1FDM(celldatas, saveFolderName=""):
                     
                     preambleBW = [fdm*data['preambleLength']*float(data['preambleSCS'])/1000 for fdm in data['msg1FDM']]
                     maxTiming = max([maxTiming, max(data['timing'])])
-                    ax.plot(data['timing'], preambleBW, attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size)
+                    if i == 3:
+                        ax.plot(data['timing'], preambleBW, attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 3, fillstyle="none", markeredgewidth=3.0)
+                    elif i == 2:
+                        ax.plot(data['timing'], preambleBW, attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 2, fillstyle="none", markeredgewidth=4.0)
+                    elif i == 1:
+                        ax.plot(data['timing'], preambleBW, attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 2)
+                    elif i == 0:
+                        ax.plot(data['timing'], preambleBW, attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 9)
+                    else:
+                        ax.plot(data['timing'], preambleBW, attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size)
                     i = i + 1
+                    for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+                        label.set_fontsize(16)
                 filenameFig = "RA_Used_BW_prach-{0}_simu-{1}_{2}_arrival-{3}".format(prach,
                         simulation,
                         arrivalMode,
@@ -162,7 +175,7 @@ def plotCellSSBPerRAO(celldatas, saveFolderName=""):
                 fig = plt.figure(figureCount)
                 figureCount = figureCount + 1
                 fig.set_size_inches(9.375, 7.3)
-                fig.subplots_adjust(top=0.85)
+                fig.subplots_adjust(top=0.83)
                 ax = plt.subplot(1, 1, 1)
 
                 plt.xlabel("Subframe Index", fontsize=label_font_size)
@@ -176,8 +189,8 @@ def plotCellSSBPerRAO(celldatas, saveFolderName=""):
                     candidateIndex = findCandidate(tau, str(prach), arrivalMode, str(simulation), celldatas)
                     data = celldatas[candidateIndex]
                     arrival = data['arrival']
-                    subTitle = "prach-ConfigurationIndex: {0}".format(str(prach)) \
-                            + " Simulation Time: {0}\n".format(str(simulation)) \
+                    subTitle = "RA SubframePeriod: {0}ms".format(str(getSubframePeriod(prach))) \
+                            + " Simulation Time: {0}s\n".format(str(simulation)) \
                             + "Arrival Mode: {0}, ".format(arrivalMode)
                     if arrivalMode == "uniform":
                         subTitle = subTitle + "Arrival Rate: {0}".format(arrival)
@@ -186,8 +199,19 @@ def plotCellSSBPerRAO(celldatas, saveFolderName=""):
                     ax.set_title(subTitle, fontsize=title_font_size)
                     
                     maxTiming = max([maxTiming, max(data['timing'])])
-                    ax.plot(data['timing'], data['ssbPerRAO'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size)
+                    if i == 4:
+                        ax.plot(data['timing'], data['ssbPerRAO'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 9, fillstyle="none", markeredgewidth=3.0)
+                    elif i == 2:
+                        ax.plot(data['timing'], data['ssbPerRAO'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 3, fillstyle="none", markeredgewidth=3.0)
+                    elif i == 1:
+                        ax.plot(data['timing'], data['ssbPerRAO'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 5)
+                    elif i == 0:
+                        ax.plot(data['timing'], data['ssbPerRAO'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 7)
+                    else:
+                        ax.plot(data['timing'], data['ssbPerRAO'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size)
                     i = i + 1
+                    for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+                        label.set_fontsize(16)
                 filenameFig = "S_RAO_prach-{0}_simu-{1}_{2}_arrival-{3}".format(prach,
                         simulation,
                         arrivalMode,
@@ -210,7 +234,7 @@ def plotCellDelta(celldatas, saveFolderName=""):
                 fig = plt.figure(figureCount)
                 figureCount = figureCount + 1
                 fig.set_size_inches(9.375, 7.3)
-                fig.subplots_adjust(top=0.85)
+                fig.subplots_adjust(top=0.83)
                 ax = plt.subplot(1, 1, 1)
 
                 plt.xlabel("Subframe Index", fontsize=label_font_size)
@@ -224,8 +248,8 @@ def plotCellDelta(celldatas, saveFolderName=""):
                     candidateIndex = findCandidate(tau, str(prach), arrivalMode, str(simulation), celldatas)
                     data = celldatas[candidateIndex]
                     arrival = data['arrival']
-                    subTitle = "prach-ConfigurationIndex: {0}".format(str(prach)) \
-                            + " Simulation Time: {0}\n".format(str(simulation)) \
+                    subTitle = "RA Subframe Period: {0}ms".format(str(getSubframePeriod(prach))) \
+                            + " Simulation Time: {0}s\n".format(str(simulation)) \
                             + "Arrival Mode: {0}, ".format(arrivalMode)
                     if arrivalMode == "uniform":
                         subTitle = subTitle + "Arrival Rate: {0}".format(arrival)
@@ -235,8 +259,22 @@ def plotCellDelta(celldatas, saveFolderName=""):
                     
                     maxTiming = max([maxTiming, max(data['timing'])])
                     maxDelta = max([maxDelta, max(data['delta'])])
-                    ax.plot(data['timing'], data['delta'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size)
+                    if i == 4:
+                        ax.plot(data['timing'], data['delta'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 9, fillstyle="none", markeredgewidth=3.0)
+                    elif i == 0:
+                        ax.plot(data['timing'], data['delta'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 7)
+                    elif i == 1:
+                        ax.plot(data['timing'], data['delta'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 5)
+                    elif i == 2:
+                        ax.plot(data['timing'], data['delta'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 9, fillstyle="none", markeredgewidth=3.0)
+                    elif i == 3:
+                        ax.plot(data['timing'], data['delta'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 7)
+
+                    else:
+                        ax.plot(data['timing'], data['delta'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size)
                     i = i + 1
+                    for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+                        label.set_fontsize(16)
                 filenameFig = "Delta_prach-{0}_simu-{1}_{2}_arrival-{3}".format(prach,
                         simulation,
                         arrivalMode,
@@ -261,7 +299,7 @@ def plotCellTau(celldatas, saveFolderName=""):
                 fig = plt.figure(figureCount)
                 figureCount = figureCount + 1
                 fig.set_size_inches(9.375, 7.3)
-                fig.subplots_adjust(top=0.85)
+                fig.subplots_adjust(top=0.83)
                 ax = plt.subplot(1, 1, 1)
 
                 plt.xlabel("Subframe Index", fontsize=label_font_size)
@@ -275,7 +313,7 @@ def plotCellTau(celldatas, saveFolderName=""):
                     candidateIndex = findCandidate(tau, str(prach), arrivalMode, str(simulation), celldatas)
                     data = celldatas[candidateIndex]
                     arrival = data['arrival']
-                    subTitle = "prach-ConfigurationIndex: {0}".format(str(prach)) \
+                    subTitle = "RA Subframe Period: {0}".format(str(getSubframePeriod(prach))) \
                             + " Simulation Time: {0}\n".format(str(simulation)) \
                             + "Arrival Mode: {0}, ".format(arrivalMode)
                     if arrivalMode == "uniform":
@@ -286,8 +324,19 @@ def plotCellTau(celldatas, saveFolderName=""):
                     
                     maxTiming = max([maxTiming, max(data['timing'])])
                     maxTau = max([maxTau, max(data['RA attempt period'])])
-                    ax.plot(data['timing'], data['RA attempt period'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size)
+                    if i == 0:
+                        ax.plot(data['timing'], data['RA attempt period'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 7)
+                    elif i == 2:
+                        ax.plot(data['timing'], data['RA attempt period'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 7, fillstyle="none", markeredgewidth=3.0)
+                    elif i == 1:
+                        ax.plot(data['timing'], data['RA attempt period'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 5)
+                    elif i == 3:
+                        ax.plot(data['timing'], data['RA attempt period'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size + 3)
+                    else:
+                        ax.plot(data['timing'], data['RA attempt period'], attr[i], label=r'$\tau\ Threshold$='+str(tau), linewidth=line_width, markersize=marker_size)
                     i = i + 1
+                    for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+                        label.set_fontsize(16)
                 filenameFig = "RA_attempt_periodprach-{0}_simu-{1}_{2}_arrival-{3}".format(prach,
                         simulation,
                         arrivalMode,
