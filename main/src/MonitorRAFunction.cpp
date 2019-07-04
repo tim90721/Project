@@ -180,7 +180,7 @@ int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
     int i = log(msg1FDM) / log(2);
     SPDLOG_TRACE("msg1fdm index: {0}", i);
     double newMsg1FDM = pow(2, i);
-    if(*newSSBPerRAO < ssbPerRAO && newTau > tau && newTau > 160 && msg1FDM < 8){
+    if(*newSSBPerRAO < ssbPerRAO && newTau > tau && newTau > 10 && msg1FDM < 8){
         newMsg1FDM = (((double)(estimateUEs * ssbPerRAO * exp(1)))
             / ((double)availiableRAO->getNumberofPreambles() * nSSB))
             * (((double)availiableRAO->getTotalNeedRAO())
@@ -228,7 +228,7 @@ int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
                     prachConfig->getNumberofRASubframe());
             SPDLOG_TRACE("new tau: {0}", newTau);
             SPDLOG_TRACE("lod tau: {0}", tau);
-            if(newTau > tau && newTau > 160){
+            if(newTau > tau && newTau > 10){
                 newMsg1FDM = pow(2, ++i);
                 *newSSBPerRAO = calculateNewSSBPerRAO(availiableRAO->getNumberofPreambles(),
                         nSSB,
@@ -243,7 +243,7 @@ int MonitorRAFunction::getNewMsg1FDMver2(double *newSSBPerRAO){
         }
         if(i == 3)
             SPDLOG_INFO("msg1FDM reach maximum capacity\n");
-        else
+        else if(i == 1)
             SPDLOG_INFO("msg1FDM reach minimum capacity\n");
     }
     SPDLOG_TRACE("new tau: {0}", newTau);
