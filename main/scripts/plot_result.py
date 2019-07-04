@@ -11,7 +11,7 @@ line_width = 3.0
 marker_size = 7.0
 label_font_size = 20
 title_font_size = 24
-legend_font_size = 12
+legend_font_size = 16
 
 def getSubframePeriod(prachIndex):
     if type(prachIndex) is not int:
@@ -92,14 +92,14 @@ def plotDataUE(latencies, upperBound, filenameFig1 = None, subTitle = ""):
     fig = plt.figure(1)
     fig.set_size_inches(9.375, 7.3)
     ax = plt.subplot(1, 1, 1)
-    fig.subplots_adjust(top=0.83)
+    #fig.subplots_adjust(top=0.83)
     plt.plot(range(len(latencies)), [x['latency'] for x in latencies.values()], 'r-')
     plt.xlabel("UE Index", fontsize=label_font_size)
     plt.ylabel("Latency (ms)", fontsize=label_font_size)
     for label in (ax.get_xticklabels() + ax.get_yticklabels()):
         label.set_fontsize(16)
-    plt.suptitle("Each UE Latency", fontweight="bold", fontsize=title_font_size)
-    plt.title(subTitle, fontsize=title_font_size)
+    #plt.suptitle("Each UE Latency", fontweight="bold", fontsize=title_font_size)
+    #plt.title(subTitle, fontsize=title_font_size)
     plt.axis([0, len(latencies), 0, upperBound + 5])
     plt.xticks(newXticks)
     plt.grid(True)
@@ -132,10 +132,10 @@ def plotDataCell(timing, arrivalUEs, participateUEs, successUEs, estimateUEs, de
         label.set_fontsize(16)
     ax.legend(loc="upper left", fontsize=legend_font_size)
     ax.set_ylim(0, ylimit)
-    fig.subplots_adjust(top=0.83)
-    plt.suptitle("UEs Condition & Esitimate UEs", fontsize=title_font_size, fontweight="bold")
+    #fig.subplots_adjust(top=0.83)
+    #plt.suptitle("UEs Condition & Esitimate UEs", fontsize=title_font_size, fontweight="bold")
     #plt.suptitle("Beta Distribution Arrival", fontsize=14, fontweight="bold")
-    ax.set_title(subTitle, fontsize=title_font_size)
+    #ax.set_title(subTitle, fontsize=title_font_size)
     plt.xlabel("Subframe Index", fontsize=label_font_size)
     plt.ylabel("Number of UEs", fontsize=label_font_size)
     #plt.axis([0, len(successUEs) * 160, 0, max([max(successUEs), max(estimateUEs), max(arrivalUEs), max(participateUEs)]) + 10])
@@ -163,8 +163,8 @@ def plotSIBLatencyAndTau(avgSIBlatencies, tau, filename=None):
     ax2.plot(t, tau, 'b-^', linewidth=line_width, markersize=marker_size + 6, fillstyle="none", markeredgewidth=3.0)
     ax2.set_ylabel('RA Attemp Period (ms)', color='b', fontsize=label_font_size)
     ax2.tick_params('y', colors='b')
-    fig.subplots_adjust(top=0.8)
-    plt.suptitle("Each SIB Period UE Average Latency\nvs\nRA Attempt Period", fontsize=title_font_size, fontweight="bold")
+    #fig.subplots_adjust(top=0.8)
+    #plt.suptitle("Each SIB Period UE Average Latency\nvs\nRA Attempt Period", fontsize=title_font_size, fontweight="bold")
     ax1.grid(True)
     ytop = 10 * (int(max([max(avgSIBlatencies), max(tau)]) / 10) + 1)
     ax1.set_ylim(0, ytop)

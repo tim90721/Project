@@ -12,7 +12,7 @@ line_width = 3.0
 marker_size = 10.0
 label_font_size = 20
 title_font_size = 24
-legend_font_size = 12
+legend_font_size = 16
 
 def getPreambleLength(preambleSCS):
     if preambleSCS == 1.25 or preambleSCS == 5:
@@ -36,7 +36,7 @@ def plotAverageResult(average, filename=""):
     global figureCount
     fig = plt.figure(figureCount)
     figureCount = figureCount + 1
-    fig.subplots_adjust(top = 0.9)
+    #fig.subplots_adjust(top = 0.9)
     fig.set_size_inches(9.375, 7.3)
     ax = plt.subplot(1, 1, 1)
     plt.plot(average.keys(), average.values(), 'b-o', linewidth=line_width, markersize=marker_size)
@@ -44,7 +44,7 @@ def plotAverageResult(average, filename=""):
     plt.ylabel("Average Latency (ms)", fontsize=label_font_size)
     for label in (ax.get_xticklabels() + ax.get_yticklabels()):
         label.set_fontsize(16)
-    plt.suptitle("Average UE Latency vs RA Subframe Period", fontsize=title_font_size, fontweight="bold")
+    #plt.suptitle("Average UE Latency vs RA Subframe Period", fontsize=title_font_size, fontweight="bold")
     plt.axis([0, max(average.keys()) + 2, 0, max(average.values()) + 10])
     plt.grid(True)
     if filename:
@@ -55,13 +55,13 @@ def plotLantencyCDF(uedata, saveFolderName=""):
     global figureCount
     fig = plt.figure(figureCount)
     figureCount = figureCount + 1
-    fig.subplots_adjust(top=0.83)
+    #fig.subplots_adjust(top=0.83)
     fig.set_size_inches(9.375, 7.3)
     ax = plt.subplot(1, 1, 1)
 
     plt.xlabel("Latency (ms)", fontsize=label_font_size)
     plt.ylabel("CDF", fontsize=label_font_size)
-    plt.suptitle("UE Latency CDF", fontsize=title_font_size, fontweight="bold")
+    #plt.suptitle("UE Latency CDF", fontsize=title_font_size, fontweight="bold")
 
     for data in uedata:
         latency = data['latency']
@@ -78,7 +78,7 @@ def plotLantencyCDF(uedata, saveFolderName=""):
         filenameFig = "CDF_simu-{0}_{1}_arrival-{2}".format(simulationTime,
                 arrivalMode,
                 arrival)
-        ax.set_title(subTitle, fontsize=title_font_size)
+        #ax.set_title(subTitle, fontsize=title_font_size)
 
         latency.insert(0, 0)
         X = np.linspace(min(latency), max(latency), max(latency) - min(latency))
@@ -103,13 +103,13 @@ def plotEachLantencyCDF(uedata, saveFolderName=""):
         fig = plt.figure(figureCount)
         figureCount = figureCount + 1
         fig.set_size_inches(9.375, 7.3)
-        fig.subplots_adjust(top=0.83)
+        #fig.subplots_adjust(top=0.83)
         fig.set_size_inches(9.375, 7.3)
         ax = plt.subplot(1, 1, 1)
 
         plt.xlabel("Latency (ms)", fontsize=label_font_size)
         plt.ylabel("CDF", fontsize=label_font_size)
-        plt.suptitle("UE Latency CDF", fontsize=title_font_size, fontweight="bold")
+        #plt.suptitle("UE Latency CDF", fontsize=title_font_size, fontweight="bold")
         latency = data['latency']
         prachIndex = data['prachIndex']
         simulationTime = data['simulationTime']
@@ -126,7 +126,7 @@ def plotEachLantencyCDF(uedata, saveFolderName=""):
                 simulationTime,
                 arrivalMode,
                 arrival)
-        ax.set_title(subTitle, fontsize=title_font_size)
+        #ax.set_title(subTitle, fontsize=title_font_size)
 
         latency.insert(0, 0)
         X = np.linspace(min(latency), max(latency), max(latency) - min(latency))
@@ -149,7 +149,7 @@ def plotCellMsg1FDM(celldatas, folderName=""):
     global figureCount
     fig = plt.figure(figureCount)
     fig.set_size_inches(9.375, 7.3)
-    fig.subplots_adjust(top=0.83)
+    #fig.subplots_adjust(top=0.83)
     simulationTime = celldatas[0]['simulationTime']
     arrivalMode = celldatas[0]['arrivalMode']
     arrival = celldatas[0]['arrival']
@@ -182,7 +182,7 @@ def plotCellMsg1FDM(celldatas, folderName=""):
     ax.grid(True)
     plt.xlabel("Subframe Index", fontsize=label_font_size)
     plt.ylabel("Preamble Occupied Bandwidth (MHz)",fontsize=label_font_size)
-    plt.suptitle("RA Used Bandwidth", fontsize=title_font_size, fontweight="bold")
+    #plt.suptitle("RA Used Bandwidth", fontsize=title_font_size, fontweight="bold")
     title = "Simulation Time: {0}s\nArrival Mode:{1}".format(simulationTime, arrivalMode)
     if arrivalMode == "uniform":
         title = title + ", Arrival Rate:{0}".format(arrival)
@@ -191,7 +191,7 @@ def plotCellMsg1FDM(celldatas, folderName=""):
     filename = "msg1FDM_simu-{0}_{1}_arrival-{2}.png".format(simulationTime,
             arrivalMode,
             arrival)
-    plt.title(title, fontsize=title_font_size)
+    #plt.title(title, fontsize=title_font_size)
     plt.savefig(folderName + filename)
 
 if __name__ == '__main__':
