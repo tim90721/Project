@@ -13,6 +13,8 @@ label_font_size = 20
 title_font_size = 24
 legend_font_size = 16
 
+plot_optimized = False
+
 def getSubframePeriod(prachIndex):
     if type(prachIndex) is not int:
         prachIndex = int(prachIndex)
@@ -66,6 +68,9 @@ def collectDataCell(filename):
     delta = []
     tau = []
     timing = []
+    if plot_optimized:
+        tauOp = []
+        deltaOp = []
     with open(filename, newline='') as csvfile:
         rows = csv.DictReader(csvfile)
         for row in rows:
@@ -76,6 +81,9 @@ def collectDataCell(filename):
             participateUEs.append(int(row['Participate UEs']))
             delta.append(float(row['Total Channel Capacity']))
             tau.append(int(row['Tau']))
+            if plot_optimized:
+                deltaOp.append(float(row['Total Channel Capacity Optimized']))
+                tauOp.append(float(row['Tau Optimized']))
 #        del estimateUEs[-1]
 #        del delta[-1]
         del delta[0]
@@ -85,6 +93,8 @@ def collectDataCell(filename):
 #        delta.insert(0, delta[0])
         delta.insert(len(delta), delta[-1])
 
+    if plot_optimized:
+        return timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, tau, deltaOp, tauOp
     return timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, tau
 
 def plotDataUE(latencies, upperBound, filenameFig1 = None, subTitle = ""):
@@ -110,12 +120,14 @@ def plotDataUE(latencies, upperBound, filenameFig1 = None, subTitle = ""):
         plt.close()
     del newXticks
 
-def plotDataCell(timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, filenameFig2 = None, subTitle = ""):
+def plotDataCell(timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, deltaOp=None, filenameFig2 = None, subTitle = ""):
     maxNum = max([max(arrivalUEs), 
         max(participateUEs), 
         max(successUEs), 
         max(estimateUEs), 
         max(delta)])
+    if plot_optimized and (deltaOp is not None):
+        maxNum = max(maxNum, max(deltaOp))
     power = math.floor(math.log(maxNum, 10))
     ylimit = math.floor(maxNum / pow(10, power))
     ylimit = (ylimit + 2) * pow(10, power)
@@ -128,6 +140,8 @@ def plotDataCell(timing, arrivalUEs, participateUEs, successUEs, estimateUEs, de
     line3, = ax.plot(timing, arrivalUEs, 'k-^', label='Arrival UEs', linewidth=line_width, markersize=marker_size + 7, fillstyle="none", markeredgewidth=3.0)
     line4, = ax.plot(timing, participateUEs, 'r-v', label='Participate UEs', linewidth=line_width, markersize=marker_size + 7, fillstyle="none", markeredgewidth=3.0)
     line5, = ax.plot(timing, delta, 'm-D', label='Total Channel Capacity', linewidth=line_width, markersize=marker_size + 2)
+    if plot_optimized:
+        line6, = ax.plot(timing, deltaOp, 'b-H', label='Optimized Channel Capacity', linewidth=line_width, markersize=marker_size + 10, fillstyle="none", markeredgewidth=3.0)
     for label in (ax.get_xticklabels() + ax.get_yticklabels()):
         label.set_fontsize(16)
     ax.legend(loc="upper left", fontsize=legend_font_size)
@@ -181,6 +195,11 @@ def plotSIBLatencyAndTau(avgSIBlatencies, tau, filename=None):
         plt.close()
 
 if __name__ == '__main__':
+    command = sys.argv
+    if 'plot_op' in command:
+        plot_optimized = True
+        print("plot optimized")
+    #print(plot_optimized)
     ueFile = 'UE.csv'
     cellFile = 'Cell.csv'
     resultSourceFolder = "./result/"
@@ -230,13 +249,19 @@ if __name__ == '__main__':
     while (upperBound % 5) != 0:
         upperBound += 1
         
-    timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, tau = collectDataCell(cellFile)
+    if plot_optimized:
+        timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, tau, deltaOp, tauOp = collectDataCell(cellFile)
+    else:
+        timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, tau = collectDataCell(cellFile)
     print(timing)
     ############################ collect data ############################
     
     ############################ plot data ############################
     plotDataUE(latencies, upperBound, filenameFig1, subTitle)
-    plotDataCell(timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, filenameFig2, subTitle)
+    if plot_optimized:
+        plotDataCell(timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, deltaOp, filenameFig2, subTitle)
+    else:
+        plotDataCell(timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, None, filenameFig2, subTitle)
     plotSIBLatencyAndTau(avgSIBlatencies, tau, filenameFig3)
     plt.show()
     ############################ plot data ############################
@@ -252,3 +277,6 @@ if __name__ == '__main__':
     del delta
     del avgSIBlatencies
     del timing
+    if plot_optimized:
+        del deltaOp
+        del tauOp

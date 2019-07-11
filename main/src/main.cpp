@@ -11,9 +11,9 @@ void initialize_log(){
         console_log->set_level(spdlog::level::info);
         console_log->set_pattern("[Project-Logging] [%@] [ %^%l%$ ] %v");
 
-        auto trace_log = std::make_shared<spdlog::sinks::basic_file_sink_mt>("./log/trace_log.log", true);
-        trace_log->set_level(spdlog::level::trace);
-        trace_log->set_pattern("[%Y-%m-%d %T] [Project-Logging] [%@] [ %^%l%$ ] %v");
+        //auto trace_log = std::make_shared<spdlog::sinks::basic_file_sink_mt>("./log/trace_log.log", true);
+        //trace_log->set_level(spdlog::level::trace);
+        //trace_log->set_pattern("[%Y-%m-%d %T] [Project-Logging] [%@] [ %^%l%$ ] %v");
 
         auto debug_log = std::make_shared<spdlog::sinks::basic_file_sink_mt>("./log/debug_log.log", true);
         debug_log->set_level(spdlog::level::debug);
@@ -21,11 +21,12 @@ void initialize_log(){
 
         std::vector<spdlog::sink_ptr> sinks;
         sinks.push_back(console_log);
-        sinks.push_back(trace_log);
+        //sinks.push_back(trace_log);
         sinks.push_back(debug_log);
 
         auto combined = std::make_shared<spdlog::logger>("multi sinks", begin(sinks), end(sinks));
-        combined->set_level(spdlog::level::trace);
+        //combined->set_level(spdlog::level::trace);
+
         //combined->flush_on(spdlog::level::trace);
         spdlog::register_logger(combined);
 

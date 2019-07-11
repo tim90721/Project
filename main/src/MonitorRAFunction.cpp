@@ -47,6 +47,7 @@ void MonitorRAFunction::updateRAOs(){
     SPDLOG_TRACE("old msg1FDM: {0}", availiableRAO->getMsg1FDM());
     SPDLOG_WARN("new ssb per rao: {0}", newSSBPerRAO);
     SPDLOG_TRACE("new msg1FDM: {0}", newMsg1FDM);
+    SPDLOG_DEBUG("raCount: {0}", raCount);
     availiableRAO->setSSBPerRAO(newSSBPerRAO);
     availiableRAO->setMsg1FDM(newMsg1FDM);
     availiableRAO->updateAssociationFrame();
@@ -110,6 +111,7 @@ int MonitorRAFunction::getTau(const int RAConfigPeriod, const int totalNeedRAO, 
 }
 
 // get new msg1-FDM
+// abandoned
 // ============================
 // if ssb per rao get smaller, it need to check the tau is getting larger
 // if so, msg1-FDM need to increase and not over 8 frequency-domain rao

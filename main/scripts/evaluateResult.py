@@ -1,6 +1,7 @@
 #/usr/bin/python3
 import os
 import csv
+import sys
 import matplotlib.pyplot as plt
 import numpy as np
 from plot_result import collectDataUE, getSubframePeriod
@@ -14,6 +15,8 @@ label_font_size = 20
 title_font_size = 24
 legend_font_size = 16
 
+plot_optimized = False
+
 def getPreambleLength(preambleSCS):
     if preambleSCS == 1.25 or preambleSCS == 5:
         return 839
@@ -23,6 +26,8 @@ def getPreambleLength(preambleSCS):
 def collectCellMsg1FDM(filename):
     timing = []
     msg1FDM = []
+    if plot_optimized:
+        msg1FDMOp = []
     with open(filename, newline='') as csvfile:
         rows = csv.DictReader(csvfile)
         #next(rows)
@@ -30,6 +35,10 @@ def collectCellMsg1FDM(filename):
             preambleSCS = row['Preamble SCS']
             timing.append(int(row['Current Frame']) * 10 + int(row['Current Subframe']))
             msg1FDM.append(int(row['msg1-FDM']))
+            if plot_optimized:
+                msg1FDMOp.append(int(row['msg1-FDM Optimized']))
+    if plot_optimized:
+        return preambleSCS, timing, msg1FDM, msg1FDMOp
     return preambleSCS, timing, msg1FDM
 
 def plotAverageResult(average, filename=""):
@@ -49,6 +58,7 @@ def plotAverageResult(average, filename=""):
     plt.grid(True)
     if filename:
         plt.savefig(filename)
+        plt.close
     #plt.show()
 
 def plotLantencyCDF(uedata, saveFolderName=""):
@@ -93,6 +103,7 @@ def plotLantencyCDF(uedata, saveFolderName=""):
     plt.grid(True)
     if saveFolderName:
         plt.savefig(saveFolderName + filenameFig)
+        plt.close()
     del X
     del hist
     del bin_edges
@@ -141,6 +152,7 @@ def plotEachLantencyCDF(uedata, saveFolderName=""):
         plt.grid(True)
         if saveFolderName:
             plt.savefig(saveFolderName + filenameFig)
+            plt.close()
     del X
     del hist
     del bin_edges
@@ -193,8 +205,56 @@ def plotCellMsg1FDM(celldatas, folderName=""):
             arrival)
     #plt.title(title, fontsize=title_font_size)
     plt.savefig(folderName + filename)
+    plt.close()
+
+def plotCellMsg1FDMwithOptimized(celldatas, folderName=""):
+    #fig.subplots_adjust(top=0.83)
+    simulationTime = celldatas[0]['simulationTime']
+    arrivalMode = celldatas[0]['arrivalMode']
+    arrival = celldatas[0]['arrival']
+    maxTiming = max([max(t['timing']) for t in celldatas])
+    attr = ['b-s', 'r-o', 'm-D', 'c-^', 'g-*']
+    i = 0
+    for data in celldatas:
+        global figureCount
+        fig = plt.figure(figureCount)
+        fig.set_size_inches(9.375, 7.3)
+        ax = plt.subplot(1, 1, 1)
+        figureCount = figureCount + 1
+        preambleBW = [fdm*data['preambleLength']*float(data['preambleSCS'])/1000 for fdm in data['msg1FDM']]
+        preambleBWOp = [fdm*data['preambleLength']*float(data['preambleSCS']) / 1000 for fdm in data['msg1FDMOp']]
+        ax.plot(data['timing'], preambleBW, attr[0], label=r'$F_{RAO}$', linewidth=line_width, markersize=marker_size + 7)
+        ax.plot(data['timing'], preambleBWOp, attr[1], label=r'$F_{RAO} optimized$', linewidth=line_width, markersize=marker_size + 7)
+        newYTick = [fdm*celldatas[0]['preambleLength']*float(celldatas[0]['preambleSCS'])/1000 for fdm in [1, 2, 4, 8]]
+
+        plt.yticks(newYTick)
+        ax.legend(loc='upper left', fontsize=legend_font_size)
+        ax.set_xlim(0, maxTiming)
+        ax.set_ylim(0, math.ceil(max(newYTick) / 10) * 10)
+        for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+            label.set_fontsize(16)
+        ax.grid(True)
+        plt.xlabel("Subframe Index", fontsize=label_font_size)
+        plt.ylabel("Preamble Occupied Bandwidth (MHz)",fontsize=label_font_size)
+        #plt.suptitle("RA Used Bandwidth", fontsize=title_font_size, fontweight="bold")
+        #title = "Simulation Time: {0}s\nArrival Mode:{1}".format(simulationTime, arrivalMode)
+        #if arrivalMode == "uniform":
+        #    title = title + ", Arrival Rate:{0}".format(arrival)
+        #else:
+        #    title = title + ", Total UE:{0}".format(arrival)
+        filename = "msg1FDM_prach-{0}_simu-{1}_{2}_arrival-{3}.png".format(data['prachIndex'],
+                simulationTime,
+                arrivalMode,
+                arrival)
+        #plt.title(title, fontsize=title_font_size)
+        plt.savefig(folderName + filename)
+        plt.close()
 
 if __name__ == '__main__':
+    command = sys.argv
+    if 'plot_op' in command:
+        plot_optimized = True
+        print('plot optimized')
     
     ueFile = 'UE.csv'
     cellFile = 'Cell.csv'
@@ -248,8 +308,13 @@ if __name__ == '__main__':
         #### get ue data ####
         #### get cell data ####
         filename = resultSourceFolder + folderName[maxIndex] + "/" + cellFile
-        preambleSCS, timing, msg1FDM = collectCellMsg1FDM(filename)
+        if plot_optimized:
+            preambleSCS, timing, msg1FDM, msg1FDMOp = collectCellMsg1FDM(filename)
+        else:
+            preambleSCS, timing, msg1FDM = collectCellMsg1FDM(filename)
         cell_data = {'prachIndex':prachIndex[maxIndex], 'preambleSCS':preambleSCS, 'preambleLength':getPreambleLength(float(preambleSCS)), 'timing':timing, 'msg1FDM':msg1FDM, 'simulationTime':simulationTime[maxIndex], 'arrivalMode': arrivalMode[maxIndex], 'arrival':arrival[maxIndex]}
+        if plot_optimized:
+            cell_data['msg1FDMOp'] = msg1FDMOp
         #### get cell data ####
         if arrivalMode[maxIndex] == "uniform":
             avgs_uniform[getSubframePeriod(int(prachIndex[maxIndex]))] = np.mean(latency)
@@ -272,11 +337,15 @@ if __name__ == '__main__':
     plotEachLantencyCDF(ue_uniform, resultSourceFolder + folderNameUniform)
     plotAverageResult(avgs_uniform, resultSourceFolder + folderNameUniform + savefigureNameUniform)
     plotCellMsg1FDM(cell_uniform, resultSourceFolder + folderNameUniform)
+    if plot_optimized:
+        plotCellMsg1FDMwithOptimized(cell_uniform, resultSourceFolder + folderNameUniform)
     
     plotLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
     plotEachLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
     plotAverageResult(avgs_beta, resultSourceFolder + folderNameBeta+ savefigurenameBeta)
     plotCellMsg1FDM(cell_beta, resultSourceFolder + folderNameBeta)
+    if plot_optimized:
+        plotCellMsg1FDMwithOptimized(cell_beta, resultSourceFolder + folderNameBeta)
     #plt.show()
     del avgs_uniform
     del avgs_beta
