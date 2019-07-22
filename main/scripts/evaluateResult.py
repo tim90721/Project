@@ -7,6 +7,25 @@ import numpy as np
 from plot_result import collectDataUE, getSubframePeriod
 import math
 
+#######################
+# plot each prach-configurationIndex uniform and beta distribution result
+#######################
+
+# plot source folder organization
+#
+# candidateResult - ./prach-16-simulation-uniform
+#                   ./prach-16-simulation-beta
+#                   ./prach-19-simulation-uniform
+#                   ./prach-19-simulation-beta
+#                   ./prach-22-simulation-uniform
+#                   ./prach-22-simulation-beta
+#                   ./prach-25-simulation-uniform
+#                   ./prach-25-simulation-beta
+#                   ./prach-27-simulation-uniform
+#                   ./prach-27-simulation-beta
+#                   ./others configuration with uniform and beta
+#                   ...
+
 figureCount = 0
 
 line_width = 3.0
@@ -340,12 +359,12 @@ if __name__ == '__main__':
     if plot_optimized:
         plotCellMsg1FDMwithOptimized(cell_uniform, resultSourceFolder + folderNameUniform)
     
-    #plotLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
-    #plotEachLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
-    #plotAverageResult(avgs_beta, resultSourceFolder + folderNameBeta+ savefigurenameBeta)
-    #plotCellMsg1FDM(cell_beta, resultSourceFolder + folderNameBeta)
-    #if plot_optimized:
-    #    plotCellMsg1FDMwithOptimized(cell_beta, resultSourceFolder + folderNameBeta)
+    plotLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
+    plotEachLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
+    plotAverageResult(avgs_beta, resultSourceFolder + folderNameBeta+ savefigurenameBeta)
+    plotCellMsg1FDM(cell_beta, resultSourceFolder + folderNameBeta)
+    if plot_optimized:
+        plotCellMsg1FDMwithOptimized(cell_beta, resultSourceFolder + folderNameBeta)
     #plt.show()
     del avgs_uniform
     del avgs_beta

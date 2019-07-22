@@ -7,6 +7,10 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import math
 
+#############################
+# plot the *newest* result from the result folder
+#############################
+
 line_width = 3.0
 marker_size = 7.0
 label_font_size = 20

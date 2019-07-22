@@ -7,6 +7,29 @@ from plot_result import collectDataUE, getSubframePeriod
 from evaluateResult import collectCellMsg1FDM, getPreambleLength
 from math import log
 
+
+#######################
+# plot each tau_threshold for each prach-configurationIndex 
+# uniform and beta distribution result
+#######################
+
+# plot source folder organization
+#
+# candidateResult - ./10/
+#                      | each prach configuration with uniform and beta
+#
+#                   ./20/
+#                      | each prach configuration with uniform and beta
+#
+#                   ./40/
+#                      | each prach configuration with uniform and beta
+#
+#                   ./80/
+#                      | each prach configuration with uniform and beta
+#
+#                   ./160/
+#                      | each prach configuration with uniform and beta
+
 figureCount = 0
 
 line_width = 3.0
