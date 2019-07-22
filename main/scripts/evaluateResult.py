@@ -168,18 +168,18 @@ def plotCellMsg1FDM(celldatas, folderName=""):
     maxTiming = max([max(t['timing']) for t in celldatas])
     ax = plt.subplot(1, 1, 1)
     figureCount = figureCount + 1
-    attr = ['b-s', 'r-o', 'm-D', 'c-^', 'g-*']
+    attr = ['b-o', 'm-D', 'c-s', 'r-^', 'g-*']
     i = 0
     for data in celldatas:
         preambleBW = [fdm*data['preambleLength']*float(data['preambleSCS'])/1000 for fdm in data['msg1FDM']]
         if i == 0:
-            ax.plot(data['timing'], preambleBW, attr[i], label='RA Subframe Period='+str(getSubframePeriod(int(data['prachIndex'])))+"ms", linewidth=line_width, markersize=marker_size + 7)
+            ax.plot(data['timing'], preambleBW, attr[i], label='RA Subframe Period='+str(getSubframePeriod(int(data['prachIndex'])))+"ms", linewidth=line_width, markersize=marker_size)
         elif i == 1:
-            ax.plot(data['timing'], preambleBW, attr[i], label='RA Subframe Period='+str(getSubframePeriod(int(data['prachIndex'])))+"ms", linewidth=line_width, markersize=marker_size + 3)
+            ax.plot(data['timing'], preambleBW, attr[i], label='RA Subframe Period='+str(getSubframePeriod(int(data['prachIndex'])))+"ms", linewidth=line_width, markersize=marker_size + 10, fillstyle="none", markeredgewidth=3.0)
         elif i == 2:
-            ax.plot(data['timing'], preambleBW, attr[i], label='RA Subframe Period='+str(getSubframePeriod(int(data['prachIndex'])))+"ms", linewidth=line_width, markersize=marker_size + 7, fillstyle="none", markeredgewidth=3.0)
+            ax.plot(data['timing'], preambleBW, attr[i], label='RA Subframe Period='+str(getSubframePeriod(int(data['prachIndex'])))+"ms", linewidth=line_width, markersize=marker_size + 5)
         elif i == 4:
-            ax.plot(data['timing'], preambleBW, attr[i], label='RA Subframe Period='+str(getSubframePeriod(int(data['prachIndex'])))+"ms", linewidth=line_width, markersize=marker_size + 7)
+            ax.plot(data['timing'], preambleBW, attr[i], label='RA Subframe Period='+str(getSubframePeriod(int(data['prachIndex'])))+"ms", linewidth=line_width, markersize=marker_size + 5)
         else:
             ax.plot(data['timing'], preambleBW, attr[i], label='RA Subframe Period='+str(getSubframePeriod(int(data['prachIndex'])))+"ms", linewidth=line_width, markersize=marker_size)
         i = i + 1
@@ -340,12 +340,12 @@ if __name__ == '__main__':
     if plot_optimized:
         plotCellMsg1FDMwithOptimized(cell_uniform, resultSourceFolder + folderNameUniform)
     
-    plotLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
-    plotEachLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
-    plotAverageResult(avgs_beta, resultSourceFolder + folderNameBeta+ savefigurenameBeta)
-    plotCellMsg1FDM(cell_beta, resultSourceFolder + folderNameBeta)
-    if plot_optimized:
-        plotCellMsg1FDMwithOptimized(cell_beta, resultSourceFolder + folderNameBeta)
+    #plotLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
+    #plotEachLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
+    #plotAverageResult(avgs_beta, resultSourceFolder + folderNameBeta+ savefigurenameBeta)
+    #plotCellMsg1FDM(cell_beta, resultSourceFolder + folderNameBeta)
+    #if plot_optimized:
+    #    plotCellMsg1FDMwithOptimized(cell_beta, resultSourceFolder + folderNameBeta)
     #plt.show()
     del avgs_uniform
     del avgs_beta
