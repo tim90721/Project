@@ -125,6 +125,8 @@ def plotDataUE(latencies, upperBound, filenameFig1 = None, subTitle = ""):
     del newXticks
 
 def plotDataCell(timing, arrivalUEs, participateUEs, successUEs, estimateUEs, delta, deltaOp=None, filenameFig2 = None, subTitle = ""):
+    #xtick = math.ceil(max(timing) / 160)
+    #xtick = [(x * 160) for x in range(xtick + 1)]
     maxNum = max([max(arrivalUEs), 
         max(participateUEs), 
         max(successUEs), 
@@ -133,8 +135,10 @@ def plotDataCell(timing, arrivalUEs, participateUEs, successUEs, estimateUEs, de
     if plot_optimized and (deltaOp is not None):
         maxNum = max(maxNum, max(deltaOp))
     power = math.floor(math.log(maxNum, 10))
-    ylimit = math.floor(maxNum / pow(10, power))
-    ylimit = (ylimit + 2) * pow(10, power)
+    print(power)
+    ylimit = round(maxNum / pow(10, power))
+    ylimit = (ylimit * 2) * pow(10, power)
+    print(ylimit)
 
     fig = plt.figure(2)
     fig.set_size_inches(9.375, 7.3)
@@ -148,15 +152,15 @@ def plotDataCell(timing, arrivalUEs, participateUEs, successUEs, estimateUEs, de
         line6, = ax.plot(timing, deltaOp, 'b-H', label='Optimized Channel Capacity', linewidth=line_width, markersize=marker_size + 10, fillstyle="none", markeredgewidth=3.0)
     for label in (ax.get_xticklabels() + ax.get_yticklabels()):
         label.set_fontsize(16)
-    ax.legend(loc="upper left", fontsize=legend_font_size)
+    ax.legend(loc="upper left", fontsize=legend_font_size, ncol=2)
     ax.set_ylim(0, ylimit)
+    #plt.xticks(xtick)
     #fig.subplots_adjust(top=0.83)
     #plt.suptitle("UEs Condition & Esitimate UEs", fontsize=title_font_size, fontweight="bold")
     #plt.suptitle("Beta Distribution Arrival", fontsize=14, fontweight="bold")
     #ax.set_title(subTitle, fontsize=title_font_size)
     plt.xlabel("Subframe Index", fontsize=label_font_size)
     plt.ylabel("Number of UEs", fontsize=label_font_size)
-    #plt.axis([0, len(successUEs) * 160, 0, max([max(successUEs), max(estimateUEs), max(arrivalUEs), max(participateUEs)]) + 10])
     plt.grid(True)
     manager = plt.get_current_fig_manager()
     manager.window.wm_geometry("900x700+450+50")

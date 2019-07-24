@@ -202,12 +202,17 @@ def plotCellMsg1FDM(celldatas, folderName=""):
         else:
             ax.plot(data['timing'], preambleBW, attr[i], label='RA Subframe Period='+str(getSubframePeriod(int(data['prachIndex'])))+"ms", linewidth=line_width, markersize=marker_size)
         i = i + 1
+
     newYTick = [fdm*celldatas[0]['preambleLength']*float(celldatas[0]['preambleSCS'])/1000 for fdm in [1, 2, 4, 8]]
 
+    xtick = math.ceil(maxTiming / 160)
+    xtick = [(x * 160) for x in range(xtick + 1)]
+
+    #plt.xticks(xtick)
     plt.yticks(newYTick)
     ax.legend(loc='upper left', fontsize=legend_font_size)
     ax.set_xlim(0, maxTiming)
-    ax.set_ylim(0, math.ceil(max(newYTick) / 10) * 10)
+    ax.set_ylim(0, math.ceil(max(newYTick) / 10) * 2 * 10)
     for label in (ax.get_xticklabels() + ax.get_yticklabels()):
         label.set_fontsize(16)
     ax.grid(True)
@@ -359,12 +364,12 @@ if __name__ == '__main__':
     if plot_optimized:
         plotCellMsg1FDMwithOptimized(cell_uniform, resultSourceFolder + folderNameUniform)
     
-    plotLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
-    plotEachLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
-    plotAverageResult(avgs_beta, resultSourceFolder + folderNameBeta+ savefigurenameBeta)
-    plotCellMsg1FDM(cell_beta, resultSourceFolder + folderNameBeta)
-    if plot_optimized:
-        plotCellMsg1FDMwithOptimized(cell_beta, resultSourceFolder + folderNameBeta)
+    #plotLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
+    #plotEachLantencyCDF(ue_beta, resultSourceFolder + folderNameBeta)
+    #plotAverageResult(avgs_beta, resultSourceFolder + folderNameBeta+ savefigurenameBeta)
+    #plotCellMsg1FDM(cell_beta, resultSourceFolder + folderNameBeta)
+    #if plot_optimized:
+    #    plotCellMsg1FDMwithOptimized(cell_beta, resultSourceFolder + folderNameBeta)
     #plt.show()
     del avgs_uniform
     del avgs_beta

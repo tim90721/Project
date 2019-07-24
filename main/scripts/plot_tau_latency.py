@@ -180,9 +180,12 @@ def plotCellMsg1FDM(celldatas, saveFolderName=""):
                         simulation,
                         arrivalMode,
                         arrival)
-                ax.legend(loc="upper left", fontsize=legend_font_size)
+                xtick = math.ceil(maxTiming / 160)
+                xtick = [(x * 160) for x in range(xtick + 1)]
+                ax.legend(loc="upper left", fontsize=legend_font_size, ncol=2)
                 ax.set_xlim(0, maxTiming)
-                ax.set_ylim(0, math.ceil(max(newYTick) / 10) * 10)
+                ax.set_ylim(0, math.ceil((max(newYTick) * 2) / 10) * 10)
+                plt.xticks(xtick)
                 plt.grid(True)
                 if saveFolderName:
                     plt.savefig(saveFolderName + arrivalMode + "/"  + filenameFig)
@@ -239,10 +242,13 @@ def plotCellSSBPerRAO(celldatas, saveFolderName=""):
                         simulation,
                         arrivalMode,
                         arrival)
+                xtick = math.ceil(maxTiming / 160)
+                xtick = [(x * 160) for x in range(xtick + 1)]
                 ax.legend(loc="upper left", fontsize=legend_font_size)
                 ax.set_xlim(0, maxTiming)
                 ax.set_ylim(newYTick[0], newYTick[-1])
                 ax.set_yscale('log', basey=2)
+                plt.xticks(xtick)
                 plt.grid(True)
                 if saveFolderName:
                     plt.savefig(saveFolderName + arrivalMode + "/"  + filenameFig)
@@ -302,12 +308,15 @@ def plotCellDelta(celldatas, saveFolderName=""):
                         simulation,
                         arrivalMode,
                         arrival)
-                ax.legend(loc="upper left", fontsize=legend_font_size)
+                xtick = math.ceil(maxTiming / 160)
+                xtick = [(x * 160) for x in range(xtick + 1)]
+                ax.legend(loc="upper left", fontsize=legend_font_size, ncol=2)
                 ax.set_xlim(0, maxTiming)
                 exponential = math.floor(log(maxDelta, 10))
                 coef = maxDelta / pow(10, exponential)
-                maxDelta = (coef + 1) * pow(10, exponential)
+                maxDelta = (coef * 2) * pow(10, exponential)
                 ax.set_ylim(0, maxDelta)
+                plt.xticks(xtick)
                 plt.grid(True)
                 if saveFolderName:
                     plt.savefig(saveFolderName + arrivalMode + "/"  + filenameFig)
@@ -364,8 +373,11 @@ def plotCellTau(celldatas, saveFolderName=""):
                         simulation,
                         arrivalMode,
                         arrival)
-                ax.legend(loc="upper left", fontsize=legend_font_size)
+                xtick = math.ceil(maxTiming / 160)
+                xtick = [(x * 160) for x in range(xtick + 1)]
+                ax.legend(loc="upper left", fontsize=legend_font_size, ncol=2)
                 ax.set_xlim(0, maxTiming)
+                ax.set_ylim(0, 220)
                 #exponential = math.floor(log(maxTau, 10))
                 #coef = maxTau / pow(10, exponential)
                 #maxTau = (coef + 1) * pow(10, exponential)
